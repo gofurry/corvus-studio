@@ -356,7 +356,8 @@ Phase 1 is complete only when evidence proves all of the following:
 - [x] 2026-07-29 — Read Phase 1 source documents, audited the clean Phase 0 repository, verified the local toolchain, and queried exact selected module versions without mutating the repository.
 - [x] 2026-07-29 18:53 +08:00 — Milestone 1: pinned Viper v1.21.0, Zap v1.28.0, and lumberjack v2.2.1; added YAML/JSON, `CORVUS_*`, and explicit override loading; enforced loopback/port/log validation; added OS-derived database/log paths and example YAML; added rotating structured console/file logging. Package tests and full Core tests passed, gofmt reported no files, and official golangci-lint v2.12.2 reported zero issues.
 - [x] Milestone 1 — Configuration and logging foundation.
-- [ ] Milestone 2 — SQLite, goose, and sqlc foundation.
+- [x] 2026-07-29 19:05 +08:00 — Milestone 2: pinned modernc SQLite v1.55.0 and goose v3.27.3, pinned sqlc v1.31.1 with a Core-local Go tool directive, added an embedded infrastructure-only schema migration and deterministic generated queries, and implemented WAL/foreign-key/busy-timeout storage open, health, version, close, idempotent migration, and `VACUUM INTO` pre-migration snapshot behavior. sqlc generate/vet and drift check passed; storage and full Core tests passed; official golangci-lint v2.12.2 reported zero issues.
+- [x] Milestone 2 — SQLite, goose, and sqlc foundation.
 - [ ] Milestone 3 — Echo, Cobra, lifecycle, and Web delivery.
 - [ ] Milestone 4 — CI, documentation, and final audit.
 
@@ -365,6 +366,8 @@ Phase 1 is complete only when evidence proves all of the following:
 - Phase 0's accepted embedding strategy explicitly assigns the staging utility, embedded filesystem, SPA fallback, cache headers, and Echo handler to Phase 1, even though the short Development Implementation Plan only names backend libraries.
 - The maintained latest module versions are newer than the Phase 0 risk snapshot: modernc SQLite is v1.55.0 and goose is v3.27.3; both still require Go versions satisfied by Go 1.26.5.
 - Echo v5.3.1 uses the new `*echo.Context` handler API and offers context-driven graceful shutdown through `StartConfig`.
+- Initial downloads from the configured `goproxy.cn` failed twice for the large modernc archive (HTTP/2 internal error and unexpected EOF), and the official Go proxy was unreachable over the host's IPv6 route. A direct upstream module download succeeded; smaller transitive modules then resolved through the configured proxy. No proxy setting was committed.
+- modernc SQLite v1.55.0 declares `modernc.org/libc` v1.74.3, but Go reports that version retracted by its author for a name-resolution lock leak/deadlock fixed in v1.74.4. The minimal fixed indirect patch was pinned. A later full-graph retraction audit was inconclusive because the configured checksum proxy returned HTTP 504 while checking an unrelated module; selected runtime/tool modules remain explicitly verified.
 
 ### Decision Log
 
@@ -372,6 +375,7 @@ Phase 1 is complete only when evidence proves all of the following:
 - **2026-07-29 — Accepted:** reserve `/api/v1` for product APIs and use only `/healthz` for operational readiness.
 - **2026-07-29 — Accepted:** use an infrastructure-only runtime metadata migration/query to prove goose/sqlc without anticipating Phase 2 models.
 - **2026-07-29 — Accepted:** use a `corvus_webui` build tag so ordinary Go builds do not depend on generated Web assets.
+- **2026-07-29 — Accepted:** override only the retracted indirect `modernc.org/libc` v1.74.3 with its author-designated v1.74.4 fix while retaining modernc SQLite v1.55.0.
 - **2026-07-29 — Accepted:** create local commits after each validated milestone and do not push without explicit user authorization.
 
 ### Outcomes & Retrospective

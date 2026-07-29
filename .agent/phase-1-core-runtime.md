@@ -358,7 +358,8 @@ Phase 1 is complete only when evidence proves all of the following:
 - [x] Milestone 1 — Configuration and logging foundation.
 - [x] 2026-07-29 19:05 +08:00 — Milestone 2: pinned modernc SQLite v1.55.0 and goose v3.27.3, pinned sqlc v1.31.1 with a Core-local Go tool directive, added an embedded infrastructure-only schema migration and deterministic generated queries, and implemented WAL/foreign-key/busy-timeout storage open, health, version, close, idempotent migration, and `VACUUM INTO` pre-migration snapshot behavior. sqlc generate/vet and drift check passed; storage and full Core tests passed; official golangci-lint v2.12.2 reported zero issues.
 - [x] Milestone 2 — SQLite, goose, and sqlc foundation.
-- [ ] Milestone 3 — Echo, Cobra, lifecycle, and Web delivery.
+- [x] 2026-07-29 19:16 +08:00 — Milestone 3: pinned Echo v5.3.1 and Cobra v1.10.2; replaced the bootstrap with `corvus serve`; composed config, rotating structured logs, migrated SQLite, readiness HTTP, and graceful context shutdown; added `/healthz`, Vite development proxies, atomic Web staging, tagged `go:embed` SPA delivery, cache rules, and package/integration tests. Default and tagged Core tests passed, official golangci-lint v2.12.2 reported zero issues, frontend format/lint/test/build passed, the embedded binary built, and a real Windows process returned `{"status":"ok","database":"ok","schema_version":1}` while creating its database and log.
+- [x] Milestone 3 — Echo, Cobra, lifecycle, and Web delivery.
 - [ ] Milestone 4 — CI, documentation, and final audit.
 
 ### Surprises & Discoveries
@@ -368,6 +369,7 @@ Phase 1 is complete only when evidence proves all of the following:
 - Echo v5.3.1 uses the new `*echo.Context` handler API and offers context-driven graceful shutdown through `StartConfig`.
 - Initial downloads from the configured `goproxy.cn` failed twice for the large modernc archive (HTTP/2 internal error and unexpected EOF), and the official Go proxy was unreachable over the host's IPv6 route. A direct upstream module download succeeded; smaller transitive modules then resolved through the configured proxy. No proxy setting was committed.
 - modernc SQLite v1.55.0 declares `modernc.org/libc` v1.74.3, but Go reports that version retracted by its author for a name-resolution lock leak/deadlock fixed in v1.74.4. The minimal fixed indirect patch was pinned. A later full-graph retraction audit was inconclusive because the configured checksum proxy returned HTTP 504 while checking an unrelated module; selected runtime/tool modules remain explicitly verified.
+- Windows process smoke used the built tagged binary rather than `go run`, so the recorded PID was the actual Core process. Package-level lifecycle tests supplied deterministic graceful-cancellation evidence; the smoke process was force-stopped only after its health/database/log observations were captured.
 
 ### Decision Log
 
@@ -377,6 +379,7 @@ Phase 1 is complete only when evidence proves all of the following:
 - **2026-07-29 — Accepted:** use a `corvus_webui` build tag so ordinary Go builds do not depend on generated Web assets.
 - **2026-07-29 — Accepted:** override only the retracted indirect `modernc.org/libc` v1.74.3 with its author-designated v1.74.4 fix while retaining modernc SQLite v1.55.0.
 - **2026-07-29 — Accepted:** create local commits after each validated milestone and do not push without explicit user authorization.
+- **2026-07-29 — Accepted:** allow Vite's Core proxy target to be overridden with `CORVUS_CORE_URL`, while retaining `http://127.0.0.1:8765` as the zero-configuration development default.
 
 ### Outcomes & Retrospective
 

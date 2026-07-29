@@ -18,6 +18,7 @@ coverage/
 # Node and Vite
 node_modules/
 apps/web/dist/
+apps/core/internal/interfaces/webui/dist/
 *.tsbuildinfo
 
 # Local caches and temporary files

@@ -1,6 +1,6 @@
 # Phase 0: Repository Bootstrap ExecPlan
 
-> Status: Milestones 1–5 executed and locally audited — remote GitHub-hosted native builds and the recommended Launcher visual smoke remain pending.
+> Status: Phase 0 completion criteria satisfied — Milestones 1–5 and the GitHub-hosted native matrix passed; the recommended Launcher visual smoke remains a manual follow-up.
 > Target repository root: `E:\Git\开源\agent\corvus`
 > Prepared: 2026-07-29 (Asia/Shanghai)
 > Maintenance standard: `.agent/PLANS.md`
@@ -790,12 +790,12 @@ Phase 0 is complete only when evidence shows all of the following:
 - README and USAGE describe only genuinely available Phase 0 commands as current;
 - no application dependency, import, SQL file, type, route, page, or workflow implements Phase 1+ capabilities;
 - no Issue/PR templates, `CONTRIBUTING.md`, Docker/systemd files, installers, signing files, or automatic-update configuration exist;
-- `git diff --check` passes, the worktree review identifies only intended Phase 0/planning paths, the user-requested local milestone commits are reviewable, and no push was performed;
+- `git diff --check` passes, the worktree review identifies only intended Phase 0/planning paths, the user-requested local milestone commits are reviewable, and no unauthorized push was performed;
 - all locally runnable required checks have recorded exit codes and results; any remote CI run not authorized or available is explicitly pending rather than reported as passed.
 
-Current assessment after the 2026-07-29 local audit: every CI-independent required criterion passed on Windows. Full Phase 0 completion is not yet claimed because native Linux, macOS, and Windows GitHub-hosted jobs have not run. The recommended visual Launcher smoke is also pending; this does not replace or invalidate the successful Windows native build evidence.
+Current assessment after the 2026-07-29 local and remote audits: every required Phase 0 criterion has authoritative evidence. All CI-independent checks passed locally on Windows, and GitHub Actions run `30442490029` passed Go quality, Frontend quality, and native Ubuntu, macOS, and Windows builds for commit `a0c6670`. The recommended visual Launcher smoke remains a manual follow-up rather than a completion gate.
 
-Remote evidence cannot be produced under the current no-push boundary: `origin/main` remains at `ad73355`, while the Phase 0 workflow exists only in local commits on `dev`. The current Windows host has no installed WSL distribution, Docker/Podman, Multipass, Vagrant, or macOS-native execution environment. A user-authorized push or equivalent external native runners are therefore required to close the remaining gate.
+The user pushed `dev` and explicitly authorized creation of Draft PR [#1](https://github.com/gofurry/corvus-studio/pull/1). Its pull-request workflow provided the native evidence without merging to `main` or introducing deployment/release behavior.
 
 ## 17. Progress, discoveries and decision log
 
@@ -821,7 +821,8 @@ Remote evidence cannot be produced under the current no-push boundary: `origin/m
 - [x] 2026-07-29 17:55 +08:00 — Milestone 5 frontend audit: pnpm 10.11.0 listed only the root and Web workspace projects; frozen install preserved lockfile SHA-256 `9C4AF0B490FBF6ABE01151CFFFEE91B1EB1358D6EB2C367828FB52C8462896ED`; format, lint, the one-test Vitest suite, and Vite build passed; `apps/web/dist/index.html` existed; no deferred product UI dependency appeared in manifests.
 - [x] 2026-07-29 17:56 +08:00 — Milestone 5 boundary/policy audit: no forbidden implementation symbol, Go dependency, SQL, repository template, deployment/signing/installer file, or release automation was found; CI/README/USAGE command scopes matched; workflow and docs parsed with pinned Prettier; `git diff --check` passed; worktree was clean before this final plan update.
 - [x] Milestone 5 — Final local evidence audit and handoff completed. Remote GitHub-hosted native builds remain required before full Phase 0 completion can be claimed; the recommended visual Launcher smoke remains pending.
-- [ ] 2026-07-29 17:59 +08:00 — Remote completion gate: GitHub CLI authentication is available, but `gh workflow list --repo gofurry/corvus-studio --all` returned no workflows and remote `main` still pointed to `ad73355`; all Phase 0 implementation commits remain local. No push is authorized, so no authoritative GitHub-hosted job can be started.
+- [x] 2026-07-29 18:08 +08:00 — Remote handoff: the user pushed local `dev` at `a0c6670` and authorized creation of Draft PR [#1](https://github.com/gofurry/corvus-studio/pull/1) targeting `main`; no additional implementation commit or assistant push was required.
+- [x] 2026-07-29 18:15 +08:00 — Remote completion gate: GitHub Actions run [30442490029](https://github.com/gofurry/corvus-studio/actions/runs/30442490029) completed successfully. Go quality, Frontend quality, and native Ubuntu, macOS, and Windows jobs all reported `success`; the slowest job was the initial Windows Fyne build, which completed without retry or bypass.
 
 ### Surprises & Discoveries
 
@@ -841,6 +842,7 @@ Remote evidence cannot be produced under the current no-push boundary: `origin/m
 - The first Milestone 4 acceptance run correctly stopped at `git diff --check` because two USAGE blockquote lines used trailing-space Markdown breaks. They were changed to explicit backslash breaks, and the entire acceptance sequence then passed.
 - A first `git ls-remote` audit returned all six referenced GitHub Action major tags. A later repeat encountered a connection reset and then three GitHub port 443 timeouts; this is recorded as a transient external-network failure and does not constitute a GitHub Actions run.
 - The Windows host exposes `wsl.exe` but has no installed Linux distribution. Docker, Podman, Multipass, and Vagrant are absent, and Windows cannot provide macOS-native build evidence. Local emulation or cross-compilation is therefore not an acceptable substitute for the pending native matrix.
+- The GitHub Connector returned HTTP 403 when creating the authorized Draft PR. Per the selected GitHub publishing workflow, authenticated GitHub CLI was used as the fallback and created PR #1 successfully; no repository content changed during PR creation.
 
 ### Decision Log
 
@@ -854,7 +856,8 @@ Remote evidence cannot be produced under the current no-push boundary: `origin/m
 - **2026-07-29 — Accepted:** retain `strict-peer-dependencies=true` and exclude only Rolldown's broken optional WASM binding via `ignoredOptionalDependencies`; do not weaken peer validation or remove native bindings for the three supported platforms.
 - **2026-07-29 — Accepted:** keep pnpm workspace coordination, the single lockfile, Node/pnpm constraints, and shared formatting policy at the repository root; keep application-specific Vite, TypeScript, ESLint, source, tests, and styles under `apps/web/`. Document these responsibilities in README instead of duplicating workspace state inside the application.
 - **2026-07-29 — Accepted:** close Milestone 5 after recording the complete local audit, but withhold the overall Phase 0 completion claim until actual GitHub-hosted Windows, macOS, and Linux native-build results exist. Do not treat YAML inspection or the successful local Windows build as remote evidence.
+- **2026-07-29 — Accepted:** actual PR run `30442490029` supplies the required remote evidence, so Phase 0 completion can now be claimed. Keep PR #1 as a draft for user review; do not merge or mark it ready without separate authorization.
 
 ### Outcomes & Retrospective
 
-Milestones 1–5 have been executed and locally audited. The three approved Go modules and root skeleton build/test locally on Windows, including a real Fyne v2.8.0 Launcher shell. The pnpm workspace installs from one frozen lockfile and the minimal Web package passes formatting, lint, smoke test, and production build. CI expresses the same quality scopes and defines native Windows/macOS/Linux builds; README and USAGE distinguish Phase 0 reality from future product commands. Design documents and LICENSE remained byte-stable against the captured baseline, and no Phase 1 capability or database migration was introduced. Full Phase 0 completion remains pending on an actual GitHub-hosted native-build matrix: the workflow and its four implementation/evidence commits are local-only, and this host has no alternative Linux/macOS native environment. The recommended visual Launcher smoke was not performed during this non-interactive audit.
+Phase 0 is complete. Milestones 1–5 passed their local audits, and Draft PR #1 supplied successful GitHub-hosted Go/frontend quality plus native Ubuntu, macOS, and Windows build evidence for `a0c6670`. The three approved Go modules and root skeleton build/test locally on Windows, including a real Fyne v2.8.0 Launcher shell. The pnpm workspace installs from one frozen lockfile and the minimal Web package passes formatting, lint, smoke test, and production build. README and USAGE distinguish current behavior from future product commands. Design documents and LICENSE remained byte-stable, and no Phase 1 capability or database migration was introduced. The only remaining suggested action is a human visual smoke of the Launcher window; it is not a Phase 0 completion gate.

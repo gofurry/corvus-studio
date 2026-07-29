@@ -63,23 +63,23 @@ This is user-owned, uncommitted work. The bootstrap must preserve it and must no
 
 ### Local environment evidence
 
-| Tool | Observed state | Phase 0 implication |
-|---|---|---|
-| Git | `2.51.0.windows.1` | Available |
-| Go | `go1.26.5 windows/amd64` | Required toolchain is available |
-| `GOTOOLCHAIN` | `auto` | Must not be relied on silently; record any automatic download |
-| CGO | enabled | Suitable for native Fyne build when toolchain prerequisites exist |
-| GCC | `14.2.0` | Present on current Windows host |
-| Node.js | `v24.15.0` | Compatible with the selected Vite/test toolchain |
-| npm | `9.6.7` | Not used for workspace installation |
-| pnpm | `10.11.0` | Selected package-manager version |
-| Corepack | `0.34.6` | Available |
+| Tool          | Observed state                                                                   | Phase 0 implication                                                                 |
+| ------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Git           | `2.51.0.windows.1`                                                               | Available                                                                           |
+| Go            | `go1.26.5 windows/amd64`                                                         | Required toolchain is available                                                     |
+| `GOTOOLCHAIN` | `auto`                                                                           | Must not be relied on silently; record any automatic download                       |
+| CGO           | enabled                                                                          | Suitable for native Fyne build when toolchain prerequisites exist                   |
+| GCC           | `14.2.0`                                                                         | Present on current Windows host                                                     |
+| Node.js       | `v24.15.0`                                                                       | Compatible with the selected Vite/test toolchain                                    |
+| npm           | `9.6.7`                                                                          | Not used for workspace installation                                                 |
+| pnpm          | `10.11.0`                                                                        | Selected package-manager version                                                    |
+| Corepack      | `0.34.6`                                                                         | Available                                                                           |
 | golangci-lint | PATH has `v1.64.8`; official v2.12.2 archive executed from a temporary directory | v2.12.2 local lint evidence is available without replacing the user's global binary |
-| goose | `v3.27.1` | Installed but out of scope and must not be run |
-| sqlc | missing | Not a Phase 0 blocker; integration starts later |
-| Fyne CLI | missing | Not required for `go build`; packaging is out of scope |
-| Docker | missing | Not a Phase 0 blocker |
-| make / clang | missing | Make is not required; Windows build uses GCC |
+| goose         | `v3.27.1`                                                                        | Installed but out of scope and must not be run                                      |
+| sqlc          | missing                                                                          | Not a Phase 0 blocker; integration starts later                                     |
+| Fyne CLI      | missing                                                                          | Not required for `go build`; packaging is out of scope                              |
+| Docker        | missing                                                                          | Not a Phase 0 blocker                                                               |
+| make / clang  | missing                                                                          | Make is not required; Windows build uses GCC                                        |
 
 At the Milestone 2 start, branch `dev` pointed to `ad73355` with a clean worktree. No Phase 0 build, test, dependency installation, migration, or application command had been run at that point.
 
@@ -87,31 +87,31 @@ At the Milestone 2 start, branch `dev` pointed to `ad73355` with a clean worktre
 
 Conflicts use the following precedence. A lower source supplies context only when it does not expand or contradict a higher source.
 
-1. `docs/Corvus_Studio_Development_Implementation_Plan_v0.1.md`
+1. `docs/development/Corvus_Studio_Development_Implementation_Plan_v0.1.md`
    - Defines Repository Bootstrap as Monorepo, Go module/workspace, pnpm workspace, GitHub Actions, README, and License.
    - Places Echo, Viper, Zap, SQLite, goose, sqlc, and Cobra in Phase 1.
-2. `docs/Corvus_Studio_Repository_Structure_Design_v0.1.md`
+2. `docs/architecture/Corvus_Studio_Repository_Structure_Design_v0.1.md`
    - Defines the target top-level tree, Core/Web/Launcher/Agent separation, package reservations, tests, tools, deployments, and `.github` layout.
-3. `docs/Corvus_Studio_Technology_Stack_Decision_v0.1.md`
+3. `docs/architecture/Corvus_Studio_Technology_Stack_Decision_v0.1.md`
    - Fixes Go 1.26, Echo v5, SQLite/modernc, goose/sqlc, React 19, Vite 8, pnpm, Fyne, Google ADK Go, and quality tools.
-4. `docs/Corvus_Studio_Engineering_and_Deployment_Guide_v0.1.md`
+4. `docs/deployment/Corvus_Studio_Engineering_and_Deployment_Guide_v0.1.md`
    - Defines GitHub Actions checks, React-to-Go production delivery direction, supported platforms, and absence of automatic updates in v0.1.
 5. `USAGE.md`
    - Defines intended developer commands and experience; commands for future phases must be labelled rather than presented as currently working.
 
 The following documents are complete background sources but do not authorize Phase 1+ implementation in this plan:
 
-- `docs/Corvus_Studio_ADK_Implementation_Plan_v0.1.md`: future in-process ADK runtime and workflows.
-- `docs/Corvus_Studio_Agent_Architecture_and_Tool_Specification_v0.1.md`: future Agent/tool boundaries and evidence model.
-- `docs/Corvus_Studio_Backend_API_Design_v0.1.md`: future REST/SSE contract.
-- `docs/Corvus_Studio_Data_Model_Design_v0.1.md`: future domains and persistence concepts.
-- `docs/Corvus_Studio_Launch_Frontend_Specification_v0.1.md`: future pages and frontend libraries.
-- `docs/Corvus_Studio_Launch_Functional_Specification_v0.1.md`: future business capabilities.
-- `docs/Corvus_Studio_Launch_MVP_Roadmap_v0.1.md`: product roadmap; its Phase labels are subordinate to the Development Implementation Plan.
-- `docs/Corvus_Studio_Launch_PRD_v0.1.md`: product requirements and v0.1 outcome.
-- `docs/Corvus_Studio_Launch_System_Design_Document_v0.1.md`: future runtime/domain/storage boundaries.
-- `docs/Corvus_Studio_Launch_UX_IA_v0.1.md`: future navigation and workflows.
-- `docs/Corvus_Studio_Product_Design_Draft_v0.1.md`: product direction and licensing recommendation.
+- `docs/agent/Corvus_Studio_ADK_Implementation_Plan_v0.1.md`: future in-process ADK runtime and workflows.
+- `docs/agent/Corvus_Studio_Agent_Architecture_and_Tool_Specification_v0.1.md`: future Agent/tool boundaries and evidence model.
+- `docs/api/Corvus_Studio_Backend_API_Design_v0.1.md`: future REST/SSE contract.
+- `docs/architecture/Corvus_Studio_Data_Model_Design_v0.1.md`: future domains and persistence concepts.
+- `docs/architecture/Corvus_Studio_Launch_Frontend_Specification_v0.1.md`: future pages and frontend libraries.
+- `docs/product/Corvus_Studio_Launch_Functional_Specification_v0.1.md`: future business capabilities.
+- `docs/product/Corvus_Studio_Launch_MVP_Roadmap_v0.1.md`: product roadmap; its Phase labels are subordinate to the Development Implementation Plan.
+- `docs/product/Corvus_Studio_Launch_PRD_v0.1.md`: product requirements and v0.1 outcome.
+- `docs/architecture/Corvus_Studio_Launch_System_Design_Document_v0.1.md`: future runtime/domain/storage boundaries.
+- `docs/product/Corvus_Studio_Launch_UX_IA_v0.1.md`: future navigation and workflows.
+- `docs/product/Corvus_Studio_Product_Design_Draft_v0.1.md`: product direction and licensing recommendation.
 
 `LICENSE` is preserved as the current repository license. `README.md` is empty; `USAGE.md` is aspirational and may receive the minimal status/command corrections specified by this plan.
 
@@ -151,17 +151,17 @@ OpenAPI source placement, sqlc layout, migrations, and production asset staging 
 
 ## 6. Document conflicts and decisions
 
-| Status | Conflict or ambiguity | Decision and rationale |
-|---|---|---|
-| Accepted | The initial working directory was outside the nested Git repository; the root was normalized between assistant turns. | The outer `corvus` directory is the permanent root. Do not repeat the move. Phase 0 begins by auditing the current root, exact document inventory, four tracked-document blob matches, and a new SHA-256 baseline for all 15 documents. |
-| Accepted | Development Plan Phase 0 is infrastructure-only, while the lower-priority MVP Roadmap lists Go Core, React, Fyne, SQLite, and CI/CD under Phase 0. | Create minimal buildable Core/React/Fyne shells, but follow the higher-priority plan by deferring SQLite and all runtime/business wiring to Phase 1+. |
-| Accepted | The Development Plan and USAGE use `go test ./...`, but three nested modules in a root `go.work` are not reliably covered by that pattern from a non-module root. | Use `go test ./apps/core/... ./apps/launcher/... ./agent/...`. Do not add a misleading root module merely to preserve the shorter command. User confirmed this choice. |
-| Accepted | Repository design separates top-level `agent/`, while the runtime design says the Agent runs in the Core process. | `agent/` is an independent Go module and future source boundary; Core will import/run it later. Phase 0 adds no ADK dependency. |
-| Accepted | Fyne creates native CGO/toolchain complexity during bootstrap. | Use a real Fyne v2.8.0 minimal window and validate native builds on all three operating systems, without implementing launcher responsibilities. User confirmed this choice. |
-| Accepted | USAGE presents future commands as if they work now. | Preserve product guidance but add a clear phase-status distinction and list only verified Phase 0 commands as current. |
-| Accepted | The repository structure names shared packages, but there are no contracts or shared components yet. | Create only explanatory README placeholders. Do not create package manifests, exports, generated code, or dependencies until a consuming phase exists. |
-| Accepted | OpenAPI/sqlc/goose locations are needed, but their content is later-phase work. | Reserve future locations as `apps/core/openapi/`, `packages/api-client/`, `apps/core/sqlc.yaml`, Core-internal SQL query/generated packages, and `apps/core/migrations/`. Only `packages/api-client/README.md` exists in Phase 0. |
-| Open Question | Product Design recommends AGPL-3.0-or-later for code and CC BY 4.0 for docs, while the repository has one AGPLv3 license and no separate docs license. | Preserve the existing `LICENSE` byte-for-byte. Decide separate documentation licensing outside Phase 0 with appropriate project/legal review. This does not block bootstrap. |
+| Status        | Conflict or ambiguity                                                                                                                                             | Decision and rationale                                                                                                                                                                                                                  |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Accepted      | The initial working directory was outside the nested Git repository; the root was normalized between assistant turns.                                             | The outer `corvus` directory is the permanent root. Do not repeat the move. Phase 0 begins by auditing the current root, exact document inventory, four tracked-document blob matches, and a new SHA-256 baseline for all 15 documents. |
+| Accepted      | Development Plan Phase 0 is infrastructure-only, while the lower-priority MVP Roadmap lists Go Core, React, Fyne, SQLite, and CI/CD under Phase 0.                | Create minimal buildable Core/React/Fyne shells, but follow the higher-priority plan by deferring SQLite and all runtime/business wiring to Phase 1+.                                                                                   |
+| Accepted      | The Development Plan and USAGE use `go test ./...`, but three nested modules in a root `go.work` are not reliably covered by that pattern from a non-module root. | Use `go test ./apps/core/... ./apps/launcher/... ./agent/...`. Do not add a misleading root module merely to preserve the shorter command. User confirmed this choice.                                                                  |
+| Accepted      | Repository design separates top-level `agent/`, while the runtime design says the Agent runs in the Core process.                                                 | `agent/` is an independent Go module and future source boundary; Core will import/run it later. Phase 0 adds no ADK dependency.                                                                                                         |
+| Accepted      | Fyne creates native CGO/toolchain complexity during bootstrap.                                                                                                    | Use a real Fyne v2.8.0 minimal window and validate native builds on all three operating systems, without implementing launcher responsibilities. User confirmed this choice.                                                            |
+| Accepted      | USAGE presents future commands as if they work now.                                                                                                               | Preserve product guidance but add a clear phase-status distinction and list only verified Phase 0 commands as current.                                                                                                                  |
+| Accepted      | The repository structure names shared packages, but there are no contracts or shared components yet.                                                              | Create only explanatory README placeholders. Do not create package manifests, exports, generated code, or dependencies until a consuming phase exists.                                                                                  |
+| Accepted      | OpenAPI/sqlc/goose locations are needed, but their content is later-phase work.                                                                                   | Reserve future locations as `apps/core/openapi/`, `packages/api-client/`, `apps/core/sqlc.yaml`, Core-internal SQL query/generated packages, and `apps/core/migrations/`. Only `packages/api-client/README.md` exists in Phase 0.       |
+| Open Question | Product Design recommends AGPL-3.0-or-later for code and CC BY 4.0 for docs, while the repository has one AGPLv3 license and no separate docs license.            | Preserve the existing `LICENSE` byte-for-byte. Decide separate documentation licensing outside Phase 0 with appropriate project/legal review. This does not block bootstrap.                                                            |
 
 ## 7. Proposed repository tree
 
@@ -242,22 +242,29 @@ corvus/
 │   └── README.md                                [reserve]
 ├── deployments/
 │   └── README.md                                [reserve; no deployment files]
-├── docs/                                        [existing; preserve bytes]
-│   ├── Corvus_Studio_ADK_Implementation_Plan_v0.1.md
-│   ├── Corvus_Studio_Agent_Architecture_and_Tool_Specification_v0.1.md
-│   ├── Corvus_Studio_Backend_API_Design_v0.1.md
-│   ├── Corvus_Studio_Data_Model_Design_v0.1.md
-│   ├── Corvus_Studio_Development_Implementation_Plan_v0.1.md
-│   ├── Corvus_Studio_Engineering_and_Deployment_Guide_v0.1.md
-│   ├── Corvus_Studio_Launch_Frontend_Specification_v0.1.md
-│   ├── Corvus_Studio_Launch_Functional_Specification_v0.1.md
-│   ├── Corvus_Studio_Launch_MVP_Roadmap_v0.1.md
-│   ├── Corvus_Studio_Launch_PRD_v0.1.md
-│   ├── Corvus_Studio_Launch_System_Design_Document_v0.1.md
-│   ├── Corvus_Studio_Launch_UX_IA_v0.1.md
-│   ├── Corvus_Studio_Product_Design_Draft_v0.1.md
-│   ├── Corvus_Studio_Repository_Structure_Design_v0.1.md
-│   └── Corvus_Studio_Technology_Stack_Decision_v0.1.md
+├── docs/                                        [existing design baselines; organized post-P0]
+│   ├── README.md                                [post-P0 navigation]
+│   ├── agent/
+│   │   ├── Corvus_Studio_ADK_Implementation_Plan_v0.1.md
+│   │   └── Corvus_Studio_Agent_Architecture_and_Tool_Specification_v0.1.md
+│   ├── api/
+│   │   └── Corvus_Studio_Backend_API_Design_v0.1.md
+│   ├── architecture/
+│   │   ├── Corvus_Studio_Data_Model_Design_v0.1.md
+│   │   ├── Corvus_Studio_Launch_Frontend_Specification_v0.1.md
+│   │   ├── Corvus_Studio_Launch_System_Design_Document_v0.1.md
+│   │   ├── Corvus_Studio_Repository_Structure_Design_v0.1.md
+│   │   └── Corvus_Studio_Technology_Stack_Decision_v0.1.md
+│   ├── deployment/
+│   │   └── Corvus_Studio_Engineering_and_Deployment_Guide_v0.1.md
+│   ├── development/
+│   │   └── Corvus_Studio_Development_Implementation_Plan_v0.1.md
+│   └── product/
+│       ├── Corvus_Studio_Launch_Functional_Specification_v0.1.md
+│       ├── Corvus_Studio_Launch_MVP_Roadmap_v0.1.md
+│       ├── Corvus_Studio_Launch_PRD_v0.1.md
+│       ├── Corvus_Studio_Launch_UX_IA_v0.1.md
+│       └── Corvus_Studio_Product_Design_Draft_v0.1.md
 ├── scripts/
 │   └── README.md                                [reserve]
 ├── tests/
@@ -301,21 +308,21 @@ All commands in this section run from `E:\Git\开源\agent\corvus` in PowerShell
 ```powershell
 $phase0Evidence = Join-Path ([IO.Path]::GetTempPath()) 'corvus-phase0-preflight'
 $phase0ExpectedDocs = @(
-    'Corvus_Studio_ADK_Implementation_Plan_v0.1.md',
-    'Corvus_Studio_Agent_Architecture_and_Tool_Specification_v0.1.md',
-    'Corvus_Studio_Backend_API_Design_v0.1.md',
-    'Corvus_Studio_Data_Model_Design_v0.1.md',
-    'Corvus_Studio_Development_Implementation_Plan_v0.1.md',
-    'Corvus_Studio_Engineering_and_Deployment_Guide_v0.1.md',
-    'Corvus_Studio_Launch_Frontend_Specification_v0.1.md',
-    'Corvus_Studio_Launch_Functional_Specification_v0.1.md',
-    'Corvus_Studio_Launch_MVP_Roadmap_v0.1.md',
-    'Corvus_Studio_Launch_PRD_v0.1.md',
-    'Corvus_Studio_Launch_System_Design_Document_v0.1.md',
-    'Corvus_Studio_Launch_UX_IA_v0.1.md',
-    'Corvus_Studio_Product_Design_Draft_v0.1.md',
-    'Corvus_Studio_Repository_Structure_Design_v0.1.md',
-    'Corvus_Studio_Technology_Stack_Decision_v0.1.md'
+    'agent/Corvus_Studio_ADK_Implementation_Plan_v0.1.md',
+    'agent/Corvus_Studio_Agent_Architecture_and_Tool_Specification_v0.1.md',
+    'api/Corvus_Studio_Backend_API_Design_v0.1.md',
+    'architecture/Corvus_Studio_Data_Model_Design_v0.1.md',
+    'development/Corvus_Studio_Development_Implementation_Plan_v0.1.md',
+    'deployment/Corvus_Studio_Engineering_and_Deployment_Guide_v0.1.md',
+    'architecture/Corvus_Studio_Launch_Frontend_Specification_v0.1.md',
+    'product/Corvus_Studio_Launch_Functional_Specification_v0.1.md',
+    'product/Corvus_Studio_Launch_MVP_Roadmap_v0.1.md',
+    'product/Corvus_Studio_Launch_PRD_v0.1.md',
+    'architecture/Corvus_Studio_Launch_System_Design_Document_v0.1.md',
+    'product/Corvus_Studio_Launch_UX_IA_v0.1.md',
+    'product/Corvus_Studio_Product_Design_Draft_v0.1.md',
+    'architecture/Corvus_Studio_Repository_Structure_Design_v0.1.md',
+    'architecture/Corvus_Studio_Technology_Stack_Decision_v0.1.md'
 )
 
 if ((git rev-parse --show-toplevel) -ne 'E:/Git/开源/agent/corvus') {
@@ -325,32 +332,33 @@ if (Test-Path -LiteralPath '.\corvus-studio') {
     throw 'Obsolete nested repository path reappeared'
 }
 
-$phase0ActualDocs = Get-ChildItem -LiteralPath '.\docs' -File |
-    Select-Object -ExpandProperty Name |
+$phase0DocsRoot = (Resolve-Path -LiteralPath '.\docs').Path
+$phase0ActualDocs = Get-ChildItem -LiteralPath $phase0DocsRoot -Recurse -File -Filter 'Corvus_Studio_*.md' |
+    ForEach-Object { [IO.Path]::GetRelativePath($phase0DocsRoot, $_.FullName).Replace('\', '/') } |
     Sort-Object
 $phase0NameDiff = Compare-Object ($phase0ExpectedDocs | Sort-Object) $phase0ActualDocs
 if ($phase0NameDiff) {
     throw "Document inventory mismatch: $phase0NameDiff"
 }
 
-foreach ($phase0Name in @(
-    'Corvus_Studio_Launch_Functional_Specification_v0.1.md',
-    'Corvus_Studio_Launch_PRD_v0.1.md',
-    'Corvus_Studio_Launch_UX_IA_v0.1.md',
-    'Corvus_Studio_Product_Design_Draft_v0.1.md'
+foreach ($phase0RelativePath in @(
+    'product/Corvus_Studio_Launch_Functional_Specification_v0.1.md',
+    'product/Corvus_Studio_Launch_PRD_v0.1.md',
+    'product/Corvus_Studio_Launch_UX_IA_v0.1.md',
+    'product/Corvus_Studio_Product_Design_Draft_v0.1.md'
 )) {
-    $phase0HeadHash = git rev-parse ('HEAD:' + $phase0Name)
-    $phase0CurrentHash = git hash-object ('docs/' + $phase0Name)
+    $phase0HeadHash = git rev-parse ('HEAD:docs/' + $phase0RelativePath)
+    $phase0CurrentHash = git hash-object ('docs/' + $phase0RelativePath)
     if ($phase0HeadHash -ne $phase0CurrentHash) {
-        throw "Tracked document content changed: $phase0Name"
+        throw "Tracked document content changed: $phase0RelativePath"
     }
 }
 
 New-Item -ItemType Directory -Force -Path $phase0Evidence | Out-Null
 git status --porcelain=v2 --branch |
     Set-Content -LiteralPath (Join-Path $phase0Evidence 'git-status-current.txt')
-Get-ChildItem -LiteralPath '.\docs' -File |
-    Sort-Object Name |
+Get-ChildItem -LiteralPath '.\docs' -Recurse -File -Filter 'Corvus_Studio_*.md' |
+    Sort-Object FullName |
     Get-FileHash -Algorithm SHA256 |
     Select-Object Path, Hash |
     Export-Csv -NoTypeInformation -LiteralPath (Join-Path $phase0Evidence 'docs-current.csv')
@@ -584,11 +592,11 @@ Recovery is milestone-specific: fix only the failing Phase 0 artifact, rerun its
 
 Module boundaries are:
 
-| Path | Module path | Phase 0 responsibility | Reason for boundary |
-|---|---|---|---|
-| `apps/core` | `github.com/gofurry/corvus-studio/apps/core` | Minimal Core command only | Core owns future HTTP/domain/storage runtime and produces the main binary. |
-| `apps/launcher` | `github.com/gofurry/corvus-studio/apps/launcher` | Minimal Fyne window | Native UI dependencies and build constraints remain isolated from headless Core. |
-| `agent` | `github.com/gofurry/corvus-studio/agent` | Empty package boundary | Agent source is top-level by design and can later be imported into Core without becoming Core-internal code. |
+| Path            | Module path                                      | Phase 0 responsibility    | Reason for boundary                                                                                          |
+| --------------- | ------------------------------------------------ | ------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `apps/core`     | `github.com/gofurry/corvus-studio/apps/core`     | Minimal Core command only | Core owns future HTTP/domain/storage runtime and produces the main binary.                                   |
+| `apps/launcher` | `github.com/gofurry/corvus-studio/apps/launcher` | Minimal Fyne window       | Native UI dependencies and build constraints remain isolated from headless Core.                             |
+| `agent`         | `github.com/gofurry/corvus-studio/agent`         | Empty package boundary    | Agent source is top-level by design and can later be imported into Core without becoming Core-internal code. |
 
 No module is created for the repository root, `packages`, `tests`, or `tools`. A new Go module requires a later explicit architectural reason and an update to `go.work` and this decision record.
 
@@ -698,30 +706,30 @@ Future additions are made when their owning phase has real content: OpenAPI drif
 
 ## 13. Validation matrix
 
-| Target | Command or observation | Expected evidence | Phase 0 requirement |
-|---|---|---|---|
-| Windows local root | `git rev-parse --show-toplevel` | Approved outer absolute root | Required |
-| Document preservation | Compare against Milestone 1 current SHA-256 baseline; verify four HEAD blobs | No post-baseline differences; four tracked blobs match | Required |
-| Go toolchain | `go version` | Go 1.26.x; planned patch 1.26.5 | Required |
-| Go workspace | `go env GOWORK`; `go work edit -json`; `go list -m` | Root workspace and exactly three modules | Required |
-| Go tests | `go test ./apps/core/... ./apps/launcher/... ./agent/...` | Exit 0; Core bootstrap test passes | Required |
-| Core build/run | Build to temporary path, execute binary | Exit 0 and exact bootstrap marker | Required |
-| Launcher Windows build | `go build` to temporary path | Exit 0 and executable exists | Required |
-| Launcher manual smoke | `go run ./apps/launcher` | Minimal window appears/closes | Recommended local observation |
-| Go formatting | `gofmt -l` audit | No paths printed | Required |
-| Go lint | golangci-lint v2.12.2 explicit patterns | Exit 0 | Required; CI may supply evidence if local version blocked |
-| pnpm version | `pnpm --version` | `10.11.0` | Required before lockfile mutation |
-| pnpm workspace | `pnpm list -r --depth -1` | Root and Web only | Required |
-| Frozen install | `pnpm install --frozen-lockfile` | Exit 0, unchanged lockfile | Required |
-| Frontend formatting/lint | `pnpm format:check`; `pnpm lint` | Exit 0 | Required |
-| Frontend tests | `pnpm test` | Bootstrap render test passes | Required |
-| Frontend build | `pnpm build`; check `apps/web/dist/index.html` | Exit 0 and file exists | Required |
-| Linux CI | Native matrix job | Core and Fyne builds exit 0 | Required before claiming remote CI complete |
-| macOS CI | Native matrix job | Core and Fyne builds exit 0 | Required before claiming remote CI complete |
-| Windows CI | Native matrix job | Core and Fyne builds exit 0 | Required before claiming remote CI complete |
-| Phase boundary | Forbidden dependency/symbol and SQL searches | No application matches | Required |
-| Repository policy | Test forbidden template/contribution paths | All false | Required |
-| Worktree review | `git status --short`; `git diff --check` | Only intended new/updated paths; no whitespace errors | Required |
+| Target                   | Command or observation                                                       | Expected evidence                                      | Phase 0 requirement                                       |
+| ------------------------ | ---------------------------------------------------------------------------- | ------------------------------------------------------ | --------------------------------------------------------- |
+| Windows local root       | `git rev-parse --show-toplevel`                                              | Approved outer absolute root                           | Required                                                  |
+| Document preservation    | Compare against Milestone 1 current SHA-256 baseline; verify four HEAD blobs | No post-baseline differences; four tracked blobs match | Required                                                  |
+| Go toolchain             | `go version`                                                                 | Go 1.26.x; planned patch 1.26.5                        | Required                                                  |
+| Go workspace             | `go env GOWORK`; `go work edit -json`; `go list -m`                          | Root workspace and exactly three modules               | Required                                                  |
+| Go tests                 | `go test ./apps/core/... ./apps/launcher/... ./agent/...`                    | Exit 0; Core bootstrap test passes                     | Required                                                  |
+| Core build/run           | Build to temporary path, execute binary                                      | Exit 0 and exact bootstrap marker                      | Required                                                  |
+| Launcher Windows build   | `go build` to temporary path                                                 | Exit 0 and executable exists                           | Required                                                  |
+| Launcher manual smoke    | `go run ./apps/launcher`                                                     | Minimal window appears/closes                          | Recommended local observation                             |
+| Go formatting            | `gofmt -l` audit                                                             | No paths printed                                       | Required                                                  |
+| Go lint                  | golangci-lint v2.12.2 explicit patterns                                      | Exit 0                                                 | Required; CI may supply evidence if local version blocked |
+| pnpm version             | `pnpm --version`                                                             | `10.11.0`                                              | Required before lockfile mutation                         |
+| pnpm workspace           | `pnpm list -r --depth -1`                                                    | Root and Web only                                      | Required                                                  |
+| Frozen install           | `pnpm install --frozen-lockfile`                                             | Exit 0, unchanged lockfile                             | Required                                                  |
+| Frontend formatting/lint | `pnpm format:check`; `pnpm lint`                                             | Exit 0                                                 | Required                                                  |
+| Frontend tests           | `pnpm test`                                                                  | Bootstrap render test passes                           | Required                                                  |
+| Frontend build           | `pnpm build`; check `apps/web/dist/index.html`                               | Exit 0 and file exists                                 | Required                                                  |
+| Linux CI                 | Native matrix job                                                            | Core and Fyne builds exit 0                            | Required before claiming remote CI complete               |
+| macOS CI                 | Native matrix job                                                            | Core and Fyne builds exit 0                            | Required before claiming remote CI complete               |
+| Windows CI               | Native matrix job                                                            | Core and Fyne builds exit 0                            | Required before claiming remote CI complete               |
+| Phase boundary           | Forbidden dependency/symbol and SQL searches                                 | No application matches                                 | Required                                                  |
+| Repository policy        | Test forbidden template/contribution paths                                   | All false                                              | Required                                                  |
+| Worktree review          | `git status --short`; `git diff --check`                                     | Only intended new/updated paths; no whitespace errors  | Required                                                  |
 
 If GitHub Actions cannot run because no push or pull request is authorized, record the three remote jobs as pending. Local commits and local checks do not constitute remote CI evidence.
 

@@ -354,7 +354,8 @@ Phase 1 is complete only when evidence proves all of the following:
 ### Progress
 
 - [x] 2026-07-29 — Read Phase 1 source documents, audited the clean Phase 0 repository, verified the local toolchain, and queried exact selected module versions without mutating the repository.
-- [ ] Milestone 1 — Configuration and logging foundation.
+- [x] 2026-07-29 18:53 +08:00 — Milestone 1: pinned Viper v1.21.0, Zap v1.28.0, and lumberjack v2.2.1; added YAML/JSON, `CORVUS_*`, and explicit override loading; enforced loopback/port/log validation; added OS-derived database/log paths and example YAML; added rotating structured console/file logging. Package tests and full Core tests passed, gofmt reported no files, and official golangci-lint v2.12.2 reported zero issues.
+- [x] Milestone 1 — Configuration and logging foundation.
 - [ ] Milestone 2 — SQLite, goose, and sqlc foundation.
 - [ ] Milestone 3 — Echo, Cobra, lifecycle, and Web delivery.
 - [ ] Milestone 4 — CI, documentation, and final audit.

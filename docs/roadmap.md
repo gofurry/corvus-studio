@@ -2,7 +2,7 @@
 
 > 状态：Active\
 > 最近更新：2026-07-29\
-> 当前进度：Phase 0 已完成；Phase 1 尚未开始\
+> 当前进度：Phase 0 已完成；Phase 1 实施中\
 > 首个产品目标：Corvus Studio Launch `v0.1` Alpha
 
 本文从[开发实施计划 v0.1](development/Corvus_Studio_Development_Implementation_Plan_v0.1.md)提取阶段主线，并补充可维护的完成状态、依赖关系和验收门槛。原始设计文档继续作为范围基线；本文负责反映实际进展，不以目录占位或未验证代码代替完成证据。
@@ -19,7 +19,7 @@
 | 阶段                           | 状态           | 完成度 | 结果或下一步                                                           |
 | ------------------------------ | -------------- | -----: | ---------------------------------------------------------------------- |
 | Phase 0 — Repository Bootstrap | ✅ Completed   |   100% | Monorepo、三 Go module、pnpm workspace、最小应用骨架和三平台 CI 已验证 |
-| Phase 1 — Core Runtime         | ⬜ Not started |     0% | 下一阶段；建立可持续运行的本地 Core                                    |
+| Phase 1 — Core Runtime         | 🚧 In progress |     5% | ExecPlan 已建立；开始配置、日志、存储和服务运行时                      |
 | Phase 2 — Project Foundation   | ⬜ Not started |     0% | 建立第一个端到端业务闭环                                               |
 | Phase 3 — Release + Checklist  | ⬜ Not started |     0% | 建立 Steam 发布目标与任务闭环                                          |
 | Phase 4A — Resource            | ⬜ Not started |     0% | 建立素材与引用管理                                                     |
@@ -67,7 +67,9 @@
 
 ### Phase 1 — Core Runtime
 
-**状态：⬜ Not started**
+**状态：🚧 In progress（2026-07-29）**
+
+**执行计划：** [Phase 1 Core Runtime ExecPlan](../.agent/phase-1-core-runtime.md)
 
 **目标：** 启动可长期运行、可配置、可观测并具备本地持久化基础的 Corvus Core。
 

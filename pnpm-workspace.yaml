@@ -1,0 +1,6 @@
+packages:
+  - apps/web
+  - packages/*
+
+ignoredOptionalDependencies:
+  - "@rolldown/binding-wasm32-wasi"

@@ -1,6 +1,6 @@
 # Phase 0: Repository Bootstrap ExecPlan
 
-> Status: Execution in progress — Milestone 2 complete; Milestone 3 started; Milestones 4–5 pending.
+> Status: Execution in progress — Milestones 2–3 complete; Milestone 4 started; Milestone 5 pending.
 > Target repository root: `E:\Git\开源\agent\corvus`
 > Prepared: 2026-07-29 (Asia/Shanghai)
 > Maintenance standard: `.agent/PLANS.md`
@@ -466,6 +466,7 @@ Initial dependency set and versions:
 
 - Runtime: `react@19.2.8`, `react-dom@19.2.8`.
 - Build/language: `vite@8.1.5`, `@vitejs/plugin-react@6.0.4`, `typescript@6.0.2`, `sass@1.102.0`.
+- Vite/Rolldown optional dependency policy: exclude only `@rolldown/binding-wasm32-wasi`; Corvus targets native Windows, macOS, and Linux bindings, and this optional fallback contains an internally unsatisfiable Emnapi peer graph under strict pnpm validation.
 - Lint/format: `eslint@10.8.0`, `@eslint/js@10.0.1`, `typescript-eslint@8.65.0`, `eslint-plugin-react-hooks@7.1.1`, `eslint-plugin-react-refresh@0.5.3`, `globals@17.8.0`, `prettier@3.9.6`.
 - Test: `vitest@4.1.10`, `jsdom@30.0.1`, `@testing-library/react@16.3.2`, `@testing-library/dom@10.4.1`, `@testing-library/jest-dom@7.0.0`.
 - Types: `@types/node@24.13.3`, `@types/react@19.2.17`, `@types/react-dom@19.2.3`.
@@ -806,7 +807,9 @@ Phase 0 is complete only when evidence shows all of the following:
 - [x] 2026-07-29 17:20 +08:00 — Milestone 2 workspace/format validation: `go env GOWORK`, `go work edit -json`, and `go list -m` identified exactly the root workspace and three approved modules; `gofmt -l` returned no files.
 - [x] 2026-07-29 17:20 +08:00 — Milestone 2 test/build validation: explicit three-module `go test` exited 0; Core and Windows Fyne Launcher built to the temporary directory; Core printed the exact bootstrap marker; forbidden Go module scan returned no Phase 1+ dependencies; `git diff --check` exited 0.
 - [x] Milestone 2 — Root skeleton and Go module shells created and locally validated on Windows.
-- [ ] Milestone 3 — Create pnpm and minimal Web workspace.
+- [x] 2026-07-29 17:28 +08:00 — Milestone 3 dependency validation: pnpm 10.11.0 generated one root lockfile; strict peer validation remained enabled; frozen install exited 0 after excluding only Rolldown's broken optional WASM fallback.
+- [x] 2026-07-29 17:28 +08:00 — Milestone 3 frontend validation: workspace list contained root and Web only; format, ESLint, one Vitest/Testing Library smoke test, TypeScript/Vite build, and frozen reinstall all exited 0; `apps/web/dist/index.html` existed.
+- [x] Milestone 3 — pnpm and minimal Web workspace created and locally validated on Windows.
 - [ ] Milestone 4 — Add CI and align developer documentation.
 - [ ] Milestone 5 — Complete final evidence audit and handoff.
 
@@ -822,6 +825,8 @@ Phase 0 is complete only when evidence shows all of the following:
 - Before execution, the repository had advanced externally to commit `ad73355`, both `main` and `dev` referenced that commit, the active branch was `dev`, and the worktree was clean.
 - Go 1.26.5 became available between planning and execution, removing the Milestone 2 toolchain blocker without changing the project version.
 - The first two full workspace test attempts timed out during the initial Windows Fyne/GLFW native compilation at 124 and 304 seconds. An isolated `go test -x ./apps/launcher/...` completed successfully after the build cache was populated, and the required full three-module test then completed successfully in 6.4 seconds.
+- The first pnpm install failed under the required strict peer policy: Vite 8.1.5 resolved Rolldown 1.1.5, whose optional WASM chain needs Emnapi 2.x while the optional binding itself pins Emnapi 1.11.1. Adding top-level Emnapi 2.0.0-alpha.3 packages did not change that nested peer context and was reverted. The broken optional WASM fallback was excluded while native Windows/macOS/Linux bindings remain enabled and strict peer checks remain active.
+- The first frontend format check found two source/config files that required the pinned Prettier rewrite. After the build generated `apps/web/dist`, a second check also revealed that a filtered workspace script does not automatically discover the root `.prettierignore`; the script now names the root ignore file explicitly and uses workspace-wide output globs.
 
 ### Decision Log
 
@@ -832,7 +837,8 @@ Phase 0 is complete only when evidence shows all of the following:
 - **2026-07-29 — Accepted:** defer Echo, SQLite, goose, sqlc, OpenAPI generation, Agent/ADK, product UI libraries, and all business behavior to their owning later phases.
 - **2026-07-29 — Accepted:** preserve the existing AGPLv3 license unchanged; separate documentation licensing remains an open, non-blocking later decision.
 - **2026-07-29 — Accepted:** commit each completed milestone locally after validation; do not push unless the user explicitly requests it.
+- **2026-07-29 — Accepted:** retain `strict-peer-dependencies=true` and exclude only Rolldown's broken optional WASM binding via `ignoredOptionalDependencies`; do not weaken peer validation or remove native bindings for the three supported platforms.
 
 ### Outcomes & Retrospective
 
-Milestones 1–2 are complete. The three approved Go modules and root skeleton build/test locally on Windows, including a real Fyne v2.8.0 Launcher shell. Milestone 3 is in progress; Milestones 4–5 are pending. No Phase 1 capability, database migration, or design-document edit has occurred.
+Milestones 1–3 are complete. The three approved Go modules and root skeleton build/test locally on Windows, including a real Fyne v2.8.0 Launcher shell. The pnpm workspace installs from one frozen lockfile and the minimal Web package passes formatting, lint, smoke test, and production build. Milestone 4 is in progress; Milestone 5 is pending. No Phase 1 capability, database migration, or design-document edit has occurred.

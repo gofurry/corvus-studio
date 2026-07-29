@@ -1,6 +1,6 @@
 # Phase 0: Repository Bootstrap ExecPlan
 
-> Status: Execution in progress — Milestones 2–4 complete; Milestone 5 started.
+> Status: Milestones 1–5 executed and locally audited — remote GitHub-hosted native builds and the recommended Launcher visual smoke remain pending.
 > Target repository root: `E:\Git\开源\agent\corvus`
 > Prepared: 2026-07-29 (Asia/Shanghai)
 > Maintenance standard: `.agent/PLANS.md`
@@ -572,7 +572,7 @@ Expected output: ripgrep and SQL search return no application matches; all three
 
 **Goal:** prove that Phase 0 is complete, reproducible, and contains no later-phase implementation.
 
-Run every applicable command in Section 13, record platform/exit code/summary in Progress, compare current document hashes with Milestone 1's current baseline, and inspect `git status --short` without staging or committing.
+Run every applicable command in Section 13, record platform/exit code/summary in Progress, compare current document hashes with Milestone 1's current baseline, and inspect `git status --short` before the final plan update and again after the user-authorized local evidence commit.
 
 Expected result: completion criteria in Section 16 are either backed by current evidence or explicitly marked pending/blocked. Do not declare Phase 0 complete while a required local or CI-independent criterion lacks evidence. Remote CI remains a named follow-up if no authorized GitHub run exists.
 
@@ -723,7 +723,7 @@ Future additions are made when their owning phase has real content: OpenAPI drif
 | Repository policy | Test forbidden template/contribution paths | All false | Required |
 | Worktree review | `git status --short`; `git diff --check` | Only intended new/updated paths; no whitespace errors | Required |
 
-If GitHub Actions cannot run because no commit/push is authorized, record the three remote jobs as pending. Local checks do not constitute remote CI evidence.
+If GitHub Actions cannot run because no push or pull request is authorized, record the three remote jobs as pending. Local commits and local checks do not constitute remote CI evidence.
 
 ## 14. Idempotence and recovery
 
@@ -790,8 +790,10 @@ Phase 0 is complete only when evidence shows all of the following:
 - README and USAGE describe only genuinely available Phase 0 commands as current;
 - no application dependency, import, SQL file, type, route, page, or workflow implements Phase 1+ capabilities;
 - no Issue/PR templates, `CONTRIBUTING.md`, Docker/systemd files, installers, signing files, or automatic-update configuration exist;
-- `git diff --check` passes, the worktree review identifies only intended Phase 0/planning paths plus the preserved pre-existing user changes, and no Git commit was created;
+- `git diff --check` passes, the worktree review identifies only intended Phase 0/planning paths, the user-requested local milestone commits are reviewable, and no push was performed;
 - all locally runnable required checks have recorded exit codes and results; any remote CI run not authorized or available is explicitly pending rather than reported as passed.
+
+Current assessment after the 2026-07-29 local audit: every CI-independent required criterion passed on Windows. Full Phase 0 completion is not yet claimed because native Linux, macOS, and Windows GitHub-hosted jobs have not run. The recommended visual Launcher smoke is also pending; this does not replace or invalidate the successful Windows native build evidence.
 
 ## 17. Progress, discoveries and decision log
 
@@ -813,7 +815,10 @@ Phase 0 is complete only when evidence shows all of the following:
 - [x] 2026-07-29 17:47 +08:00 — Milestone 4 local acceptance: official golangci-lint v2.12.2 reported zero issues; the explicit Go test, frozen pnpm install, format, lint, one-test Vitest suite, Vite build, `git diff --check`, and native Windows Core/Launcher builds all exited 0.
 - [x] 2026-07-29 17:50 +08:00 — Milestone 4 policy/parity audit: code and SQL boundary scans were empty; Issue/PR template and `CONTRIBUTING.md` checks were false; `docs/` and `LICENSE` had no diff; README, USAGE, and CI use the same Go/frontend scopes. Prettier parsed the workflow and both documents. Six referenced Action major tags were observed in their official Git remotes before a later GitHub connectivity outage.
 - [x] Milestone 4 — CI definition and developer documentation created and locally validated. GitHub-hosted Windows/macOS/Linux job results remain pending until a user-authorized push or pull request.
-- [ ] Milestone 5 — Complete final evidence audit and handoff.
+- [x] 2026-07-29 17:55 +08:00 — Milestone 5 structural/Go audit: approved outer Git root and absent inner container confirmed; all 15 design-document SHA-256 values and the LICENSE hash matched the pre-execution baseline and HEAD; 44 required Phase 0 files existed and 21 future/forbidden paths were absent. Go 1.26.5 recognized exactly three modules; golangci-lint v2.12.2 reported zero issues; explicit tests passed; Windows Core and Launcher binaries were 2,465,792 and 43,980,361 bytes; Core printed the exact marker.
+- [x] 2026-07-29 17:55 +08:00 — Milestone 5 frontend audit: pnpm 10.11.0 listed only the root and Web workspace projects; frozen install preserved lockfile SHA-256 `9C4AF0B490FBF6ABE01151CFFFEE91B1EB1358D6EB2C367828FB52C8462896ED`; format, lint, the one-test Vitest suite, and Vite build passed; `apps/web/dist/index.html` existed; no deferred product UI dependency appeared in manifests.
+- [x] 2026-07-29 17:56 +08:00 — Milestone 5 boundary/policy audit: no forbidden implementation symbol, Go dependency, SQL, repository template, deployment/signing/installer file, or release automation was found; CI/README/USAGE command scopes matched; workflow and docs parsed with pinned Prettier; `git diff --check` passed; worktree was clean before this final plan update.
+- [x] Milestone 5 — Final local evidence audit and handoff completed. Remote GitHub-hosted native builds remain required before full Phase 0 completion can be claimed; the recommended visual Launcher smoke remains pending.
 
 ### Surprises & Discoveries
 
@@ -844,7 +849,8 @@ Phase 0 is complete only when evidence shows all of the following:
 - **2026-07-29 — Accepted:** commit each completed milestone locally after validation; do not push unless the user explicitly requests it.
 - **2026-07-29 — Accepted:** retain `strict-peer-dependencies=true` and exclude only Rolldown's broken optional WASM binding via `ignoredOptionalDependencies`; do not weaken peer validation or remove native bindings for the three supported platforms.
 - **2026-07-29 — Accepted:** keep pnpm workspace coordination, the single lockfile, Node/pnpm constraints, and shared formatting policy at the repository root; keep application-specific Vite, TypeScript, ESLint, source, tests, and styles under `apps/web/`. Document these responsibilities in README instead of duplicating workspace state inside the application.
+- **2026-07-29 — Accepted:** close Milestone 5 after recording the complete local audit, but withhold the overall Phase 0 completion claim until actual GitHub-hosted Windows, macOS, and Linux native-build results exist. Do not treat YAML inspection or the successful local Windows build as remote evidence.
 
 ### Outcomes & Retrospective
 
-Milestones 1–4 are complete. The three approved Go modules and root skeleton build/test locally on Windows, including a real Fyne v2.8.0 Launcher shell. The pnpm workspace installs from one frozen lockfile and the minimal Web package passes formatting, lint, smoke test, and production build. CI expresses the same quality scopes and defines native Windows/macOS/Linux builds; README and USAGE now distinguish Phase 0 reality from future product commands. Milestone 5 is in progress. No Phase 1 capability, database migration, or design-document edit has occurred.
+Milestones 1–5 have been executed and locally audited. The three approved Go modules and root skeleton build/test locally on Windows, including a real Fyne v2.8.0 Launcher shell. The pnpm workspace installs from one frozen lockfile and the minimal Web package passes formatting, lint, smoke test, and production build. CI expresses the same quality scopes and defines native Windows/macOS/Linux builds; README and USAGE distinguish Phase 0 reality from future product commands. Design documents and LICENSE remained byte-stable against the captured baseline, and no Phase 1 capability or database migration was introduced. Full Phase 0 completion remains pending on an actual GitHub-hosted native-build matrix; the recommended visual Launcher smoke was not performed during this non-interactive audit.

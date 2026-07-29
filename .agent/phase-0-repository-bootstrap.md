@@ -244,6 +244,7 @@ corvus/
 │   └── README.md                                [reserve; no deployment files]
 ├── docs/                                        [existing design baselines; organized post-P0]
 │   ├── README.md                                [post-P0 navigation]
+│   ├── roadmap.md                               [post-P0 current implementation status]
 │   ├── agent/
 │   │   ├── Corvus_Studio_ADK_Implementation_Plan_v0.1.md
 │   │   └── Corvus_Studio_Agent_Architecture_and_Tool_Specification_v0.1.md

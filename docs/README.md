@@ -9,6 +9,10 @@
 5. 根目录 `USAGE.md` 决定目标开发命令和开发者体验；
 6. 其余文档提供产品、接口和后续阶段背景，不得据此提前实现未来阶段。
 
+## Current Roadmap
+
+- [Corvus Studio Roadmap](roadmap.md)：当前实施阶段、完成情况、验收门槛和风险。
+
 ## Product
 
 - [产品设计草案](product/Corvus_Studio_Product_Design_Draft_v0.1.md)
@@ -42,4 +46,4 @@
 
 - [工程与部署指南](deployment/Corvus_Studio_Engineering_and_Deployment_Guide_v0.1.md)
 
-原始 `v0.1` 文档保留原文件名与内容，仅调整存放位置。当前执行状态由独立路线图维护，避免在设计基线中混入实施进度。
+原始 `v0.1` 文档保留原文件名与内容，仅调整存放位置。当前执行状态由 [roadmap.md](roadmap.md) 维护，避免在设计基线中混入实施进度。

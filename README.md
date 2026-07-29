@@ -1,6 +1,6 @@
 # Corvus Studio
 
-Corvus Studio is a local-first workspace for preparing independent game releases. The repository is currently at **Phase 0: Repository Bootstrap**: the monorepo, buildable application shells, local validation commands, and CI definition exist, but product features do not.
+Corvus Studio is a local-first workspace for preparing independent game releases. **Phase 0: Repository Bootstrap is complete**, and Phase 1 has not started: the monorepo, buildable application shells, local validation commands, and CI definition exist, but product features do not.
 
 ## What works in Phase 0
 
@@ -81,6 +81,7 @@ There is no `corvus serve` command in Phase 0, and the Web dev server is not yet
 
 - [USAGE.md](USAGE.md) separates current Phase 0 commands from future product workflows.
 - [.agent/phase-0-repository-bootstrap.md](.agent/phase-0-repository-bootstrap.md) is the executable Phase 0 plan and evidence log.
+- [docs/roadmap.md](docs/roadmap.md) tracks implementation phases and completion evidence.
 - [docs/](docs/) contains the source design documents.
 
 Code is licensed under the repository's [GNU Affero General Public License v3](LICENSE). A separate documentation-license decision remains pending.

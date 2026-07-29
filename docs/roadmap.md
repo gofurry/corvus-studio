@@ -2,7 +2,7 @@
 
 > 状态：Active\
 > 最近更新：2026-07-29\
-> 当前进度：Phase 0 已完成；Phase 1 实施中\
+> 当前进度：Phase 0 已完成；Phase 1 本地实现完成，远端三平台 CI 待验证\
 > 首个产品目标：Corvus Studio Launch `v0.1` Alpha
 
 本文从[开发实施计划 v0.1](development/Corvus_Studio_Development_Implementation_Plan_v0.1.md)提取阶段主线，并补充可维护的完成状态、依赖关系和验收门槛。原始设计文档继续作为范围基线；本文负责反映实际进展，不以目录占位或未验证代码代替完成证据。
@@ -19,7 +19,7 @@
 | 阶段                           | 状态           | 完成度 | 结果或下一步                                                           |
 | ------------------------------ | -------------- | -----: | ---------------------------------------------------------------------- |
 | Phase 0 — Repository Bootstrap | ✅ Completed   |   100% | Monorepo、三 Go module、pnpm workspace、最小应用骨架和三平台 CI 已验证 |
-| Phase 1 — Core Runtime         | 🚧 In progress |     5% | ExecPlan 已建立；开始配置、日志、存储和服务运行时                      |
+| Phase 1 — Core Runtime         | 🚧 In progress |    95% | 本地实现与全量验证完成；当前提交推送后补齐三平台 CI 证据               |
 | Phase 2 — Project Foundation   | ⬜ Not started |     0% | 建立第一个端到端业务闭环                                               |
 | Phase 3 — Release + Checklist  | ⬜ Not started |     0% | 建立 Steam 发布目标与任务闭环                                          |
 | Phase 4A — Resource            | ⬜ Not started |     0% | 建立素材与引用管理                                                     |
@@ -75,23 +75,30 @@
 
 **重点：** Core 进程生命周期、配置、日志、HTTP 服务、SQLite schema 工具链和 CLI；不实现 Project 等产品领域。
 
-**计划任务：**
+**已完成任务：**
 
-- [ ] 使用 Cobra 建立 `corvus serve` 命令和清晰的退出码。
-- [ ] 使用 Viper 建立配置文件、环境变量和命令行覆盖规则。
-- [ ] 使用 Zap 与 lumberjack 建立结构化日志和本地轮转策略。
-- [ ] 使用 Echo v5 建立最小 HTTP runtime、错误边界和优雅关闭。
-- [ ] 使用 `modernc.org/sqlite` 建立无 CGO 的 SQLite 连接与启动检查。
-- [ ] 建立 goose migration 目录、版本执行和失败恢复规则。
-- [ ] 建立 sqlc 配置、查询边界和可复现生成命令。
-- [ ] 为配置、日志、数据库和进程生命周期增加单元/集成测试。
+- [x] 使用 Cobra 建立 `corvus serve` 命令和清晰的退出码。
+- [x] 使用 Viper 建立配置文件、环境变量和命令行覆盖规则。
+- [x] 使用 Zap 与 lumberjack 建立结构化日志和本地轮转策略。
+- [x] 使用 Echo v5 建立最小 HTTP runtime、错误边界和优雅关闭。
+- [x] 使用 `modernc.org/sqlite` 建立无 CGO 的 SQLite 连接与启动检查。
+- [x] 建立 goose migration 目录、版本执行和失败恢复规则。
+- [x] 建立 sqlc 配置、查询边界和可复现生成命令。
+- [x] 为配置、日志、数据库和进程生命周期增加单元/集成测试。
 
 **验收门槛：**
 
-- [ ] `corvus serve` 可启动并保持运行，可通过受控信号正常退出。
-- [ ] 临时数据目录上的首次启动、重复启动和 migration 均可验证。
-- [ ] 三个 Go module 的规范测试命令继续通过，Core 不依赖桌面图形环境。
-- [ ] CI 与 `README.md`、`USAGE.md` 使用相同命令。
+- [x] `corvus serve` 可启动并保持运行；进程 smoke 验证真实 HTTP，生命周期测试验证受控取消和优雅退出。
+- [x] 临时数据目录上的首次启动、重复启动、migration 和 migration 前快照均已验证。
+- [x] 三个 Go module 的规范测试命令在 Windows 本地通过，Core 不依赖桌面图形环境。
+- [x] CI 定义与 `README.md`、`USAGE.md` 使用相同的测试、生成和构建命令。
+- [ ] 当前 Phase 1 提交在 GitHub Actions 的 Windows、macOS、Linux 原生任务中实际通过。
+
+**当前证据：**
+
+- Phase 1 实现提交为 `2456d78`、`6a00ad1`、`1f49c2f`、`0637980` 和边界测试修正 `3abf069`；详细操作与发现见 ExecPlan。
+- Windows 本地已通过 Core 默认/嵌入标签测试、三个 Go module 测试、sqlc 生成/vet/漂移、golangci-lint、前端 format/lint/test/build、默认/嵌入 Core build 和真实 `/healthz` 进程 smoke。
+- 阶段维持 95%，直到当前提交推送并取得三平台 Actions 成功证据；不得复用 Phase 0 的 CI run 作为 Phase 1 证据。
 
 ### Phase 2 — Project Foundation
 

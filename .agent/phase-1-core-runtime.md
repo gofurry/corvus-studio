@@ -360,6 +360,8 @@ Phase 1 is complete only when evidence proves all of the following:
 - [x] Milestone 2 — SQLite, goose, and sqlc foundation.
 - [x] 2026-07-29 19:16 +08:00 — Milestone 3: pinned Echo v5.3.1 and Cobra v1.10.2; replaced the bootstrap with `corvus serve`; composed config, rotating structured logs, migrated SQLite, readiness HTTP, and graceful context shutdown; added `/healthz`, Vite development proxies, atomic Web staging, tagged `go:embed` SPA delivery, cache rules, and package/integration tests. Default and tagged Core tests passed, official golangci-lint v2.12.2 reported zero issues, frontend format/lint/test/build passed, the embedded binary built, and a real Windows process returned `{"status":"ok","database":"ok","schema_version":1}` while creating its database and log.
 - [x] Milestone 3 — Echo, Cobra, lifecycle, and Web delivery.
+- [x] 2026-07-29 — Milestone 4 local work: CI now verifies sqlc drift, the tagged embedded Core, and native Core tests; README/USAGE/roadmap match the implemented runtime and Phase boundary. Windows local evidence passed gofmt over 27 files, sqlc generate/vet/drift, all three Go modules, official golangci-lint v2.12.2, frozen pnpm install, frontend format/lint/test/build, tagged Core tests, default/tagged Core builds, Launcher build, live readiness, live embedded index delivery, cache behavior, policy-file audit, and Phase 2 symbol/schema/route audit.
+- [ ] Remote evidence: push the Phase 1 commits and record one successful GitHub Actions run covering Go quality, frontend quality, Linux, macOS, and Windows before marking the phase complete.
 - [ ] Milestone 4 — CI, documentation, and final audit.
 
 ### Surprises & Discoveries
@@ -380,7 +382,10 @@ Phase 1 is complete only when evidence proves all of the following:
 - **2026-07-29 — Accepted:** override only the retracted indirect `modernc.org/libc` v1.74.3 with its author-designated v1.74.4 fix while retaining modernc SQLite v1.55.0.
 - **2026-07-29 — Accepted:** create local commits after each validated milestone and do not push without explicit user authorization.
 - **2026-07-29 — Accepted:** allow Vite's Core proxy target to be overridden with `CORVUS_CORE_URL`, while retaining `http://127.0.0.1:8765` as the zero-configuration development default.
+- **2026-07-29 — Accepted:** keep roadmap and ExecPlan completion at 95%/in progress until this revision has actual three-platform GitHub Actions evidence; Phase 0's earlier successful run is not reusable as Phase 1 evidence.
 
 ### Outcomes & Retrospective
 
-Not started — implementation is in progress under the user's authorization.
+The Phase 1 implementation is complete and validated locally on Windows. Core now has a real loopback-only runtime, deterministic configuration, structured rotating logs, pure-Go SQLite with guarded embedded migrations, a sqlc boundary, readiness HTTP, graceful lifecycle handling, and both development-proxy and tagged embedded-Web delivery paths. No Phase 2+ domain or product route was introduced.
+
+The only remaining completion gate is external evidence: these local commits must be pushed and the resulting GitHub Actions Go quality, frontend quality, Linux, macOS, and Windows jobs must all succeed. Until that happens, the roadmap remains at 95% and Phase 1 is not represented as fully complete.

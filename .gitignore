@@ -1,0 +1,27 @@
+# Environment and local configuration
+.env
+.env.*
+!.env.example
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Go
+*.exe
+*.test
+*.out
+coverage/
+
+# Node and Vite
+node_modules/
+apps/web/dist/
+*.tsbuildinfo
+
+# Local caches and temporary files
+.cache/
+.tmp/
+tmp/
+*.log

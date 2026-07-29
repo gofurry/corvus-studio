@@ -1,6 +1,6 @@
 # Phase 0: Repository Bootstrap ExecPlan
 
-> Status: Plan complete — awaiting user review. Repository-root normalization is present; Milestones 2–5 have not started.
+> Status: Execution in progress — Milestone 2 complete; Milestone 3 started; Milestones 4–5 pending.
 > Target repository root: `E:\Git\开源\agent\corvus`
 > Prepared: 2026-07-29 (Asia/Shanghai)
 > Maintenance standard: `.agent/PLANS.md`
@@ -66,7 +66,7 @@ This is user-owned, uncommitted work. The bootstrap must preserve it and must no
 | Tool | Observed state | Phase 0 implication |
 |---|---|---|
 | Git | `2.51.0.windows.1` | Available |
-| Go | `go1.25.8 windows/amd64` | Blocked for project commands until Go 1.26 is available locally |
+| Go | `go1.26.5 windows/amd64` | Required toolchain is available |
 | `GOTOOLCHAIN` | `auto` | Must not be relied on silently; record any automatic download |
 | CGO | enabled | Suitable for native Fyne build when toolchain prerequisites exist |
 | GCC | `14.2.0` | Present on current Windows host |
@@ -74,14 +74,14 @@ This is user-owned, uncommitted work. The bootstrap must preserve it and must no
 | npm | `9.6.7` | Not used for workspace installation |
 | pnpm | `10.11.0` | Selected package-manager version |
 | Corepack | `0.34.6` | Available |
-| golangci-lint | `v1.64.8` | Too old; v2.12.2 is required for Phase 0 lint evidence |
+| golangci-lint | `v1.64.8` | Too old; v2.12.2 is still required for Phase 0 lint evidence |
 | goose | `v3.27.1` | Installed but out of scope and must not be run |
 | sqlc | missing | Not a Phase 0 blocker; integration starts later |
 | Fyne CLI | missing | Not required for `go build`; packaging is out of scope |
 | Docker | missing | Not a Phase 0 blocker |
 | make / clang | missing | Make is not required; Windows build uses GCC |
 
-No build, test, generator, dependency installation, migration, or Phase 0 application command has been run yet.
+At the Milestone 2 start, branch `dev` pointed to `ad73355` with a clean worktree. No Phase 0 build, test, dependency installation, migration, or application command had been run at that point.
 
 ## 3. Source-of-truth documents
 
@@ -802,7 +802,10 @@ Phase 0 is complete only when evidence shows all of the following:
 - [x] 2026-07-29 — Confirmed target root, three-module strategy, explicit Go test command, and real Fyne skeleton with the user.
 - [x] 2026-07-29 — Created the three allowed planning artifacts only.
 - [x] 2026-07-29 16:53 +08:00 — Milestone 1 audit: outer Git root confirmed, nested path absent, all 15 expected document names present, and four tracked documents match HEAD blobs. Limitation: no pre-move SHA-256 baseline exists for the 11 originally untracked documents.
-- [ ] Milestone 2 — Create root skeleton and Go module shells.
+- [x] 2026-07-29 17:08 +08:00 — Execution preflight: branch `dev`, HEAD `ad73355`, clean worktree, Go 1.26.5, Node 24.15.0, pnpm 10.11.0, GCC 14.2.0; golangci-lint remains v1.64.8.
+- [x] 2026-07-29 17:20 +08:00 — Milestone 2 workspace/format validation: `go env GOWORK`, `go work edit -json`, and `go list -m` identified exactly the root workspace and three approved modules; `gofmt -l` returned no files.
+- [x] 2026-07-29 17:20 +08:00 — Milestone 2 test/build validation: explicit three-module `go test` exited 0; Core and Windows Fyne Launcher built to the temporary directory; Core printed the exact bootstrap marker; forbidden Go module scan returned no Phase 1+ dependencies; `git diff --check` exited 0.
+- [x] Milestone 2 — Root skeleton and Go module shells created and locally validated on Windows.
 - [ ] Milestone 3 — Create pnpm and minimal Web workspace.
 - [ ] Milestone 4 — Add CI and align developer documentation.
 - [ ] Milestone 5 — Complete final evidence audit and handoff.
@@ -816,6 +819,9 @@ Phase 0 is complete only when evidence shows all of the following:
 - Fyne remains the only Phase 0 component requiring native C/graphics build prerequisites.
 - A root `go test ./...` command would not express the intended coverage for a non-module workspace root, so explicit module patterns are necessary.
 - The repository-root relocation occurred between assistant turns rather than through Milestone 1's recorded command sequence. The root and document inventory are present, but the complete pre-move hash manifest cannot be reconstructed.
+- Before execution, the repository had advanced externally to commit `ad73355`, both `main` and `dev` referenced that commit, the active branch was `dev`, and the worktree was clean.
+- Go 1.26.5 became available between planning and execution, removing the Milestone 2 toolchain blocker without changing the project version.
+- The first two full workspace test attempts timed out during the initial Windows Fyne/GLFW native compilation at 124 and 304 seconds. An isolated `go test -x ./apps/launcher/...` completed successfully after the build cache was populated, and the required full three-module test then completed successfully in 6.4 seconds.
 
 ### Decision Log
 
@@ -825,7 +831,8 @@ Phase 0 is complete only when evidence shows all of the following:
 - **2026-07-29 — Accepted:** use a real minimal Fyne v2.8.0 Launcher and native three-platform build matrix during Phase 0.
 - **2026-07-29 — Accepted:** defer Echo, SQLite, goose, sqlc, OpenAPI generation, Agent/ADK, product UI libraries, and all business behavior to their owning later phases.
 - **2026-07-29 — Accepted:** preserve the existing AGPLv3 license unchanged; separate documentation licensing remains an open, non-blocking later decision.
+- **2026-07-29 — Accepted:** commit each completed milestone locally after validation; do not push unless the user explicitly requests it.
 
 ### Outcomes & Retrospective
 
-Milestone 1's revised repository audit is complete; the engineering bootstrap in Milestones 2–5 has not started and remains awaiting user review. Repository-root normalization occurred outside this task, and the missing pre-move hash baseline for 11 untracked documents is explicitly retained. No dependency installation, application generation, database migration, or design-document edit has occurred as part of preparing this plan.
+Milestones 1–2 are complete. The three approved Go modules and root skeleton build/test locally on Windows, including a real Fyne v2.8.0 Launcher shell. Milestone 3 is in progress; Milestones 4–5 are pending. No Phase 1 capability, database migration, or design-document edit has occurred.

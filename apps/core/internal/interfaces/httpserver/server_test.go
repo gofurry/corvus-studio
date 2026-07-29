@@ -75,7 +75,7 @@ func TestSPAHandlerServesAssetsAndFallback(t *testing.T) {
 	}
 
 	fallbackRecorder := httptest.NewRecorder()
-	server.Handler().ServeHTTP(fallbackRecorder, httptest.NewRequest(http.MethodGet, "/projects/example", nil))
+	server.Handler().ServeHTTP(fallbackRecorder, httptest.NewRequest(http.MethodGet, "/nested/example", nil))
 	if fallbackRecorder.Code != http.StatusOK || fallbackRecorder.Body.String() != "<h1>Corvus</h1>" {
 		t.Fatalf("fallback response status=%d body=%q", fallbackRecorder.Code, fallbackRecorder.Body.String())
 	}

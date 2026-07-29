@@ -1,0 +1,147 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  go-quality:
+    name: Go quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: .go-version
+          cache-dependency-path: |
+            **/go.sum
+            go.work.sum
+
+      - name: Install Fyne build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gcc libgl1-mesa-dev xorg-dev libwayland-dev libxkbcommon-dev
+
+      - name: Check Go formatting
+        shell: bash
+        run: |
+          mapfile -d '' go_files < <(find apps/core apps/launcher agent -type f -name '*.go' -print0)
+          unformatted="$(gofmt -l "${go_files[@]}")"
+          if [[ -n "$unformatted" ]]; then
+            printf 'The following Go files are not formatted:\n%s\n' "$unformatted"
+            exit 1
+          fi
+
+      - name: Test Go workspace
+        run: go test ./apps/core/... ./apps/launcher/... ./agent/...
+
+      - name: Lint Go workspace
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.12.2
+          args: ./apps/core/... ./apps/launcher/... ./agent/...
+
+  frontend-quality:
+    name: Frontend quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 10.11.0
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check frontend formatting
+        run: pnpm format:check
+
+      - name: Lint frontend
+        run: pnpm lint
+
+      - name: Test frontend
+        run: pnpm test
+
+      - name: Build frontend
+        run: pnpm build
+
+  native-build:
+    name: Native build (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: .go-version
+          cache-dependency-path: |
+            **/go.sum
+            go.work.sum
+
+      - name: Install Linux build prerequisites
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gcc libgl1-mesa-dev xorg-dev libwayland-dev libxkbcommon-dev
+
+      - name: Set up Windows build prerequisites
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: mingw-w64-x86_64-gcc
+          path-type: inherit
+
+      - name: Verify Linux compiler
+        if: runner.os == 'Linux'
+        run: gcc --version
+
+      - name: Verify macOS compiler
+        if: runner.os == 'macOS'
+        run: |
+          xcode-select -p
+          clang --version
+
+      - name: Build on Linux or macOS
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          go build -o "$RUNNER_TEMP/corvus" ./apps/core/cmd/corvus
+          go build -o "$RUNNER_TEMP/corvus-launcher" ./apps/launcher
+
+      - name: Build on Windows
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          gcc --version
+          go build -o "$RUNNER_TEMP/corvus.exe" ./apps/core/cmd/corvus
+          go build -o "$RUNNER_TEMP/corvus-launcher.exe" ./apps/launcher

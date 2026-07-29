@@ -1,6 +1,6 @@
 # Phase 0: Repository Bootstrap ExecPlan
 
-> Status: Execution in progress — Milestones 2–3 complete; Milestone 4 started; Milestone 5 pending.
+> Status: Execution in progress — Milestones 2–4 complete; Milestone 5 started.
 > Target repository root: `E:\Git\开源\agent\corvus`
 > Prepared: 2026-07-29 (Asia/Shanghai)
 > Maintenance standard: `.agent/PLANS.md`
@@ -74,7 +74,7 @@ This is user-owned, uncommitted work. The bootstrap must preserve it and must no
 | npm | `9.6.7` | Not used for workspace installation |
 | pnpm | `10.11.0` | Selected package-manager version |
 | Corepack | `0.34.6` | Available |
-| golangci-lint | `v1.64.8` | Too old; v2.12.2 is still required for Phase 0 lint evidence |
+| golangci-lint | PATH has `v1.64.8`; official v2.12.2 archive executed from a temporary directory | v2.12.2 local lint evidence is available without replacing the user's global binary |
 | goose | `v3.27.1` | Installed but out of scope and must not be run |
 | sqlc | missing | Not a Phase 0 blocker; integration starts later |
 | Fyne CLI | missing | Not required for `go build`; packaging is out of scope |
@@ -564,7 +564,7 @@ Test-Path '.\CONTRIBUTING.md'
 
 Expected output: ripgrep and SQL search return no application matches; all three forbidden repository-policy path checks print `False`.
 
-**Acceptance and remote evidence:** locally validate workflow command parity and `git diff --check`. Because this plan does not commit or push, a GitHub Actions run is not automatically available. Record remote jobs as pending until a user-authorized push/PR causes a run; never state that GitHub Actions passed based only on YAML inspection.
+**Acceptance and remote evidence:** locally validate workflow command parity and `git diff --check`. The user authorized local milestone commits but not a push, so a GitHub Actions run is not automatically available. Record remote jobs as pending until a user-authorized push/PR causes a run; never state that GitHub Actions passed based only on YAML inspection.
 
 **Recovery:** back up current untracked `README.md` and `USAGE.md` to the temporary evidence directory before editing. On failure, restore those exact copies and move newly created CI/config files to the evidence directory. Do not touch design documents or the license.
 
@@ -810,7 +810,9 @@ Phase 0 is complete only when evidence shows all of the following:
 - [x] 2026-07-29 17:28 +08:00 — Milestone 3 dependency validation: pnpm 10.11.0 generated one root lockfile; strict peer validation remained enabled; frozen install exited 0 after excluding only Rolldown's broken optional WASM fallback.
 - [x] 2026-07-29 17:28 +08:00 — Milestone 3 frontend validation: workspace list contained root and Web only; format, ESLint, one Vitest/Testing Library smoke test, TypeScript/Vite build, and frozen reinstall all exited 0; `apps/web/dist/index.html` existed.
 - [x] Milestone 3 — pnpm and minimal Web workspace created and locally validated on Windows.
-- [ ] Milestone 4 — Add CI and align developer documentation.
+- [x] 2026-07-29 17:47 +08:00 — Milestone 4 local acceptance: official golangci-lint v2.12.2 reported zero issues; the explicit Go test, frozen pnpm install, format, lint, one-test Vitest suite, Vite build, `git diff --check`, and native Windows Core/Launcher builds all exited 0.
+- [x] 2026-07-29 17:50 +08:00 — Milestone 4 policy/parity audit: code and SQL boundary scans were empty; Issue/PR template and `CONTRIBUTING.md` checks were false; `docs/` and `LICENSE` had no diff; README, USAGE, and CI use the same Go/frontend scopes. Prettier parsed the workflow and both documents. Six referenced Action major tags were observed in their official Git remotes before a later GitHub connectivity outage.
+- [x] Milestone 4 — CI definition and developer documentation created and locally validated. GitHub-hosted Windows/macOS/Linux job results remain pending until a user-authorized push or pull request.
 - [ ] Milestone 5 — Complete final evidence audit and handoff.
 
 ### Surprises & Discoveries
@@ -827,6 +829,9 @@ Phase 0 is complete only when evidence shows all of the following:
 - The first two full workspace test attempts timed out during the initial Windows Fyne/GLFW native compilation at 124 and 304 seconds. An isolated `go test -x ./apps/launcher/...` completed successfully after the build cache was populated, and the required full three-module test then completed successfully in 6.4 seconds.
 - The first pnpm install failed under the required strict peer policy: Vite 8.1.5 resolved Rolldown 1.1.5, whose optional WASM chain needs Emnapi 2.x while the optional binding itself pins Emnapi 1.11.1. Adding top-level Emnapi 2.0.0-alpha.3 packages did not change that nested peer context and was reverted. The broken optional WASM fallback was excluded while native Windows/macOS/Linux bindings remain enabled and strict peer checks remain active.
 - The first frontend format check found two source/config files that required the pinned Prettier rewrite. After the build generated `apps/web/dist`, a second check also revealed that a filtered workspace script does not automatically discover the root `.prettierignore`; the script now names the root ignore file explicitly and uses workspace-wide output globs.
+- Root `pnpm exec prettier` does not expose the Web package's locally pinned binary. Repository-document and workflow formatting validation must use `pnpm --filter @corvus-studio/web exec prettier ...`; this avoids a duplicate root Prettier dependency.
+- The first Milestone 4 acceptance run correctly stopped at `git diff --check` because two USAGE blockquote lines used trailing-space Markdown breaks. They were changed to explicit backslash breaks, and the entire acceptance sequence then passed.
+- A first `git ls-remote` audit returned all six referenced GitHub Action major tags. A later repeat encountered a connection reset and then three GitHub port 443 timeouts; this is recorded as a transient external-network failure and does not constitute a GitHub Actions run.
 
 ### Decision Log
 
@@ -838,7 +843,8 @@ Phase 0 is complete only when evidence shows all of the following:
 - **2026-07-29 — Accepted:** preserve the existing AGPLv3 license unchanged; separate documentation licensing remains an open, non-blocking later decision.
 - **2026-07-29 — Accepted:** commit each completed milestone locally after validation; do not push unless the user explicitly requests it.
 - **2026-07-29 — Accepted:** retain `strict-peer-dependencies=true` and exclude only Rolldown's broken optional WASM binding via `ignoredOptionalDependencies`; do not weaken peer validation or remove native bindings for the three supported platforms.
+- **2026-07-29 — Accepted:** keep pnpm workspace coordination, the single lockfile, Node/pnpm constraints, and shared formatting policy at the repository root; keep application-specific Vite, TypeScript, ESLint, source, tests, and styles under `apps/web/`. Document these responsibilities in README instead of duplicating workspace state inside the application.
 
 ### Outcomes & Retrospective
 
-Milestones 1–3 are complete. The three approved Go modules and root skeleton build/test locally on Windows, including a real Fyne v2.8.0 Launcher shell. The pnpm workspace installs from one frozen lockfile and the minimal Web package passes formatting, lint, smoke test, and production build. Milestone 4 is in progress; Milestone 5 is pending. No Phase 1 capability, database migration, or design-document edit has occurred.
+Milestones 1–4 are complete. The three approved Go modules and root skeleton build/test locally on Windows, including a real Fyne v2.8.0 Launcher shell. The pnpm workspace installs from one frozen lockfile and the minimal Web package passes formatting, lint, smoke test, and production build. CI expresses the same quality scopes and defines native Windows/macOS/Linux builds; README and USAGE now distinguish Phase 0 reality from future product commands. Milestone 5 is in progress. No Phase 1 capability, database migration, or design-document edit has occurred.

@@ -1,585 +1,211 @@
 # Corvus Studio Usage & Development Guide
 
-> 文档状态：Draft\
+> 文档状态：Phase 0 已实现命令与未来产品目标的分界说明\
 > 项目：Corvus Studio\
-> 用途：用户使用、开发环境搭建、贡献者快速入门
+> 用途：当前仓库验证、本地开发入门和未来能力导航
 
-------------------------------------------------------------------------
+## 1. 当前实现状态
 
-# 1. Introduction
+Corvus Studio 当前处于 **Phase 0: Repository Bootstrap**。现在可以验证 monorepo、三个 Go module、React/Vite 前端骨架、最小 Fyne Launcher 和 CI 定义。
 
-Corvus Studio 是一个本地优先的独立游戏 Steam 发布准备工作台。
+当前尚未实现：
 
-支持：
+- `corvus serve` 或 HTTP API；
+- Echo、SQLite、goose、sqlc 和数据库迁移；
+- OpenAPI 合约与生成客户端；
+- ADK Agent、模型 Provider 或 AI 配置；
+- Project、Release Goal、Checklist、Resource、Deliverable、Steam 模板、Asset Map 和 Watch；
+- 登录、鉴权、Docker、systemd、安装包、签名、公证和自动更新。
 
--   Desktop Application
--   Local Web Application
--   Docker Deployment
+本文档中只有标明为“Phase 0 可用”的命令才能当作已实现功能。
 
-核心能力：
+## 2. 产品目标（未来 Phase）
 
--   Project 管理
--   Steam Coming Soon 准备
--   Checklist
--   Resource Library
--   Deliverables
--   AI Review
+Corvus Studio 的产品目标是成为本地优先的独立游戏 Steam 发布准备工作台。设计文档规划了 Desktop Application、Local Web Application、Project 管理、Steam Coming Soon 准备、Checklist、Resource Library、Deliverables 和 AI Review。
 
-AI 是增强能力，不是运行前提。
+这些是后续阶段的产品目标，不是 Phase 0 已可用能力。AI 仍按设计作为增强能力，不是未来产品的运行前提。
 
-------------------------------------------------------------------------
+## 3. Developer Environment
 
-# 2. User Quick Start
+Phase 0 固定使用：
 
-## Desktop
+- Go 1.26.5；
+- Node.js 24.15.x；
+- pnpm 10.11.0；
+- golangci-lint 2.12.2（执行本地 Go lint 时）；
+- 构建 Launcher 所需的本机 C 编译器与 Fyne 图形开发依赖。
 
-启动流程：
+在仓库根目录检查：
 
-    Launch Corvus Studio
-
-    ↓
-
-    Create Project
-
-    ↓
-
-    Select Steam Coming Soon
-
-    ↓
-
-    Start Preparing
-
-------------------------------------------------------------------------
-
-## AI 配置
-
-进入：
-
-    Settings
-
-    ↓
-
-    AI Providers
-
-    ↓
-
-    Add Provider Key
-
-    ↓
-
-    Test Connection
-
-AI 未配置时：
-
-仍可使用：
-
--   Project
--   Checklist
--   Resource
--   Deliverable
-
-------------------------------------------------------------------------
-
-# 3. Developer Environment
-
-## Backend
-
-需要：
-
-    Go 1.26+
-
-检查：
-
-``` bash
+```powershell
 go version
+node --version
+pnpm --version
+golangci-lint --version
 ```
 
-------------------------------------------------------------------------
+Windows、macOS 和 Linux 都是正式目标平台。Docker 不是 Phase 0 开发环境前提。
 
-## Frontend
+## 4. Repository Setup（Phase 0 可用）
 
-需要：
+获取代码并进入仓库根目录：
 
-    Node.js
-
-    pnpm
-
-检查：
-
-``` bash
-node -v
-pnpm -v
-```
-
-------------------------------------------------------------------------
-
-## Optional
-
-Docker：
-
-``` bash
-docker --version
-```
-
-------------------------------------------------------------------------
-
-# 4. Repository Setup
-
-获取代码：
-
-``` bash
+```powershell
 git clone <repository>
-
 cd corvus-studio
 ```
 
-------------------------------------------------------------------------
+确认 Go workspace 指向根 `go.work` 且只聚合 Core、Launcher 和 Agent：
 
-## Backend
-
-``` bash
-cd apps/core
-
-go mod download
+```powershell
+go env GOWORK
+go work edit -json
+go list -m
 ```
 
-------------------------------------------------------------------------
+安装前端 workspace 依赖：
 
-## Frontend
-
-``` bash
-pnpm install
+```powershell
+pnpm install --frozen-lockfile
 ```
 
-------------------------------------------------------------------------
+仓库只使用根目录的 `pnpm-lock.yaml`。不要在 `apps/web` 或 `packages/*` 中创建独立锁文件。
 
-# 5. Local Development
+## 5. Local Development（Phase 0 可用）
 
-开发模式：
+### Core bootstrap
 
-## Terminal 1
-
-启动 Core：
-
-``` bash
-cd apps/core
-
-go run ./cmd/corvus serve
+```powershell
+go run ./apps/core/cmd/corvus
 ```
 
-------------------------------------------------------------------------
+预期输出：
 
-## Terminal 2
-
-启动 Web：
-
-``` bash
-cd apps/web
-
-pnpm dev
+```text
+Corvus Studio core bootstrap
 ```
 
-------------------------------------------------------------------------
+该命令随后退出；Phase 0 不启动 HTTP 服务。
 
-## Terminal 3（可选）
+### Web development server
 
-启动 Launcher：
-
-``` bash
-cd apps/launcher
-
-go run .
+```powershell
+pnpm dev:web
 ```
 
-------------------------------------------------------------------------
+Web 由 Vite Dev Server 独立运行，尚未连接 Core。
 
-# 6. Database Development
+### Minimal Launcher
 
-技术：
-
--   SQLite
--   goose
--   sqlc
-
-------------------------------------------------------------------------
-
-Migration：
-
-位置：
-
-    apps/core/migrations
-
-------------------------------------------------------------------------
-
-执行迁移：
-
-``` bash
-corvus migrate
+```powershell
+go run ./apps/launcher
 ```
 
-------------------------------------------------------------------------
+Launcher 只显示一个最小 Fyne 窗口；不启停 Core、不提供托盘功能，也不承载业务 UI。
 
-创建 Migration：
+## 6. Validation（Phase 0 可用）
 
-``` bash
-goose create add_feature sql
+### Go
+
+`go test ./...` 不能在无根 `go.mod` 的三 module workspace 中表达完整覆盖范围。请始终使用显式命令：
+
+```powershell
+go test ./apps/core/... ./apps/launcher/... ./agent/...
+golangci-lint run ./apps/core/... ./apps/launcher/... ./agent/...
 ```
 
-------------------------------------------------------------------------
+检查 Go 格式：
 
-生成 SQL Code：
-
-``` bash
-sqlc generate
+```powershell
+$phase0GoFiles = Get-ChildItem -Recurse -File -Include *.go -Path '.\apps\core','.\apps\launcher','.\agent'
+$phase0Unformatted = $phase0GoFiles | ForEach-Object { gofmt -l $_.FullName }
+if ($phase0Unformatted) { throw "Unformatted Go files: $phase0Unformatted" }
 ```
 
-------------------------------------------------------------------------
+### Frontend
 
-# 7. Frontend Development
-
-技术：
-
--   React 19
--   TypeScript
--   Vite
--   Ant Design
-
-------------------------------------------------------------------------
-
-启动：
-
-``` bash
-pnpm dev
-```
-
-------------------------------------------------------------------------
-
-构建：
-
-``` bash
-pnpm build
-```
-
-------------------------------------------------------------------------
-
-API Client：
-
-通过 OpenAPI 生成：
-
-    Backend OpenAPI
-
-    ↓
-
-    Generated Client
-
-    ↓
-
-    Frontend
-
-------------------------------------------------------------------------
-
-# 8. Agent Development
-
-Agent 目录：
-
-    agent/
-
-结构：
-
-    agent/
-
-    ├── runtime
-    ├── workflows
-    ├── tools
-    ├── context
-    ├── prompts
-    └── providers
-
-------------------------------------------------------------------------
-
-设计原则：
-
-Agent 不直接访问数据库。
-
-流程：
-
-    Agent
-
-    ↓
-
-    Workflow
-
-    ↓
-
-    Tool
-
-    ↓
-
-    Domain Service
-
-------------------------------------------------------------------------
-
-Prompt：
-
-    agent/prompts
-
-------------------------------------------------------------------------
-
-Workflow：
-
-    agent/workflows
-
-------------------------------------------------------------------------
-
-Tool：
-
-    agent/tools
-
-------------------------------------------------------------------------
-
-# 9. Testing
-
-## Go
-
-``` bash
-go test ./...
-```
-
-------------------------------------------------------------------------
-
-## Frontend
-
-``` bash
-pnpm test
-```
-
-------------------------------------------------------------------------
-
-## Lint
-
-Go：
-
-``` bash
-golangci-lint run
-```
-
-Frontend：
-
-``` bash
+```powershell
+pnpm install --frozen-lockfile
+pnpm format:check
 pnpm lint
-```
-
-------------------------------------------------------------------------
-
-## Scenario Test
-
-位置：
-
-    tests/scenario
-
-用于：
-
--   用户流程测试
--   Agent 回归测试
-
-------------------------------------------------------------------------
-
-# 10. Debugging
-
-## Backend
-
-开启 Debug 日志：
-
-``` yaml
-log:
-  level: debug
-```
-
-------------------------------------------------------------------------
-
-## Agent
-
-Debug 模式记录：
-
--   Context
--   Tool Call
--   Model Call
-
-------------------------------------------------------------------------
-
-## Frontend
-
-使用浏览器 DevTools。
-
-------------------------------------------------------------------------
-
-# 11. Configuration
-
-Corvus 使用 Viper。
-
-配置优先级：
-
-    CLI
-
-    >
-
-    Environment Variables
-
-    >
-
-    Config File
-
-    >
-
-    Default Values
-
-------------------------------------------------------------------------
-
-配置包含：
-
--   Server
--   Storage
--   AI Provider
--   Logging
-
-------------------------------------------------------------------------
-
-# 12. Build
-
-## Backend
-
-``` bash
-go build ./cmd/corvus
-```
-
-------------------------------------------------------------------------
-
-## Frontend
-
-``` bash
+pnpm test
 pnpm build
 ```
 
-------------------------------------------------------------------------
+`pnpm build` 成功后可观察到 `apps/web/dist/index.html`。`dist/` 是本地构建产物，不提交。
 
-## Desktop
+### Native build
 
-构建：
-
--   Go Core
--   React Assets
--   Fyne Launcher
-
-------------------------------------------------------------------------
-
-# 13. Docker Development
-
-启动：
-
-``` bash
-docker compose up
+```powershell
+New-Item -ItemType Directory -Force .tmp | Out-Null
+go build -o .tmp/corvus ./apps/core/cmd/corvus
+go build -o .tmp/corvus-launcher ./apps/launcher
 ```
 
-------------------------------------------------------------------------
+GitHub Actions 会在 Windows、macOS 和 Linux 原生 runner 上构建这两个入口。Phase 0 不进行交叉编译、打包、签名、公证或产物发布。
 
-用户数据通过挂载保存。
+## 7. Frontend Development Boundary
 
-示例：
+Phase 0 已安装 React 19、TypeScript、Vite 8、SCSS、ESLint、Prettier、Vitest 和 Testing Library。
 
-    project-data/
+Ant Design、Zustand、TanStack Query、React Router、React Flow 和 `react-markdown` 会在首次有真实产品需求的后续 Phase 引入。`packages/api-client`、`packages/shared-types` 和 `packages/ui` 当前只有边界说明，不包含虚假导出或生成代码。
 
-------------------------------------------------------------------------
+开发模式下 Web 与 Core 独立运行。Vite 产物未来由 Go `embed` 提供，但 Phase 0 只验证 Vite 自身能构建。
 
-# 14. Contribution
+## 8. Database, API, Agent and Configuration（未来 Phase）
 
-Corvus Studio 不提供强制 Issue/PR Template。
+以下设计仍是后续实现输入，Phase 0 不提供对应命令：
 
-贡献者可以自由组织描述。
+- SQLite、goose migration、sqlc 查询生成；
+- Echo HTTP runtime、SSE 和 OpenAPI-first API；
+- Viper 运行时配置、zap/lumberjack 日志；
+- ADK Agent runtime、workflows、tools、context、prompts 和 providers。
 
-建议：
+因此，不要在 Phase 0 执行 `corvus migrate`、`goose create`、`sqlc generate` 或 Agent 调试命令。`agent/` 目前只是一个独立 Go module 边界。
 
-Issue：
+## 9. Deployment and Packaging（未来 Phase）
 
-包含：
+Docker、systemd、正式桌面安装包、macOS 签名/公证和自动更新都不属于 Phase 0。`deployments/` 目录仅预留仓库边界，当前没有 `docker compose up` 或正式安装命令。
 
--   背景
--   问题
--   期望
+## 10. Contribution
 
-PR：
+- 使用 Trunk Based Development；
+- 不强制 Conventional Commits；
+- 不创建 Issue Template 或 Pull Request Template；
+- 当前不创建 `CONTRIBUTING.md`；
+- 每次变更都必须提供可运行的验证证据；
+- 不得在没有证据时声称测试或构建通过。
 
-包含：
+## 11. Troubleshooting
 
--   修改内容
--   测试方式
--   影响范围
+### Go workspace 未识别
 
-------------------------------------------------------------------------
+在仓库根目录执行：
 
-# 15. Troubleshooting
+```powershell
+go env GOWORK
+go work edit -json
+```
 
-## Core 无法启动
+`GOWORK` 应指向根 `go.work`，`Use` 条目应且只应包含 `agent`、`apps/core` 和 `apps/launcher`。
 
-检查：
+### Launcher 无法构建
 
--   配置文件；
--   SQLite；
--   文件权限。
+确认已安装当前平台的 [Fyne prerequisites](https://docs.fyne.io/started/)，并检查 `go env CGO_ENABLED` 与本机 C 编译器。
 
-------------------------------------------------------------------------
+### pnpm 安装不一致
 
-## AI 不工作
+不要在子目录单独安装或生成锁文件。回到仓库根目录执行：
 
-检查：
+```powershell
+pnpm install --frozen-lockfile
+```
 
--   API Key；
--   Provider 配置；
--   网络连接。
+如果锁文件与 manifest 不一致，不要删除锁文件或关闭严格 peer dependency 检查；先记录错误并核对依赖变更。
 
-------------------------------------------------------------------------
+## 12. 文档导航
 
-## Resource Missing
-
-检查：
-
--   文件路径；
--   外部引用；
--   权限。
-
-------------------------------------------------------------------------
-
-# 16. 文档导航
-
-推荐阅读顺序：
-
-    README.md
-
-    ↓
-
-    USAGE.md
-
-    ↓
-
-    docs/
-
-    ├── Product Design
-    ├── PRD
-    ├── UX
-    ├── System Design
-    ├── API
-    └── Agent Architecture
-
-------------------------------------------------------------------------
-
-# 总结
-
-USAGE.md 是 Corvus Studio 的用户与开发入口。
-
-它回答：
-
--   如何运行 Corvus Studio；
--   如何配置环境；
--   如何参与开发；
--   如何调试和测试。
-
-详细架构设计请参考 docs 目录。
+1. `README.md`：Phase 0 现状和快速验证。
+2. `USAGE.md`：当前命令、边界和排错。
+3. `.agent/phase-0-repository-bootstrap.md`：可执行计划、进度和证据。
+4. `docs/`：产品、架构、API、数据模型、Agent 和工程设计的信息源。

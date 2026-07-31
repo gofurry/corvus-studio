@@ -1,6 +1,6 @@
 :root {
-  color: #f5f7ff;
-  background: #0c1018;
+  color: #edf1f7;
+  background: #0a0d12;
   font-family:
     Inter,
     ui-sans-serif,
@@ -21,43 +21,169 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+  background: radial-gradient(circle at 15% -10%, rgb(72 93 190 / 24%), transparent 32rem), #0a0d12;
 }
 
-.bootstrap-shell {
-  display: grid;
+a {
+  color: inherit;
+}
+
+.app-shell {
   min-height: 100vh;
+  background: transparent;
+}
+
+.app-header {
+  display: flex;
+  height: auto;
+  min-height: 72px;
+  align-items: center;
+  padding: 0 5vw;
+  border-bottom: 1px solid rgb(255 255 255 / 8%);
+  background: rgb(10 13 18 / 88%);
+  backdrop-filter: blur(18px);
+}
+
+.app-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.app-brand-mark {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
   place-items: center;
-  padding: 2rem;
-  background: radial-gradient(circle at top, rgb(93 108 255 / 24%), transparent 38rem), #0c1018;
+  border: 1px solid rgb(130 151 255 / 60%);
+  border-radius: 0.65rem;
+  color: #dce3ff;
+  background: linear-gradient(145deg, #3b50a5, #182247);
+  font-weight: 800;
 }
 
-.bootstrap-card {
-  width: min(38rem, 100%);
-  padding: 3rem;
-  border: 1px solid rgb(255 255 255 / 12%);
-  border-radius: 1.5rem;
-  background: rgb(19 25 38 / 88%);
-  box-shadow: 0 2rem 6rem rgb(0 0 0 / 35%);
-
-  h1 {
-    margin: 0.35rem 0 1rem;
-    font-size: clamp(2.5rem, 10vw, 5rem);
-    line-height: 0.95;
-  }
-
-  p:last-child {
-    margin: 0;
-    color: #b9c2d7;
-    font-size: 1.05rem;
-    line-height: 1.65;
-  }
-}
-
-.bootstrap-eyebrow {
-  margin: 0;
-  color: #9aa7ff;
-  font-size: 0.75rem;
+.app-brand-name.ant-typography {
+  color: #f7f8ff;
   font-weight: 700;
-  letter-spacing: 0.18em;
+}
+
+.app-brand-caption.ant-typography {
+  color: #8993aa;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.app-content {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  padding: clamp(2rem, 6vw, 5rem) 1.5rem 5rem;
+}
+
+.page-stack {
+  display: grid;
+  gap: 2rem;
+
+  h1.ant-typography {
+    margin: 0.25rem 0 0.6rem;
+    color: #f5f7ff;
+    font-size: clamp(2.25rem, 6vw, 4.5rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+}
+
+.narrow-page {
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+.page-eyebrow.ant-typography {
+  color: #93a5ff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.page-intro.ant-typography {
+  max-width: 42rem;
+  margin: 0;
+  color: #aab3c7;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.center-state {
+  display: grid;
+  min-height: 18rem;
+  place-items: center;
+}
+
+.empty-card,
+.form-card,
+.detail-card,
+.project-card {
+  border-color: rgb(255 255 255 / 9%);
+  background: rgb(20 25 34 / 92%);
+  box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 20%);
+}
+
+.project-list {
+  .ant-list-items {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .ant-list-item {
+    padding: 0;
+    border: 0;
+  }
+}
+
+.project-card-link {
+  display: block;
+  width: 100%;
+  text-decoration: none;
+}
+
+.project-card {
+  width: 100%;
+
+  h3.ant-typography {
+    margin: 0;
+    color: #f4f6ff;
+  }
+}
+
+.form-card,
+.detail-card {
+  .ant-form-item-label label,
+  .ant-descriptions-item-label {
+    font-weight: 600;
+  }
+}
+
+.form-alert {
+  margin-bottom: 1.5rem;
+}
+
+.form-flex-item {
+  min-width: min(18rem, 100%);
+  flex: 1;
+}
+
+@media (max-width: 600px) {
+  .app-header {
+    padding: 0 1rem;
+  }
+
+  .app-content {
+    padding: 2rem 1rem 4rem;
+  }
+
+  .page-stack {
+    gap: 1.4rem;
+  }
 }

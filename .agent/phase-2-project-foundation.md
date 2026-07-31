@@ -419,7 +419,7 @@ Phase 2 remains `In progress` until an actual authorized GitHub Actions run pass
 - [x] 2026-07-31: Milestone 2 defined OpenAPI create/list/get, generated deterministic Go and TypeScript clients, and passed `pnpm generate:api`, frozen install, API-client typecheck, root format/build, and `go test ./apps/core/...`.
 - [x] 2026-07-31: Milestone 3 implemented Project domain/application/storage, migration 00002, canonical existing-directory references, and restart persistence; sqlc generate/vet and focused/full Core tests passed.
 - [x] 2026-07-31: Milestone 4 implemented manual Echo v5 create/list/get handlers, strict bounded JSON, error envelopes, runtime composition, OpenAPI request/response tests, and a real HTTP restart persistence test; focused/full Core tests and Go vet passed.
-- [ ] Milestone 5: implement and commit the Project Web flow.
+- [x] 2026-07-31: Milestone 5 implemented Project list/create/detail routes, generated-client wrapper, TanStack Query cache behavior, Ant Design UI, and interaction tests; format/lint, 7 Vitest cases, API-client typecheck, and Vite build passed.
 - [ ] Milestone 6: complete local audit, docs, CI definition, and final local commit.
 - [ ] Remote completion: push only after explicit authorization and obtain a green native CI run.
 
@@ -430,6 +430,7 @@ Phase 2 remains `In progress` until an actual authorized GitHub Actions run pass
 - The local PATH still exposes golangci-lint v1.64.8 even though CI and the repository configuration use v2.12.2.
 - `@hey-api/client-fetch 0.13.1` installed with an upstream deprecation warning, and the `openapi-ts 0.99.0` output imports only its own generated Fetch implementation. The unnecessary standalone dependency was removed rather than committing deprecated code.
 - Generated Go UUID fields require `github.com/oapi-codegen/runtime/types`; the compatible current runtime `v1.6.0` was added explicitly.
+- The first Ant Design production bundle is about 893 kB minified (287 kB gzip) and triggers Vite’s non-failing 500 kB chunk warning. Phase 2 keeps the simple route structure; route-level optimization is a later performance task, not a correctness blocker.
 
 ### Decision Log
 
@@ -443,4 +444,4 @@ Phase 2 remains `In progress` until an actual authorized GitHub Actions run pass
 
 ### Outcomes & Retrospective
 
-Milestones 1–4 established the living plan, deterministic OpenAPI boundary, Project persistence, and public Core API. Domain/storage behavior, HTTP status/error contracts, and create→Core restart→get now have current automated evidence.
+Milestones 1–5 established the living plan, deterministic OpenAPI boundary, Project persistence/API, and the minimum user-facing Web flow. Automated evidence now covers create/list/detail, direct detail-route reload, errors, and create-to-detail navigation.

@@ -1,12 +1,35 @@
+import { Layout, Space, Typography } from 'antd';
+import { Link, Navigate, Route, Routes } from 'react-router-dom';
+
+import ProjectCreatePage from './features/projects/ProjectCreatePage';
+import ProjectDetailPage from './features/projects/ProjectDetailPage';
+import ProjectListPage from './features/projects/ProjectListPage';
+import NotFoundPage from './pages/NotFoundPage';
+
+const { Header, Content } = Layout;
+
 function App() {
   return (
-    <main className="bootstrap-shell">
-      <section className="bootstrap-card" aria-labelledby="bootstrap-title">
-        <p className="bootstrap-eyebrow">Repository Bootstrap</p>
-        <h1 id="bootstrap-title">Corvus Studio</h1>
-        <p>The development workspace is ready for the next implementation phase.</p>
-      </section>
-    </main>
+    <Layout className="app-shell">
+      <Header className="app-header">
+        <Link className="app-brand" to="/projects" aria-label="Corvus Studio projects">
+          <span className="app-brand-mark">C</span>
+          <Space orientation="vertical" size={0}>
+            <Typography.Text className="app-brand-name">Corvus Studio</Typography.Text>
+            <Typography.Text className="app-brand-caption">Local release workspace</Typography.Text>
+          </Space>
+        </Link>
+      </Header>
+      <Content className="app-content">
+        <Routes>
+          <Route path="/" element={<Navigate to="/projects" replace />} />
+          <Route path="/projects" element={<ProjectListPage />} />
+          <Route path="/projects/new" element={<ProjectCreatePage />} />
+          <Route path="/projects/:projectId" element={<ProjectDetailPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Content>
+    </Layout>
   );
 }
 

@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import App from './App';
 import { projectsApi, type Project } from './api/projects';
+import { releasesApi } from './api/releases';
 import { systemApi } from './api/system';
 
 vi.mock('./api/projects', () => ({
@@ -21,12 +22,24 @@ vi.mock('./api/system', () => ({
   },
 }));
 
+vi.mock('./api/releases', () => ({
+  releasesApi: {
+    getTemplate: vi.fn(),
+    listForProject: vi.fn(),
+    create: vi.fn(),
+    get: vi.fn(),
+    transition: vi.fn(),
+  },
+}));
+
 const mockedProjectsApi = vi.mocked(projectsApi);
 const mockedSystemApi = vi.mocked(systemApi);
+const mockedReleasesApi = vi.mocked(releasesApi);
 
 describe('Project application', () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    mockedReleasesApi.listForProject.mockResolvedValue([]);
   });
 
   afterEach(() => {

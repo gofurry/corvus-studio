@@ -242,7 +242,7 @@ Evidence must show atomic creation, duplicate rejection, persistence after Core 
 - [x] 2026-07-31: Milestone 2 added the template/Release/Checklist OpenAPI contract and regenerated Go/TypeScript clients; Core tests, API-client typecheck and consecutive-output hash comparison passed.
 - [x] 2026-07-31: Milestone 3 implemented Release/Checklist/Template domains, the 12-item embedded Catalog, schema version 3, sqlc repositories, atomic workspace creation, transition histories and restart/rollback tests; sqlc generate/vet, Core tests and Go vet passed.
 - [x] 2026-07-31: Milestone 4 composed the services into Runtime and exposed template/Release/Checklist Echo v5 routes with strict requests, filters, DTO/error mapping and OpenAPI exchange tests; focused uncached tests, full Core tests and Go vet passed, including a real restart-persistence HTTP test.
-- [ ] Milestone 5 — Web workflow.
+- [x] 2026-07-31: Milestone 5 added Project workspace navigation, versioned template preview and confirmation, Release status controls, URL-restorable Checklist filters and selection, responsive task details, custom tasks and task transitions; Web format/lint/build and all 20 tests passed.
 - [ ] Milestone 6 — full local completion audit.
 - [ ] Authorized push and successful Windows/macOS/Linux Actions evidence.
 
@@ -253,6 +253,7 @@ Evidence must show atomic creation, duplicate rejection, persistence after Core 
 - The branch begins three local commits ahead of its remote baseline.
 - On Windows, one immediate repeated TypeScript generation attempt hit a transient file lock while Prettier reopened `client/types.gen.ts`. A clean retry and two successful runs separated by two seconds produced the identical diff hash `848a1bfe7b7c864351ead23bb66061324084d999`; no source or generator change was required.
 - Expanding the sqlc schema caused the pinned sqlc tool to record additional transitive module checksums in `go.work.sum`; no Go module version or direct dependency changed.
+- The Phase 3 Web build succeeds but Vite reports the application chunk at about 986 kB minified (315 kB gzip), above its advisory 500 kB threshold. Route-level splitting is a later performance optimization, not a Phase 3 correctness blocker.
 
 ### Decision Log
 

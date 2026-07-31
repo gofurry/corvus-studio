@@ -3,6 +3,10 @@ import { Alert, Button, Card, Descriptions, Flex, Skeleton, Space, Tag, Typograp
 import { Link, useParams } from 'react-router-dom';
 
 import { projectsApi } from '../../api/projects';
+import { releasesApi } from '../../api/releases';
+import { releaseStatusLabels } from '../release/workflowPresentation';
+import { releaseQueryKeys } from '../release/workflowQueries';
+import ProjectWorkspaceNav from './ProjectWorkspaceNav';
 import { formatProjectDate, projectStageLabels, projectStatusLabels } from './projectPresentation';
 import { projectQueryKeys } from './projectQueries';
 
@@ -11,6 +15,12 @@ function ProjectDetailPage() {
   const project = useQuery({
     queryKey: projectQueryKeys.detail(projectId),
     queryFn: () => projectsApi.get(projectId),
+    enabled: projectId !== '',
+    staleTime: 30_000,
+  });
+  const releases = useQuery({
+    queryKey: releaseQueryKeys.project(projectId),
+    queryFn: () => releasesApi.listForProject(projectId),
     enabled: projectId !== '',
     staleTime: 30_000,
   });
@@ -66,6 +76,8 @@ function ProjectDetailPage() {
         </Link>
       </Flex>
 
+      <ProjectWorkspaceNav projectId={projectId} />
+
       <Card className="detail-card">
         <Descriptions column={1} bordered>
           <Descriptions.Item label="Description">
@@ -87,6 +99,46 @@ function ProjectDetailPage() {
             {formatProjectDate(project.data.updated_at)}
           </Descriptions.Item>
         </Descriptions>
+      </Card>
+
+      <Card className="detail-card" title="Steam Coming Soon release">
+        {releases.isPending ? (
+          <Skeleton active paragraph={{ rows: 2 }} />
+        ) : releases.isError ? (
+          <Alert
+            type="warning"
+            showIcon
+            title="Release progress is unavailable"
+            description={releases.error.message}
+          />
+        ) : releases.data.length === 0 ? (
+          <Flex justify="space-between" align="center" gap="middle" wrap>
+            <Typography.Text type="secondary">
+              No Release Goal exists for this Project yet.
+            </Typography.Text>
+            <Link to={`/projects/${projectId}/release`}>
+              <Button type="primary">Set up release workspace</Button>
+            </Link>
+          </Flex>
+        ) : (
+          <Flex justify="space-between" align="center" gap="middle" wrap>
+            <Space>
+              <Tag color="geekblue">{releaseStatusLabels[releases.data[0].status]}</Tag>
+              <Typography.Text type="secondary">
+                {releases.data[0].checklist_summary.done}/{releases.data[0].checklist_summary.total}{' '}
+                tasks completed
+              </Typography.Text>
+            </Space>
+            <Space>
+              <Link to={`/projects/${projectId}/release`}>
+                <Button>Release status</Button>
+              </Link>
+              <Link to={`/projects/${projectId}/checklist`}>
+                <Button type="primary">Open checklist</Button>
+              </Link>
+            </Space>
+          </Flex>
+        )}
       </Card>
     </section>
   );

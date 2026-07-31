@@ -4,6 +4,8 @@ import { Link, Navigate, Route, Routes } from 'react-router-dom';
 import ProjectCreatePage from './features/projects/ProjectCreatePage';
 import ProjectDetailPage from './features/projects/ProjectDetailPage';
 import ProjectListPage from './features/projects/ProjectListPage';
+import ChecklistPage from './features/release/ChecklistPage';
+import ReleasePage from './features/release/ReleasePage';
 import NotFoundPage from './pages/NotFoundPage';
 
 const { Header, Content } = Layout;
@@ -26,6 +28,8 @@ function App() {
           <Route path="/projects" element={<ProjectListPage />} />
           <Route path="/projects/new" element={<ProjectCreatePage />} />
           <Route path="/projects/:projectId" element={<ProjectDetailPage />} />
+          <Route path="/projects/:projectId/release" element={<ReleasePage />} />
+          <Route path="/projects/:projectId/checklist" element={<ChecklistPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Content>

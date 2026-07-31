@@ -130,6 +130,64 @@ a {
   box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 20%);
 }
 
+.full-width {
+  width: 100%;
+}
+
+.template-task-list {
+  max-height: 28rem;
+  overflow: auto;
+  border-block: 1px solid rgb(255 255 255 / 8%);
+}
+
+.checklist-filters .ant-select {
+  min-width: 10rem;
+}
+
+.checklist-workspace {
+  display: grid;
+  align-items: start;
+  grid-template-columns: minmax(10rem, 0.7fr) minmax(18rem, 1.35fr) minmax(20rem, 1.5fr);
+  gap: 1rem;
+}
+
+.checklist-categories .ant-btn {
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+}
+
+.checklist-list-card .ant-list-item {
+  padding: 0.35rem 0;
+}
+
+.checklist-task {
+  display: grid;
+  width: 100%;
+  gap: 0.65rem;
+  padding: 0.85rem;
+  border: 1px solid transparent;
+  border-radius: 0.65rem;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible,
+  &.is-selected {
+    border-color: rgb(130 151 255 / 55%);
+    background: rgb(130 151 255 / 10%);
+    outline: none;
+  }
+}
+
+.checklist-detail-card {
+  position: sticky;
+  top: 1rem;
+}
+
 .project-list {
   .ant-list-items {
     display: grid;
@@ -185,5 +243,11 @@ a {
 
   .page-stack {
     gap: 1.4rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .checklist-workspace {
+    grid-template-columns: minmax(9rem, 0.65fr) minmax(0, 1.35fr);
   }
 }

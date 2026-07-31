@@ -125,6 +125,8 @@ func newDirectoryPickerTestServer(t *testing.T, picker DirectoryPicker) *Server 
 		Health:          fakeHealth{version: 2},
 		DirectoryPicker: picker,
 		Projects:        emptyProjects{},
+		Releases:        emptyReleases{},
+		Checklist:       emptyChecklist{},
 		Logger:          zap.NewNop(),
 	})
 	if err != nil {

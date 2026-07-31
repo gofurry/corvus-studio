@@ -33,6 +33,8 @@ type Server struct {
 	health          HealthChecker
 	directoryPicker DirectoryPicker
 	projects        ProjectService
+	releases        ReleaseService
+	checklist       ChecklistService
 	logger          *zap.Logger
 }
 
@@ -40,6 +42,8 @@ type Dependencies struct {
 	Health          HealthChecker
 	DirectoryPicker DirectoryPicker
 	Projects        ProjectService
+	Releases        ReleaseService
+	Checklist       ChecklistService
 	Logger          *zap.Logger
 	WebAssets       fs.FS
 }
@@ -54,6 +58,9 @@ func New(dependencies Dependencies) (*Server, error) {
 	if dependencies.DirectoryPicker == nil {
 		return nil, errors.New("directory picker is required")
 	}
+	if dependencies.Releases == nil || dependencies.Checklist == nil {
+		return nil, errors.New("release and Checklist services are required")
+	}
 	if dependencies.Logger == nil {
 		dependencies.Logger = zap.NewNop()
 	}
@@ -65,6 +72,8 @@ func New(dependencies Dependencies) (*Server, error) {
 		health:          dependencies.Health,
 		directoryPicker: dependencies.DirectoryPicker,
 		projects:        dependencies.Projects,
+		releases:        dependencies.Releases,
+		checklist:       dependencies.Checklist,
 		logger:          dependencies.Logger,
 	}
 	e.GET("/healthz", server.healthHandler)
@@ -72,6 +81,15 @@ func New(dependencies Dependencies) (*Server, error) {
 	e.GET("/api/v1/projects", server.listProjectsHandler)
 	e.POST("/api/v1/projects", server.createProjectHandler)
 	e.GET("/api/v1/projects/:project_id", server.getProjectHandler)
+	e.GET("/api/v1/release-templates/:template_key", server.getReleaseTemplateHandler)
+	e.GET("/api/v1/projects/:project_id/releases", server.listProjectReleasesHandler)
+	e.POST("/api/v1/releases", server.createReleaseHandler)
+	e.GET("/api/v1/releases/:release_id", server.getReleaseHandler)
+	e.POST("/api/v1/releases/:release_id/transition", server.transitionReleaseHandler)
+	e.GET("/api/v1/releases/:release_id/checklist", server.listChecklistItemsHandler)
+	e.POST("/api/v1/checklist", server.createChecklistItemHandler)
+	e.GET("/api/v1/checklist/:item_id", server.getChecklistItemHandler)
+	e.POST("/api/v1/checklist/:item_id/transition", server.transitionChecklistItemHandler)
 	if dependencies.WebAssets != nil {
 		if _, err := fs.Stat(dependencies.WebAssets, "index.html"); err != nil {
 			return nil, fmt.Errorf("embedded Web UI is missing index.html: %w", err)

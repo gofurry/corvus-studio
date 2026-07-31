@@ -241,7 +241,7 @@ Evidence must show atomic creation, duplicate rejection, persistence after Core 
 - [x] 2026-07-31: Milestone 1 created the living ExecPlan and marked Phase 3 In progress; Markdown formatting and `git diff --check` passed.
 - [x] 2026-07-31: Milestone 2 added the template/Release/Checklist OpenAPI contract and regenerated Go/TypeScript clients; Core tests, API-client typecheck and consecutive-output hash comparison passed.
 - [x] 2026-07-31: Milestone 3 implemented Release/Checklist/Template domains, the 12-item embedded Catalog, schema version 3, sqlc repositories, atomic workspace creation, transition histories and restart/rollback tests; sqlc generate/vet, Core tests and Go vet passed.
-- [ ] Milestone 4 — HTTP API.
+- [x] 2026-07-31: Milestone 4 composed the services into Runtime and exposed template/Release/Checklist Echo v5 routes with strict requests, filters, DTO/error mapping and OpenAPI exchange tests; focused uncached tests, full Core tests and Go vet passed, including a real restart-persistence HTTP test.
 - [ ] Milestone 5 — Web workflow.
 - [ ] Milestone 6 — full local completion audit.
 - [ ] Authorized push and successful Windows/macOS/Linux Actions evidence.

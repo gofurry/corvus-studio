@@ -5,12 +5,15 @@ import (
 	"errors"
 	"fmt"
 
+	checklistapp "github.com/gofurry/corvus-studio/apps/core/internal/application/checklist"
 	projectapp "github.com/gofurry/corvus-studio/apps/core/internal/application/project"
+	releaseapp "github.com/gofurry/corvus-studio/apps/core/internal/application/release"
 	"github.com/gofurry/corvus-studio/apps/core/internal/infrastructure/config"
 	"github.com/gofurry/corvus-studio/apps/core/internal/infrastructure/directorypicker"
 	"github.com/gofurry/corvus-studio/apps/core/internal/infrastructure/logging"
 	"github.com/gofurry/corvus-studio/apps/core/internal/infrastructure/projectpath"
 	"github.com/gofurry/corvus-studio/apps/core/internal/infrastructure/storage"
+	"github.com/gofurry/corvus-studio/apps/core/internal/infrastructure/templatecatalog"
 	"github.com/gofurry/corvus-studio/apps/core/internal/interfaces/httpserver"
 	"github.com/gofurry/corvus-studio/apps/core/internal/interfaces/webui"
 	"go.uber.org/zap"
@@ -59,6 +62,37 @@ func Run(ctx context.Context, cfg config.Config) (runErr error) {
 	if err != nil {
 		return fmt.Errorf("initialize Project service: %w", err)
 	}
+	releaseRepository, err := storage.NewReleaseRepository(store)
+	if err != nil {
+		return fmt.Errorf("initialize Release repository: %w", err)
+	}
+	checklistRepository, err := storage.NewChecklistRepository(store)
+	if err != nil {
+		return fmt.Errorf("initialize Checklist repository: %w", err)
+	}
+	templates, err := templatecatalog.New()
+	if err != nil {
+		return fmt.Errorf("initialize Release template catalog: %w", err)
+	}
+	releaseService, err := releaseapp.NewService(
+		releaseRepository,
+		projectRepository,
+		templates,
+		releaseapp.UUIDv7Generator{},
+		releaseapp.SystemClock{},
+	)
+	if err != nil {
+		return fmt.Errorf("initialize Release service: %w", err)
+	}
+	checklistService, err := checklistapp.NewService(
+		checklistRepository,
+		releaseRepository,
+		checklistapp.UUIDv7Generator{},
+		checklistapp.SystemClock{},
+	)
+	if err != nil {
+		return fmt.Errorf("initialize Checklist service: %w", err)
+	}
 
 	assets, err := webui.Files()
 	if err != nil {
@@ -68,6 +102,8 @@ func Run(ctx context.Context, cfg config.Config) (runErr error) {
 		Health:          store,
 		DirectoryPicker: directorypicker.New(),
 		Projects:        projectService,
+		Releases:        releaseService,
+		Checklist:       checklistService,
 		Logger:          logger,
 		WebAssets:       assets,
 	})

@@ -218,6 +218,8 @@ func newProjectTestServer(t *testing.T, projects ProjectService) *Server {
 		Health:          fakeHealth{version: 2},
 		DirectoryPicker: cancelledDirectoryPicker{},
 		Projects:        projects,
+		Releases:        emptyReleases{},
+		Checklist:       emptyChecklist{},
 		Logger:          zap.NewNop(),
 	})
 	if err != nil {

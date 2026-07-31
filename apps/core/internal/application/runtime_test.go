@@ -57,7 +57,7 @@ func TestRunStartsHealthyRuntimeAndStops(t *testing.T) {
 	}
 }
 
-func TestRunPersistsProjectAcrossRestart(t *testing.T) {
+func TestRunPersistsProjectAndReleaseWorkspaceAcrossRestart(t *testing.T) {
 	dataDir := t.TempDir()
 	projectDirectory := filepath.Join(dataDir, "game")
 	if err := os.Mkdir(projectDirectory, 0o700); err != nil {
@@ -111,6 +111,61 @@ func TestRunPersistsProjectAcrossRestart(t *testing.T) {
 			created.ID,
 		)
 	}
+	releaseRequestBody, err := json.Marshal(map[string]any{
+		"project_id":       created.ID,
+		"goal_type":        "steam_coming_soon",
+		"template_key":     "steam-coming-soon",
+		"template_version": "1.0.0",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	response, err = http.Post( //nolint:noctx
+		baseURL+"/api/v1/releases",
+		"application/json",
+		bytes.NewReader(releaseRequestBody),
+	)
+	if err != nil {
+		t.Fatalf("create Release workspace: %v", err)
+	}
+	var createdRelease struct {
+		ID               string `json:"id"`
+		ChecklistSummary struct {
+			Total int `json:"total"`
+		} `json:"checklist_summary"`
+	}
+	decodeErr = json.NewDecoder(response.Body).Decode(&createdRelease)
+	_ = response.Body.Close()
+	if response.StatusCode != http.StatusCreated || decodeErr != nil || createdRelease.ID == "" || createdRelease.ChecklistSummary.Total != 12 {
+		t.Fatalf("create Release response status=%d decode=%v value=%#v", response.StatusCode, decodeErr, createdRelease)
+	}
+	response, err = http.Get(baseURL + "/api/v1/releases/" + createdRelease.ID + "/checklist") //nolint:noctx
+	if err != nil {
+		t.Fatalf("list Checklist: %v", err)
+	}
+	var checklistResponse struct {
+		Items []struct {
+			ID string `json:"id"`
+		} `json:"items"`
+	}
+	decodeErr = json.NewDecoder(response.Body).Decode(&checklistResponse)
+	_ = response.Body.Close()
+	if response.StatusCode != http.StatusOK || decodeErr != nil || len(checklistResponse.Items) != 12 {
+		t.Fatalf("Checklist response status=%d decode=%v value=%#v", response.StatusCode, decodeErr, checklistResponse)
+	}
+	transitionBody := bytes.NewBufferString(`{"status":"in_progress"}`)
+	response, err = http.Post( //nolint:noctx
+		baseURL+"/api/v1/checklist/"+checklistResponse.Items[0].ID+"/transition",
+		"application/json",
+		transitionBody,
+	)
+	if err != nil {
+		t.Fatalf("transition Checklist item: %v", err)
+	}
+	_ = response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		t.Fatalf("transition Checklist status=%d", response.StatusCode)
+	}
 	stopRuntime(t, cancel, done)
 
 	cancel, done = startRuntime(cfg)
@@ -131,6 +186,30 @@ func TestRunPersistsProjectAcrossRestart(t *testing.T) {
 	}
 	if reopened.ID != created.ID || reopened.Name != "Persistent Raven" {
 		t.Fatalf("reopened Project = %#v", reopened)
+	}
+	response, err = http.Get(baseURL + "/api/v1/releases/" + createdRelease.ID) //nolint:noctx
+	if err != nil {
+		t.Fatalf("get Release after restart: %v", err)
+	}
+	var reopenedRelease struct {
+		ID               string `json:"id"`
+		ChecklistSummary struct {
+			Total int `json:"total"`
+		} `json:"checklist_summary"`
+	}
+	decodeErr = json.NewDecoder(response.Body).Decode(&reopenedRelease)
+	_ = response.Body.Close()
+	if response.StatusCode != http.StatusOK || decodeErr != nil || reopenedRelease.ID != createdRelease.ID || reopenedRelease.ChecklistSummary.Total != 12 {
+		t.Fatalf("reopened Release status=%d decode=%v value=%#v", response.StatusCode, decodeErr, reopenedRelease)
+	}
+	response, err = http.Get(baseURL + "/api/v1/releases/" + createdRelease.ID + "/checklist?status=in_progress") //nolint:noctx
+	if err != nil {
+		t.Fatalf("get transitioned Checklist after restart: %v", err)
+	}
+	decodeErr = json.NewDecoder(response.Body).Decode(&checklistResponse)
+	_ = response.Body.Close()
+	if response.StatusCode != http.StatusOK || decodeErr != nil || len(checklistResponse.Items) != 1 || checklistResponse.Items[0].ID == "" {
+		t.Fatalf("reopened Checklist status=%d decode=%v value=%#v", response.StatusCode, decodeErr, checklistResponse)
 	}
 }
 

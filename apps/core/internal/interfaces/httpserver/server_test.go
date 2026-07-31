@@ -12,8 +12,13 @@ import (
 	"testing/fstest"
 	"time"
 
+	checklistapp "github.com/gofurry/corvus-studio/apps/core/internal/application/checklist"
 	projectapp "github.com/gofurry/corvus-studio/apps/core/internal/application/project"
+	releaseapp "github.com/gofurry/corvus-studio/apps/core/internal/application/release"
+	checklistdomain "github.com/gofurry/corvus-studio/apps/core/internal/domain/checklist"
 	projectdomain "github.com/gofurry/corvus-studio/apps/core/internal/domain/project"
+	releasedomain "github.com/gofurry/corvus-studio/apps/core/internal/domain/release"
+	templatedomain "github.com/gofurry/corvus-studio/apps/core/internal/domain/template"
 	"go.uber.org/zap"
 )
 
@@ -43,6 +48,39 @@ type cancelledDirectoryPicker struct{}
 
 func (cancelledDirectoryPicker) Select(context.Context) (string, bool, error) {
 	return "", false, nil
+}
+
+type emptyReleases struct{}
+
+func (emptyReleases) Create(context.Context, releaseapp.CreateCommand) (releasedomain.Goal, error) {
+	return releasedomain.Goal{}, errors.New("not implemented in this test")
+}
+func (emptyReleases) Get(context.Context, releasedomain.ID) (releasedomain.Goal, error) {
+	return releasedomain.Goal{}, releasedomain.ErrNotFound
+}
+func (emptyReleases) ListByProject(context.Context, projectdomain.ID) ([]releasedomain.Goal, error) {
+	return []releasedomain.Goal{}, nil
+}
+func (emptyReleases) Transition(context.Context, releasedomain.ID, releasedomain.Status) (releasedomain.Goal, error) {
+	return releasedomain.Goal{}, errors.New("not implemented in this test")
+}
+func (emptyReleases) LatestTemplate(string) (templatedomain.Definition, error) {
+	return templatedomain.Definition{}, templatedomain.ErrNotFound
+}
+
+type emptyChecklist struct{}
+
+func (emptyChecklist) Create(context.Context, checklistapp.CreateCommand) (checklistdomain.Item, error) {
+	return checklistdomain.Item{}, errors.New("not implemented in this test")
+}
+func (emptyChecklist) Get(context.Context, checklistdomain.ID) (checklistdomain.Item, error) {
+	return checklistdomain.Item{}, checklistdomain.ErrNotFound
+}
+func (emptyChecklist) List(context.Context, releasedomain.ID, checklistdomain.Filter) ([]checklistdomain.Item, error) {
+	return []checklistdomain.Item{}, nil
+}
+func (emptyChecklist) Transition(context.Context, checklistdomain.ID, checklistdomain.Status) (checklistdomain.Item, error) {
+	return checklistdomain.Item{}, errors.New("not implemented in this test")
 }
 
 func TestHealthHandlerReportsReady(t *testing.T) {
@@ -164,6 +202,8 @@ func testDependencies(health HealthChecker, assets fs.FS) Dependencies {
 		Health:          health,
 		DirectoryPicker: cancelledDirectoryPicker{},
 		Projects:        emptyProjects{},
+		Releases:        emptyReleases{},
+		Checklist:       emptyChecklist{},
 		Logger:          zap.NewNop(),
 		WebAssets:       assets,
 	}

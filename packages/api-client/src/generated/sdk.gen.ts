@@ -12,6 +12,9 @@ import type {
   ListProjectsData,
   ListProjectsErrors,
   ListProjectsResponses,
+  SelectDirectoryData,
+  SelectDirectoryErrors,
+  SelectDirectoryResponses,
 } from './types.gen';
 
 export type Options<
@@ -31,6 +34,21 @@ export type Options<
    */
   meta?: keyof ClientMeta extends never ? Record<string, unknown> : ClientMeta;
 };
+
+/**
+ * Open the native directory picker
+ */
+export const selectDirectory = <ThrowOnError extends boolean = false>(
+  options: Options<SelectDirectoryData, ThrowOnError>,
+): RequestResult<SelectDirectoryResponses, SelectDirectoryErrors, ThrowOnError> =>
+  (options.client ?? client).post<SelectDirectoryResponses, SelectDirectoryErrors, ThrowOnError>({
+    url: '/api/v1/system/select-directory',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
 
 /**
  * List projects

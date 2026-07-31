@@ -215,9 +215,10 @@ func (service *fakeProjectService) List(context.Context) ([]projectdomain.Projec
 func newProjectTestServer(t *testing.T, projects ProjectService) *Server {
 	t.Helper()
 	server, err := New(Dependencies{
-		Health:   fakeHealth{version: 2},
-		Projects: projects,
-		Logger:   zap.NewNop(),
+		Health:          fakeHealth{version: 2},
+		DirectoryPicker: cancelledDirectoryPicker{},
+		Projects:        projects,
+		Logger:          zap.NewNop(),
 	})
 	if err != nil {
 		t.Fatalf("new server: %v", err)

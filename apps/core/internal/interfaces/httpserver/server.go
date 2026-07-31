@@ -24,18 +24,24 @@ type HealthChecker interface {
 	SchemaVersion() int64
 }
 
+type DirectoryPicker interface {
+	Select(context.Context) (path string, selected bool, err error)
+}
+
 type Server struct {
-	echo     *echo.Echo
-	health   HealthChecker
-	projects ProjectService
-	logger   *zap.Logger
+	echo            *echo.Echo
+	health          HealthChecker
+	directoryPicker DirectoryPicker
+	projects        ProjectService
+	logger          *zap.Logger
 }
 
 type Dependencies struct {
-	Health    HealthChecker
-	Projects  ProjectService
-	Logger    *zap.Logger
-	WebAssets fs.FS
+	Health          HealthChecker
+	DirectoryPicker DirectoryPicker
+	Projects        ProjectService
+	Logger          *zap.Logger
+	WebAssets       fs.FS
 }
 
 func New(dependencies Dependencies) (*Server, error) {
@@ -45,6 +51,9 @@ func New(dependencies Dependencies) (*Server, error) {
 	if dependencies.Projects == nil {
 		return nil, errors.New("project service is required")
 	}
+	if dependencies.DirectoryPicker == nil {
+		return nil, errors.New("directory picker is required")
+	}
 	if dependencies.Logger == nil {
 		dependencies.Logger = zap.NewNop()
 	}
@@ -52,12 +61,14 @@ func New(dependencies Dependencies) (*Server, error) {
 	e := echo.New()
 	e.Use(middleware.Recover())
 	server := &Server{
-		echo:     e,
-		health:   dependencies.Health,
-		projects: dependencies.Projects,
-		logger:   dependencies.Logger,
+		echo:            e,
+		health:          dependencies.Health,
+		directoryPicker: dependencies.DirectoryPicker,
+		projects:        dependencies.Projects,
+		logger:          dependencies.Logger,
 	}
 	e.GET("/healthz", server.healthHandler)
+	e.POST("/api/v1/system/select-directory", server.selectDirectoryHandler)
 	e.GET("/api/v1/projects", server.listProjectsHandler)
 	e.POST("/api/v1/projects", server.createProjectHandler)
 	e.GET("/api/v1/projects/:project_id", server.getProjectHandler)

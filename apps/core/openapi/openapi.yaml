@@ -4,6 +4,31 @@ info:
   version: 0.1.0
   description: Local-first API exposed by the Corvus Studio Core runtime.
 paths:
+  /api/v1/system/select-directory:
+    post:
+      operationId: selectDirectory
+      summary: Open the native directory picker
+      tags:
+        - System
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SelectDirectoryRequest"
+      responses:
+        "200":
+          description: Directory selection completed or was cancelled by the user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SelectDirectoryResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "503":
+          $ref: "#/components/responses/DirectoryPickerUnavailable"
+        "500":
+          $ref: "#/components/responses/InternalError"
   /api/v1/projects:
     get:
       operationId: listProjects
@@ -96,6 +121,12 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
+    DirectoryPickerUnavailable:
+      description: The Core host cannot open a native directory picker.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
     InternalError:
       description: Core could not complete the request.
       content:
@@ -115,6 +146,31 @@ components:
       enum:
         - active
         - archived
+    DirectoryPickerPurpose:
+      type: string
+      enum:
+        - project_location
+    SelectDirectoryRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - purpose
+      properties:
+        purpose:
+          $ref: "#/components/schemas/DirectoryPickerPurpose"
+    SelectDirectoryResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - selected
+        - path
+      properties:
+        selected:
+          type: boolean
+        path:
+          type: string
+          nullable: true
+          description: Absolute directory path on the Core host, or null when cancelled.
     CreateProjectRequest:
       type: object
       additionalProperties: false
@@ -211,6 +267,7 @@ components:
             - validation_failed
             - project_not_found
             - project_location_conflict
+            - directory_picker_unavailable
             - internal_error
         message:
           type: string

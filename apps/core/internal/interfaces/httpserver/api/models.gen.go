@@ -9,17 +9,35 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for DirectoryPickerPurpose.
+const (
+	ProjectLocation DirectoryPickerPurpose = "project_location"
+)
+
+// Valid indicates whether the value is a known member of the DirectoryPickerPurpose enum.
+func (e DirectoryPickerPurpose) Valid() bool {
+	switch e {
+	case ProjectLocation:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ErrorCode.
 const (
-	ErrorCodeInternalError           ErrorCode = "internal_error"
-	ErrorCodeProjectLocationConflict ErrorCode = "project_location_conflict"
-	ErrorCodeProjectNotFound         ErrorCode = "project_not_found"
-	ErrorCodeValidationFailed        ErrorCode = "validation_failed"
+	ErrorCodeDirectoryPickerUnavailable ErrorCode = "directory_picker_unavailable"
+	ErrorCodeInternalError              ErrorCode = "internal_error"
+	ErrorCodeProjectLocationConflict    ErrorCode = "project_location_conflict"
+	ErrorCodeProjectNotFound            ErrorCode = "project_not_found"
+	ErrorCodeValidationFailed           ErrorCode = "validation_failed"
 )
 
 // Valid indicates whether the value is a known member of the ErrorCode enum.
 func (e ErrorCode) Valid() bool {
 	switch e {
+	case ErrorCodeDirectoryPickerUnavailable:
+		return true
 	case ErrorCodeInternalError:
 		return true
 	case ErrorCodeProjectLocationConflict:
@@ -87,6 +105,9 @@ type CreateProjectRequest struct {
 	SteamAppId *int64       `json:"steam_app_id,omitempty"`
 }
 
+// DirectoryPickerPurpose defines model for DirectoryPickerPurpose.
+type DirectoryPickerPurpose string
+
 // Error defines model for Error.
 type Error struct {
 	Code        ErrorCode `json:"code"`
@@ -127,6 +148,21 @@ type ProjectStage string
 // ProjectStatus defines model for ProjectStatus.
 type ProjectStatus string
 
+// SelectDirectoryRequest defines model for SelectDirectoryRequest.
+type SelectDirectoryRequest struct {
+	Purpose DirectoryPickerPurpose `json:"purpose"`
+}
+
+// SelectDirectoryResponse defines model for SelectDirectoryResponse.
+type SelectDirectoryResponse struct {
+	// Path Absolute directory path on the Core host, or null when cancelled.
+	Path     *string `json:"path"`
+	Selected bool    `json:"selected"`
+}
+
+// DirectoryPickerUnavailable defines model for DirectoryPickerUnavailable.
+type DirectoryPickerUnavailable = ErrorResponse
+
 // InternalError defines model for InternalError.
 type InternalError = ErrorResponse
 
@@ -141,3 +177,6 @@ type ValidationError = ErrorResponse
 
 // CreateProjectJSONRequestBody defines body for CreateProject for application/json ContentType.
 type CreateProjectJSONRequestBody = CreateProjectRequest
+
+// SelectDirectoryJSONRequestBody defines body for SelectDirectory for application/json ContentType.
+type SelectDirectoryJSONRequestBody = SelectDirectoryRequest

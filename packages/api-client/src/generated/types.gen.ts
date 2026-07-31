@@ -8,6 +8,20 @@ export type ProjectStage = 'concept' | 'development' | 'release_preparation' | '
 
 export type ProjectStatus = 'active' | 'archived';
 
+export type DirectoryPickerPurpose = 'project_location';
+
+export type SelectDirectoryRequest = {
+  purpose: DirectoryPickerPurpose;
+};
+
+export type SelectDirectoryResponse = {
+  selected: boolean;
+  /**
+   * Absolute directory path on the Core host, or null when cancelled.
+   */
+  path: string | null;
+};
+
 export type CreateProjectRequest = {
   name: string;
   description?: string;
@@ -38,7 +52,12 @@ export type ProjectList = {
 };
 
 export type Error = {
-  code: 'validation_failed' | 'project_not_found' | 'project_location_conflict' | 'internal_error';
+  code:
+    | 'validation_failed'
+    | 'project_not_found'
+    | 'project_location_conflict'
+    | 'directory_picker_unavailable'
+    | 'internal_error';
   message: string;
   recoverable: boolean;
 };
@@ -46,6 +65,39 @@ export type Error = {
 export type ErrorResponse = {
   error: Error;
 };
+
+export type SelectDirectoryData = {
+  body: SelectDirectoryRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/system/select-directory';
+};
+
+export type SelectDirectoryErrors = {
+  /**
+   * Request validation failed.
+   */
+  400: ErrorResponse;
+  /**
+   * Core could not complete the request.
+   */
+  500: ErrorResponse;
+  /**
+   * The Core host cannot open a native directory picker.
+   */
+  503: ErrorResponse;
+};
+
+export type SelectDirectoryError = SelectDirectoryErrors[keyof SelectDirectoryErrors];
+
+export type SelectDirectoryResponses = {
+  /**
+   * Directory selection completed or was cancelled by the user.
+   */
+  200: SelectDirectoryResponse;
+};
+
+export type SelectDirectoryResponse2 = SelectDirectoryResponses[keyof SelectDirectoryResponses];
 
 export type ListProjectsData = {
   body?: never;

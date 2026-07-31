@@ -7,6 +7,7 @@ import (
 
 	projectapp "github.com/gofurry/corvus-studio/apps/core/internal/application/project"
 	"github.com/gofurry/corvus-studio/apps/core/internal/infrastructure/config"
+	"github.com/gofurry/corvus-studio/apps/core/internal/infrastructure/directorypicker"
 	"github.com/gofurry/corvus-studio/apps/core/internal/infrastructure/logging"
 	"github.com/gofurry/corvus-studio/apps/core/internal/infrastructure/projectpath"
 	"github.com/gofurry/corvus-studio/apps/core/internal/infrastructure/storage"
@@ -64,10 +65,11 @@ func Run(ctx context.Context, cfg config.Config) (runErr error) {
 		return fmt.Errorf("load embedded Web UI: %w", err)
 	}
 	server, err := httpserver.New(httpserver.Dependencies{
-		Health:    store,
-		Projects:  projectService,
-		Logger:    logger,
-		WebAssets: assets,
+		Health:          store,
+		DirectoryPicker: directorypicker.New(),
+		Projects:        projectService,
+		Logger:          logger,
+		WebAssets:       assets,
 	})
 	if err != nil {
 		return fmt.Errorf("initialize HTTP server: %w", err)

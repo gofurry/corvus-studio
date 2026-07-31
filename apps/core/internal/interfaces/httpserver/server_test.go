@@ -39,6 +39,12 @@ func (emptyProjects) List(context.Context) ([]projectdomain.Project, error) {
 	return []projectdomain.Project{}, nil
 }
 
+type cancelledDirectoryPicker struct{}
+
+func (cancelledDirectoryPicker) Select(context.Context) (string, bool, error) {
+	return "", false, nil
+}
+
 func TestHealthHandlerReportsReady(t *testing.T) {
 	server, err := New(testDependencies(fakeHealth{version: 1}, nil))
 	if err != nil {
@@ -155,9 +161,10 @@ var _ fs.FS = fstest.MapFS{}
 
 func testDependencies(health HealthChecker, assets fs.FS) Dependencies {
 	return Dependencies{
-		Health:    health,
-		Projects:  emptyProjects{},
-		Logger:    zap.NewNop(),
-		WebAssets: assets,
+		Health:          health,
+		DirectoryPicker: cancelledDirectoryPicker{},
+		Projects:        emptyProjects{},
+		Logger:          zap.NewNop(),
+		WebAssets:       assets,
 	}
 }

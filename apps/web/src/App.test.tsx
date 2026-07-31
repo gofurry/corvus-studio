@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import App from './App';
 import { projectsApi, type Project } from './api/projects';
+import { systemApi } from './api/system';
 
 vi.mock('./api/projects', () => ({
   projectsApi: {
@@ -14,7 +15,14 @@ vi.mock('./api/projects', () => ({
   },
 }));
 
+vi.mock('./api/system', () => ({
+  systemApi: {
+    selectProjectDirectory: vi.fn(),
+  },
+}));
+
 const mockedProjectsApi = vi.mocked(projectsApi);
+const mockedSystemApi = vi.mocked(systemApi);
 
 describe('Project application', () => {
   beforeEach(() => {
@@ -70,6 +78,32 @@ describe('Project application', () => {
     });
     expect(await screen.findByRole('heading', { name: project.name })).toBeInTheDocument();
     expect(mockedProjectsApi.get).not.toHaveBeenCalled();
+  });
+
+  it('fills Project location from the native directory picker', async () => {
+    mockedSystemApi.selectProjectDirectory.mockResolvedValue('C:\\Games\\Selected');
+    renderApp('/projects/new');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Browse' }));
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Project location')).toHaveValue('C:\\Games\\Selected');
+    });
+    expect(mockedSystemApi.selectProjectDirectory).toHaveBeenCalledOnce();
+  });
+
+  it('keeps manual entry available when the directory picker fails', async () => {
+    mockedSystemApi.selectProjectDirectory.mockRejectedValue(
+      new Error('Native directory picker is unavailable'),
+    );
+    renderApp('/projects/new');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Browse' }));
+
+    expect(await screen.findByText('Directory picker unavailable')).toBeInTheDocument();
+    const locationInput = screen.getByLabelText('Project location');
+    fireEvent.change(locationInput, { target: { value: 'C:\\Games\\Manual' } });
+    expect(locationInput).toHaveValue('C:\\Games\\Manual');
   });
 
   it('reloads a direct Project detail URL from Core', async () => {

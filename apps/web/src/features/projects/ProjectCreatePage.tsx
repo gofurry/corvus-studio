@@ -14,6 +14,7 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 
 import { projectsApi, type CreateProjectRequest, type ProjectStage } from '../../api/projects';
+import { systemApi } from '../../api/system';
 import { projectStageLabels } from './projectPresentation';
 import { projectQueryKeys } from './projectQueries';
 
@@ -25,12 +26,22 @@ const stageOptions = (Object.keys(projectStageLabels) as ProjectStage[]).map((va
 function ProjectCreatePage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [form] = Form.useForm<CreateProjectRequest>();
   const createProject = useMutation({
     mutationFn: projectsApi.create,
     onSuccess: async (project) => {
       await queryClient.invalidateQueries({ queryKey: projectQueryKeys.all });
       queryClient.setQueryData(projectQueryKeys.detail(project.id), project);
       navigate(`/projects/${project.id}`);
+    },
+  });
+  const selectDirectory = useMutation({
+    mutationFn: systemApi.selectProjectDirectory,
+    onSuccess: (path) => {
+      if (path !== null) {
+        form.setFieldValue('location', path);
+        form.validateFields(['location']).catch(() => undefined);
+      }
     },
   });
 
@@ -57,7 +68,17 @@ function ProjectCreatePage() {
             description={createProject.error.message}
           />
         ) : null}
+        {selectDirectory.isError ? (
+          <Alert
+            className="form-alert"
+            type="warning"
+            showIcon
+            title="Directory picker unavailable"
+            description={`${selectDirectory.error.message}. You can still enter an absolute path manually.`}
+          />
+        ) : null}
         <Form<CreateProjectRequest>
+          form={form}
           layout="vertical"
           initialValues={{ language: 'English', stage: 'concept' }}
           onFinish={(values) => createProject.mutate(values)}
@@ -85,11 +106,32 @@ function ProjectCreatePage() {
 
           <Form.Item
             label="Project location"
-            name="location"
-            extra="Enter an existing absolute directory on this computer."
-            rules={[{ required: true, whitespace: true, message: 'Enter an absolute directory' }]}
+            htmlFor="project-location"
+            required
+            extra="Choose an existing directory, or enter its absolute path manually."
           >
-            <Input placeholder="C:\Games\Raven or /home/me/games/raven" />
+            <Space.Compact block>
+              <Form.Item
+                name="location"
+                noStyle
+                rules={[
+                  {
+                    required: true,
+                    whitespace: true,
+                    message: 'Choose or enter an absolute directory',
+                  },
+                ]}
+              >
+                <Input id="project-location" placeholder="C:\Games\Raven or /home/me/games/raven" />
+              </Form.Item>
+              <Button
+                htmlType="button"
+                loading={selectDirectory.isPending}
+                onClick={() => selectDirectory.mutate()}
+              >
+                Browse
+              </Button>
+            </Space.Compact>
           </Form.Item>
 
           <Flex gap="middle" wrap>

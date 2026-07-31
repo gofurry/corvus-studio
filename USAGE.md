@@ -1,12 +1,12 @@
 # Corvus Studio Usage & Development Guide
 
-> 文档状态：Phase 1 本地实现与验证说明；远端三平台 CI 证据待当前提交推送后补齐\
+> 文档状态：Phase 1 已完成；当前 Core Runtime 与三平台验证说明\
 > 项目：Corvus Studio\
 > 用途：Core Runtime、本地开发、验证命令和后续 Phase 边界
 
 ## 1. 当前实现状态
 
-Corvus Studio 已完成 Phase 0，并完成了 Phase 1 Core Runtime 的本地实现：
+Corvus Studio 已完成 Phase 0 和 Phase 1 Core Runtime：
 
 - `corvus serve` 长期运行命令；
 - Viper 配置文件、环境变量和 CLI 覆盖；
@@ -16,7 +16,7 @@ Corvus Studio 已完成 Phase 0，并完成了 Phase 1 Core Runtime 的本地实
 - Vite 开发代理与可选的生产 Web 嵌入构建；
 - Core 配置、日志、存储、HTTP 和生命周期测试。
 
-当前提交尚未推送，因此不能声称这一版 Windows、macOS、Linux GitHub Actions 已通过。CI 定义已包含三平台 Core 测试与构建。
+GitHub Actions [run 30611808221](https://github.com/gofurry/corvus-studio/actions/runs/30611808221) 已针对 Phase 1 修正提交 `59a478c` 通过 Go quality、Frontend quality、Ubuntu、macOS 和 Windows 原生任务。
 
 仍未实现：Project、Release Goal、Checklist、Resource、Deliverable、Steam 模板、Asset Map、Watch、OpenAPI 业务接口、SSE、ADK Agent、模型 Provider、登录鉴权、Docker、systemd、安装包、签名、公证和自动更新。
 

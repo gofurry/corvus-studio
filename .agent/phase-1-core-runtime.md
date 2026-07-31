@@ -361,8 +361,8 @@ Phase 1 is complete only when evidence proves all of the following:
 - [x] 2026-07-29 19:16 +08:00 — Milestone 3: pinned Echo v5.3.1 and Cobra v1.10.2; replaced the bootstrap with `corvus serve`; composed config, rotating structured logs, migrated SQLite, readiness HTTP, and graceful context shutdown; added `/healthz`, Vite development proxies, atomic Web staging, tagged `go:embed` SPA delivery, cache rules, and package/integration tests. Default and tagged Core tests passed, official golangci-lint v2.12.2 reported zero issues, frontend format/lint/test/build passed, the embedded binary built, and a real Windows process returned `{"status":"ok","database":"ok","schema_version":1}` while creating its database and log.
 - [x] Milestone 3 — Echo, Cobra, lifecycle, and Web delivery.
 - [x] 2026-07-29 — Milestone 4 local work: CI now verifies sqlc drift, the tagged embedded Core, and native Core tests; README/USAGE/roadmap match the implemented runtime and Phase boundary. Windows local evidence passed gofmt over 27 files, sqlc generate/vet/drift, all three Go modules, official golangci-lint v2.12.2, frozen pnpm install, frontend format/lint/test/build, tagged Core tests, default/tagged Core builds, Launcher build, live readiness, live embedded index delivery, cache behavior, policy-file audit, and Phase 2 symbol/schema/route audit.
-- [ ] Remote evidence: push the Phase 1 commits and record one successful GitHub Actions run covering Go quality, frontend quality, Linux, macOS, and Windows before marking the phase complete.
-- [ ] Milestone 4 — CI, documentation, and final audit.
+- [x] 2026-07-31 — Remote evidence: GitHub Actions run `30611808221` passed Go quality, Frontend quality, Ubuntu, macOS, and Windows against commit `59a478c`.
+- [x] Milestone 4 — CI, documentation, and final audit.
 
 ### Surprises & Discoveries
 
@@ -372,6 +372,7 @@ Phase 1 is complete only when evidence proves all of the following:
 - Initial downloads from the configured `goproxy.cn` failed twice for the large modernc archive (HTTP/2 internal error and unexpected EOF), and the official Go proxy was unreachable over the host's IPv6 route. A direct upstream module download succeeded; smaller transitive modules then resolved through the configured proxy. No proxy setting was committed.
 - modernc SQLite v1.55.0 declares `modernc.org/libc` v1.74.3, but Go reports that version retracted by its author for a name-resolution lock leak/deadlock fixed in v1.74.4. The minimal fixed indirect patch was pinned. A later full-graph retraction audit was inconclusive because the configured checksum proxy returned HTTP 504 while checking an unrelated module; selected runtime/tool modules remain explicitly verified.
 - Windows process smoke used the built tagged binary rather than `go run`, so the recorded PID was the actual Core process. Package-level lifecycle tests supplied deterministic graceful-cancellation evidence; the smoke process was force-stopped only after its health/database/log observations were captured.
+- The first Phase 1 remote run (`30610942309`) exposed a macOS-only `EBADF` from calling `Sync` on `/dev/stderr`; all other jobs passed. Commit `59a478c` made the console sink write-only with a no-op Zap sync while retaining file close errors, and added a regression test that fails if the console's underlying `Sync` is called.
 
 ### Decision Log
 
@@ -382,10 +383,11 @@ Phase 1 is complete only when evidence proves all of the following:
 - **2026-07-29 — Accepted:** override only the retracted indirect `modernc.org/libc` v1.74.3 with its author-designated v1.74.4 fix while retaining modernc SQLite v1.55.0.
 - **2026-07-29 — Accepted:** create local commits after each validated milestone and do not push without explicit user authorization.
 - **2026-07-29 — Accepted:** allow Vite's Core proxy target to be overridden with `CORVUS_CORE_URL`, while retaining `http://127.0.0.1:8765` as the zero-configuration development default.
-- **2026-07-29 — Accepted:** keep roadmap and ExecPlan completion at 95%/in progress until this revision has actual three-platform GitHub Actions evidence; Phase 0's earlier successful run is not reusable as Phase 1 evidence.
+- **2026-07-29 — Accepted:** keep roadmap and ExecPlan incomplete until this revision has actual three-platform GitHub Actions evidence; Phase 0's earlier successful run is not reusable as Phase 1 evidence.
+- **2026-07-31 — Accepted:** do not broadly ignore macOS `EBADF`; prevent terminal syncing at the sink boundary so genuine logger/file close errors remain observable.
 
 ### Outcomes & Retrospective
 
-The Phase 1 implementation is complete and validated locally on Windows. Core now has a real loopback-only runtime, deterministic configuration, structured rotating logs, pure-Go SQLite with guarded embedded migrations, a sqlc boundary, readiness HTTP, graceful lifecycle handling, and both development-proxy and tagged embedded-Web delivery paths. No Phase 2+ domain or product route was introduced.
+Phase 1 is complete. Core now has a real loopback-only runtime, deterministic configuration, structured rotating logs, pure-Go SQLite with guarded embedded migrations, a sqlc boundary, readiness HTTP, graceful lifecycle handling, and both development-proxy and tagged embedded-Web delivery paths. No Phase 2+ domain or product route was introduced.
 
-The only remaining completion gate is external evidence: these local commits must be pushed and the resulting GitHub Actions Go quality, frontend quality, Linux, macOS, and Windows jobs must all succeed. Until that happens, the roadmap remains at 95% and Phase 1 is not represented as fully complete.
+Local Windows validation passed the full Go/frontend generation, format, lint, test, build, process-smoke, embedded-Web, policy, and phase-boundary matrix. GitHub Actions run `30611808221` then passed Go quality, Frontend quality, Ubuntu, macOS, and Windows against the macOS-safe logging revision `59a478c`. The repository is ready to plan Phase 2 without carrying an open Phase 1 gate.

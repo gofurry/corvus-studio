@@ -1,6 +1,6 @@
 # Corvus Studio
 
-Corvus Studio is a local-first workspace for preparing independent game releases. Phase 1 now has a working local Core runtime: configuration, structured logs, SQLite migrations, a readiness endpoint, graceful shutdown, and an optional embedded React build are implemented. Remote Windows/macOS/Linux CI evidence for this Phase 1 revision remains pending until the local commits are pushed.
+Corvus Studio is a local-first workspace for preparing independent game releases. Phase 1 is complete: configuration, structured logs, SQLite migrations, a readiness endpoint, graceful shutdown, and an optional embedded React build are implemented. The current Core revision is verified on Windows, macOS, and Linux by [GitHub Actions run 30611808221](https://github.com/gofurry/corvus-studio/actions/runs/30611808221).
 
 Product domains are intentionally absent. Project, Release Goal, Checklist, Resource, Deliverable, Steam templates, Asset Map, Agent/ADK, authentication, SSE, and OpenAPI business APIs begin in later phases.
 

@@ -40,6 +40,12 @@ jobs:
             exit 1
           fi
 
+      - name: Verify OpenAPI Go model generation
+        working-directory: apps/core
+        run: |
+          go tool oapi-codegen -config openapi/oapi-codegen.yaml openapi/openapi.yaml
+          git diff --exit-code -- internal/interfaces/httpserver/api
+
       - name: Verify sqlc generation
         working-directory: apps/core
         run: |
@@ -86,6 +92,11 @@ jobs:
 
       - name: Install frontend dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Verify TypeScript API client generation
+        run: |
+          pnpm --filter @corvus-studio/api-client generate
+          git diff --exit-code -- packages/api-client/src/generated
 
       - name: Check frontend formatting
         run: pnpm format:check

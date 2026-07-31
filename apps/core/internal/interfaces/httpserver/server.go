@@ -43,7 +43,7 @@ func New(dependencies Dependencies) (*Server, error) {
 		return nil, errors.New("health checker is required")
 	}
 	if dependencies.Projects == nil {
-		return nil, errors.New("Project service is required")
+		return nil, errors.New("project service is required")
 	}
 	if dependencies.Logger == nil {
 		dependencies.Logger = zap.NewNop()

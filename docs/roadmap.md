@@ -20,7 +20,7 @@
 | ------------------------------ | -------------- | -----: | ---------------------------------------------------------------------- |
 | Phase 0 — Repository Bootstrap | ✅ Completed   |   100% | Monorepo、三 Go module、pnpm workspace、最小应用骨架和三平台 CI 已验证 |
 | Phase 1 — Core Runtime         | ✅ Completed   |   100% | Core runtime、本地验证及 Windows、macOS、Linux CI 均已通过             |
-| Phase 2 — Project Foundation   | 🚧 In progress |     5% | ExecPlan 已确认，开始建立第一个端到端业务闭环                          |
+| Phase 2 — Project Foundation   | 🚧 In progress |    95% | 本地业务闭环与验收已完成；等待当前提交的远端三平台 CI                  |
 | Phase 3 — Release + Checklist  | ⬜ Not started |     0% | 建立 Steam 发布目标与任务闭环                                          |
 | Phase 4A — Resource            | ⬜ Not started |     0% | 建立素材与引用管理                                                     |
 | Phase 4B — Deliverable         | ⬜ Not started |     0% | 建立交付物及其与任务、资源的关系                                       |
@@ -110,19 +110,27 @@
 
 **重点：** Project Domain、持久化、OpenAPI First 接口和最小 Project 页面。
 
-**计划任务：**
+**已完成任务：**
 
-- [ ] 定义 Project 领域模型、UUIDv7 标识、校验规则和错误语义。
-- [ ] 添加 Project schema/migration、repository 和 service 层。
-- [ ] 先更新 OpenAPI 合约，再实现 Project API 与生成客户端。
-- [ ] 实现项目创建、项目列表和打开项目的最小 Web 流程。
-- [ ] 覆盖领域、存储、API 和前端交互测试。
+- [x] 定义 Project 领域模型、UUIDv7 标识、校验规则和错误语义。
+- [x] 添加 Project schema/migration、repository 和 service 层。
+- [x] 先更新 OpenAPI 合约，再实现 Project API 与生成客户端。
+- [x] 实现项目创建、项目列表和打开项目的最小 Web 流程。
+- [x] 覆盖领域、存储、API 和前端交互测试。
 
 **验收门槛：**
 
-- [ ] 用户可创建项目、重启 Core，并从本地存储重新打开该项目。
-- [ ] OpenAPI、服务实现和客户端不存在未解释的漂移。
-- [ ] 失败输入不会留下半创建项目或损坏本地状态。
+- [x] Windows 本地实进程验证可创建项目、重启 Core，并从同一 SQLite 重新打开项目。
+- [x] OpenAPI、Go models、sqlc 和 TypeScript client 重新生成后不存在漂移。
+- [x] 自动化测试验证失败输入和重复目录不会留下半创建项目或修改目标目录。
+- [ ] 当前 Phase 2 提交在 GitHub Actions 的 Go/frontend quality 及 Windows、macOS、Linux 原生任务中通过。
+
+**当前证据：**
+
+- 里程碑提交：`88ebc3a`、`2fe1ff6`、`b1a9925`、`670522d`、`6f9ffcd`；最终 CI/文档由本阶段最后一个本地提交承载。
+- Windows 本地通过 OpenAPI/sqlc/TypeScript client 生成漂移检查、40 个 Go 文件格式检查、三个 module 测试、Go vet、golangci-lint v2.12.2、7 个 Web 交互测试、frontend lint/build、默认及嵌入式 Core build 和 Launcher build。
+- 实进程 smoke 创建 UUIDv7 Project，重启同一 Core 后 list/get 仍返回同一记录；嵌入式 `/projects/:id` 刷新返回 `200`，被引用目录保持空目录。
+- Phase 2 未推送，历史 [GitHub Actions run 30611808221](https://github.com/gofurry/corvus-studio/actions/runs/30611808221) 仅是 Phase 1 证据。
 
 ### Phase 3 — Release + Checklist
 

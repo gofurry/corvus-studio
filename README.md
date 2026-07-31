@@ -1,26 +1,30 @@
 # Corvus Studio
 
-Corvus Studio is a local-first workspace for preparing independent game releases. Phase 1 is complete: configuration, structured logs, SQLite migrations, a readiness endpoint, graceful shutdown, and an optional embedded React build are implemented. The current Core revision is verified on Windows, macOS, and Linux by [GitHub Actions run 30611808221](https://github.com/gofurry/corvus-studio/actions/runs/30611808221).
+Corvus Studio is a local-first workspace for preparing independent game releases. Phase 2 now has a complete local Project foundation: developers can create, list, and reopen projects through Core and Web, with durable SQLite storage and an OpenAPI-first client boundary. Phase 2 remains in progress until these commits pass the remote Windows, macOS, and Linux workflow; [GitHub Actions run 30611808221](https://github.com/gofurry/corvus-studio/actions/runs/30611808221) is the latest completed remote evidence for Phase 1.
 
-Product domains are intentionally absent. Project, Release Goal, Checklist, Resource, Deliverable, Steam templates, Asset Map, Agent/ADK, authentication, SSE, and OpenAPI business APIs begin in later phases.
+Project editing, deletion, and archiving are intentionally absent. Release Goal, Checklist, Resource, Deliverable, Steam templates, Asset Map, Agent/ADK, authentication, SSE, and system file-manager integration remain later-phase work.
 
 ## What works
 
 - A Go workspace with separate `apps/core`, `apps/launcher`, and `agent` modules.
 - `corvus serve`, backed by Cobra, Viper, Zap/lumberjack, Echo v5, modernc SQLite, embedded goose migrations, and sqlc-generated queries.
 - Loopback-only `GET /healthz` readiness on `127.0.0.1:8765` by default.
-- A React 19, TypeScript, and Vite 8 Web shell with a development proxy and a tagged production embedding path.
+- OpenAPI-first `POST /api/v1/projects`, `GET /api/v1/projects`, and `GET /api/v1/projects/{project_id}` endpoints.
+- A Project domain and repository with UUIDv7 identifiers, validated existing-directory locations, and restart persistence.
+- A generated Go model boundary and generated TypeScript Fetch client sourced from the same OpenAPI document.
+- A React 19, TypeScript, Vite 8, Ant Design, React Router, and TanStack Query flow for project creation, listing, and details.
+- A Vite development proxy and tagged production embedding path with SPA route fallback.
 - A minimal Fyne launcher window with no product UI or Core process management.
 - GitHub Actions definitions for Go/frontend quality and native Windows, macOS, and Linux Core tests/builds.
 
 ## Repository map
 
 ```text
-apps/core/       Go Core runtime, migrations, queries, and Web embedding boundary
-apps/web/        React/Vite Web application shell
+apps/core/       Core runtime, Project domain/API, OpenAPI, migrations, and Web embedding
+apps/web/        React/Vite Project application
 apps/launcher/   Minimal Fyne launcher shell
 agent/           Reserved Agent Go module boundary
-packages/        Reserved shared TypeScript package boundaries
+packages/        Generated API client plus reserved shared TypeScript boundaries
 configs/         Repository-wide configuration boundary
 deployments/     Future deployment boundary; no deployment implementation
 scripts/         Future portable automation boundary
@@ -53,10 +57,13 @@ Run commands from the repository root.
 pnpm install --frozen-lockfile
 
 Push-Location .\apps\core
+go tool oapi-codegen -config openapi/oapi-codegen.yaml openapi/openapi.yaml
 go tool sqlc generate
 go tool sqlc vet
 Pop-Location
-git diff --exit-code -- apps/core/internal/infrastructure/storage/sqlc
+
+pnpm --filter @corvus-studio/api-client generate
+git diff --exit-code -- apps/core/internal/interfaces/httpserver/api apps/core/internal/infrastructure/storage/sqlc packages/api-client/src/generated
 
 go test ./apps/core/... ./apps/launcher/... ./agent/...
 golangci-lint run ./apps/core/... ./apps/launcher/... ./agent/...
@@ -85,6 +92,28 @@ pnpm dev:web
 
 Vite proxies `/api` and `/healthz` to Core. Set `CORVUS_CORE_URL` before starting Vite when Core uses a different loopback port.
 
+Open `http://localhost:5173/projects`. The create form accepts an existing absolute directory and only records its normalized identity; Corvus does not create, move, or write files inside that directory. Opening a project means navigating to its Corvus detail page.
+
+The same flow is available through the API:
+
+```powershell
+$projectLocation = (Resolve-Path .).Path
+$projectBody = @{
+  name = 'Corvus Studio'
+  description = 'Local Phase 2 smoke project'
+  location = $projectLocation
+  language = 'English'
+  stage = 'concept'
+} | ConvertTo-Json
+
+$project = Invoke-RestMethod -Method Post `
+  -Uri http://127.0.0.1:8765/api/v1/projects `
+  -ContentType 'application/json' `
+  -Body $projectBody
+Invoke-RestMethod http://127.0.0.1:8765/api/v1/projects
+Invoke-RestMethod "http://127.0.0.1:8765/api/v1/projects/$($project.id)"
+```
+
 To validate production Web embedding:
 
 ```powershell
@@ -104,12 +133,12 @@ Configuration precedence is `CLI > CORVUS_* environment variables > YAML/JSON fi
 go run ./apps/core/cmd/corvus serve --config .\apps\core\configs\corvus.example.yaml
 ```
 
-Phase 1 accepts loopback hosts only because authentication is not implemented. See [USAGE.md](USAGE.md) for flags, environment variables, storage behavior, and troubleshooting.
+Core accepts loopback hosts only because authentication is not implemented. See [USAGE.md](USAGE.md) for flags, Project API behavior, storage, generation, validation, and troubleshooting.
 
 ## Documentation and license
 
-- [USAGE.md](USAGE.md) contains current Phase 1 development commands and boundaries.
-- [.agent/phase-1-core-runtime.md](.agent/phase-1-core-runtime.md) is the living Phase 1 execution and evidence log.
+- [USAGE.md](USAGE.md) contains current Phase 2 development commands and boundaries.
+- [.agent/phase-2-project-foundation.md](.agent/phase-2-project-foundation.md) is the living Phase 2 execution and evidence log.
 - [docs/roadmap.md](docs/roadmap.md) tracks implementation phases and completion gates.
 - [docs/](docs/) contains the source design documents.
 

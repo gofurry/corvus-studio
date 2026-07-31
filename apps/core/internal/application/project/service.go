@@ -42,7 +42,7 @@ func NewService(
 	clock Clock,
 ) (*Service, error) {
 	if repository == nil || directoryResolver == nil || idGenerator == nil || clock == nil {
-		return nil, errors.New("Project service dependencies are required")
+		return nil, errors.New("project service dependencies are required")
 	}
 	return &Service{
 		repository:        repository,

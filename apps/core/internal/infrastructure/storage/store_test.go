@@ -19,8 +19,8 @@ func TestOpenMigratesAndReopensIdempotently(t *testing.T) {
 	if err != nil {
 		t.Fatalf("first open: %v", err)
 	}
-	if first.SchemaVersion() != 1 {
-		t.Fatalf("first schema version = %d, want 1", first.SchemaVersion())
+	if first.SchemaVersion() != 2 {
+		t.Fatalf("first schema version = %d, want 2", first.SchemaVersion())
 	}
 	if first.LastBackupPath() != "" {
 		t.Fatalf("fresh database backup = %q, want none", first.LastBackupPath())
@@ -35,8 +35,8 @@ func TestOpenMigratesAndReopensIdempotently(t *testing.T) {
 		t.Fatalf("second open: %v", err)
 	}
 	t.Cleanup(func() { _ = second.Close() })
-	if second.SchemaVersion() != 1 {
-		t.Fatalf("second schema version = %d, want 1", second.SchemaVersion())
+	if second.SchemaVersion() != 2 {
+		t.Fatalf("second schema version = %d, want 2", second.SchemaVersion())
 	}
 	if second.LastBackupPath() != "" {
 		t.Fatalf("idempotent reopen backup = %q, want none", second.LastBackupPath())
@@ -58,7 +58,7 @@ func TestOpenBacksUpExistingDatabaseBeforeMigration(t *testing.T) {
 	wantBackup := filepath.Join(
 		filepath.Dir(databasePath),
 		"backups",
-		"corvus-pre-migration-v0-to-v1-20260729T100000.000000123Z.db",
+		"corvus-pre-migration-v0-to-v2-20260729T100000.000000123Z.db",
 	)
 	if store.LastBackupPath() != wantBackup {
 		t.Fatalf("backup path = %q, want %q", store.LastBackupPath(), wantBackup)

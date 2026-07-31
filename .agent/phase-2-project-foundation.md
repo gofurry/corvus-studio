@@ -417,7 +417,7 @@ Phase 2 remains `In progress` until an actual authorized GitHub Actions run pass
 - [x] 2026-07-31: audited the clean `dev` baseline at `74f59de`, read Phase 2 source documents, and obtained the three product decisions plus local-only remote policy.
 - [x] 2026-07-31: Milestone 1 prepared the living plan and roadmap In progress state; `git diff --check` is the pre-commit validation.
 - [x] 2026-07-31: Milestone 2 defined OpenAPI create/list/get, generated deterministic Go and TypeScript clients, and passed `pnpm generate:api`, frozen install, API-client typecheck, root format/build, and `go test ./apps/core/...`.
-- [ ] Milestone 3: implement and commit Project domain/storage.
+- [x] 2026-07-31: Milestone 3 implemented Project domain/application/storage, migration 00002, canonical existing-directory references, and restart persistence; sqlc generate/vet and focused/full Core tests passed.
 - [ ] Milestone 4: implement and commit Project HTTP API.
 - [ ] Milestone 5: implement and commit the Project Web flow.
 - [ ] Milestone 6: complete local audit, docs, CI definition, and final local commit.
@@ -443,4 +443,4 @@ Phase 2 remains `In progress` until an actual authorized GitHub Actions run pass
 
 ### Outcomes & Retrospective
 
-Milestones 1–2 established the living plan and OpenAPI-first generation boundary. Contract models and clients compile and regenerate deterministically; Project domain behavior has not yet been implemented.
+Milestones 1–3 established the living plan, deterministic OpenAPI boundary, and Project persistence. Domain validation, canonical directory references, schema version 2, conflict handling, newest-first listing, and close/reopen persistence have current automated evidence.

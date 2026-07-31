@@ -4,8 +4,26 @@
 
 package sqlc
 
+import (
+	"database/sql"
+)
+
 type CorvusRuntimeMetadatum struct {
 	Key       string
 	Value     string
 	UpdatedAt string
+}
+
+type Project struct {
+	ID          string
+	Name        string
+	Description string
+	Location    string
+	LocationKey string
+	SteamAppID  sql.NullInt64
+	Language    string
+	Stage       string
+	Status      string
+	CreatedAt   string
+	UpdatedAt   string
 }

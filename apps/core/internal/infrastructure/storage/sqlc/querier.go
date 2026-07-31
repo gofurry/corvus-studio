@@ -9,7 +9,10 @@ import (
 )
 
 type Querier interface {
+	CreateProject(ctx context.Context, arg CreateProjectParams) error
+	GetProject(ctx context.Context, id string) (Project, error)
 	GetRuntimeMetadata(ctx context.Context, key string) (string, error)
+	ListProjects(ctx context.Context) ([]Project, error)
 	Ping(ctx context.Context) (int64, error)
 	UpsertRuntimeMetadata(ctx context.Context, arg UpsertRuntimeMetadataParams) error
 }

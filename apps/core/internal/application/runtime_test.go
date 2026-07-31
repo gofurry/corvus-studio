@@ -36,7 +36,7 @@ func TestRunStartsHealthyRuntimeAndStops(t *testing.T) {
 
 	endpoint := "http://" + cfg.Server.Address() + "/healthz"
 	response := waitForRuntimeHealth(t, endpoint)
-	if response.Status != "ok" || response.Database != "ok" || response.SchemaVersion != 1 {
+	if response.Status != "ok" || response.Database != "ok" || response.SchemaVersion != 2 {
 		t.Fatalf("unexpected health response: %#v", response)
 	}
 	cancel()

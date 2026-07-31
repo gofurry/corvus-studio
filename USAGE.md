@@ -1,12 +1,12 @@
 # Corvus Studio Usage & Development Guide
 
-> 文档状态：Phase 2 Project Foundation 已完成\
+> 文档状态：Phase 3 Release + Checklist 已完成本地实施，等待远端三平台验证\
 > 项目：Corvus Studio\
-> 用途：Project Foundation、本地开发、验证命令和后续 Phase 边界
+> 用途：Project、Release、Checklist、本地开发、验证命令和后续 Phase 边界
 
 ## 1. 当前实现状态
 
-Corvus Studio 已完成 Phase 0、Phase 1，并完成 Phase 2 Project Foundation 的本地实现：
+Corvus Studio 已完成 Phase 0、Phase 1、Phase 2，并完成 Phase 3 Release + Checklist 的本地实现：
 
 - `corvus serve` 长期运行命令；
 - Viper 配置文件、环境变量和 CLI 覆盖；
@@ -16,13 +16,16 @@ Corvus Studio 已完成 Phase 0、Phase 1，并完成 Phase 2 Project Foundation
 - Project Domain、UUIDv7、目录校验、SQLite repository 和重启持久化；
 - OpenAPI-first Project create/list/get 接口及生成的 Go/TypeScript 客户端边界；
 - 由本地 Core 打开的原生目录选择器，以及不可用时的手动绝对路径回退；
-- React Router、TanStack Query 和 Ant Design 实现的项目列表、创建和详情流程；
+- Release Goal、Checklist、状态历史、原子创建和重启持久化；
+- 内嵌且经过启动校验的 Steam Coming Soon 模板 v1.0.0，包含 8 个 Steam 官方任务和 4 个 Corvus 推荐任务；
+- OpenAPI-first Template/Release/Checklist 接口及同步生成的 Go/TypeScript 类型；
+- React Router、TanStack Query 和 Ant Design 实现的项目、Release 状态及可恢复筛选条件的 Checklist 流程；
 - Vite 开发代理与可选的生产 Web 嵌入构建；
 - Core 配置、日志、存储、HTTP、OpenAPI 合约和生命周期测试。
 
-GitHub Actions [run 30617549600](https://github.com/gofurry/corvus-studio/actions/runs/30617549600) 已针对 Phase 2 基线提交 `80dca49` 通过 Go quality、Frontend quality、Ubuntu、macOS 和 Windows 原生任务。随后增加的原生目录选择器已通过当前 Windows 本地全量验证，但尚未推送，不能把该运行描述成覆盖后续提交。
+GitHub Actions [run 30617549600](https://github.com/gofurry/corvus-studio/actions/runs/30617549600) 已针对 Phase 2 基线提交 `80dca49` 通过 Go quality、Frontend quality、Ubuntu、macOS 和 Windows 原生任务。Phase 3 只有当前 Windows 本地证据；尚未推送，不能把该运行描述成覆盖 Phase 3。
 
-仍未实现：Project 编辑/删除/归档、Dashboard、Release Goal、Checklist、Resource、Deliverable、Steam 模板、Asset Map、Watch、SSE、ADK Agent、模型 Provider、登录鉴权、系统目录打开、Docker、systemd、安装包、签名、公证和自动更新。
+仍未实现：Project 编辑/删除/归档、Dashboard、Checklist 任务编辑/删除/排序、模板升级合并、Resource、Deliverable、Evidence、Steam API/在线模板更新、Asset Map、Watch、SSE、ADK Agent、模型 Provider、登录鉴权、系统目录打开、Docker、systemd、安装包、签名、公证和自动更新。
 
 ## 2. Developer Environment
 
@@ -89,10 +92,10 @@ Invoke-RestMethod http://127.0.0.1:8765/healthz
 预期字段：
 
 ```json
-{ "status": "ok", "database": "ok", "schema_version": 2 }
+{ "status": "ok", "database": "ok", "schema_version": 3 }
 ```
 
-当前 schema version 是 `2`。`/healthz` 是运行状态接口，不是产品 API；Project API 位于 `/api/v1/projects`。
+当前 schema version 是 `3`。`/healthz` 是运行状态接口，不是产品 API；公开产品 API 位于 `/api/v1`。
 
 ### CLI 参数
 
@@ -157,7 +160,7 @@ go run ./apps/core/cmd/corvus serve
 $projectLocation = (Resolve-Path .).Path
 $projectBody = @{
   name = 'Corvus Studio'
-  description = 'Phase 2 local project'
+  description = 'Phase 3 local project'
   location = $projectLocation
   steam_app_id = 480
   language = 'English'
@@ -178,7 +181,47 @@ Invoke-RestMethod "http://127.0.0.1:8765/api/v1/projects/$($project.id)"
 
 目录选择接口只接受 JSON `{"purpose":"project_location"}`，避免普通跨站请求触发本机对话框。用户取消时返回 `selected: false`，不属于错误。Windows 使用系统 FolderBrowserDialog，macOS 使用系统目录选择器；Linux 优先使用 `zenity`，其次使用 `kdialog`。两者都不存在时 Web 会提示用户继续手动输入。
 
-## 7. Web 开发与生产嵌入
+## 7. Release 与 Checklist API
+
+Phase 3 的公开接口同样以 `apps/core/openapi/openapi.yaml` 为唯一来源：
+
+| Method | Path                                       | 行为                                     |
+| ------ | ------------------------------------------ | ---------------------------------------- |
+| `GET`  | `/api/v1/release-templates/{template_key}` | 读取内置模板 metadata 和任务预览         |
+| `GET`  | `/api/v1/projects/{project_id}/releases`   | 列出 Project 的 Release Goals            |
+| `POST` | `/api/v1/releases`                         | 原子创建 Release Goal 和完整 Checklist   |
+| `GET`  | `/api/v1/releases/{release_id}`            | 读取 Goal 和 Checklist 汇总              |
+| `POST` | `/api/v1/releases/{release_id}/transition` | 显式推进或退回 Release 状态              |
+| `GET`  | `/api/v1/releases/{release_id}/checklist`  | 按 status、source、category 筛选任务     |
+| `POST` | `/api/v1/checklist`                        | 添加服务端标记为 `user` 来源的自定义任务 |
+| `GET`  | `/api/v1/checklist/{item_id}`              | 读取任务详情                             |
+| `POST` | `/api/v1/checklist/{item_id}/transition`   | 修改任务状态                             |
+
+通过 API 创建工作区：
+
+```powershell
+$template = Invoke-RestMethod http://127.0.0.1:8765/api/v1/release-templates/steam-coming-soon
+$releaseBody = @{
+  project_id = $project.id
+  goal_type = 'steam_coming_soon'
+  template_key = $template.key
+  template_version = $template.version
+} | ConvertTo-Json
+
+$release = Invoke-RestMethod -Method Post `
+  -Uri http://127.0.0.1:8765/api/v1/releases `
+  -ContentType 'application/json' `
+  -Body $releaseBody
+$checklist = Invoke-RestMethod "http://127.0.0.1:8765/api/v1/releases/$($release.id)/checklist"
+```
+
+一次创建会在同一事务内写入 Goal 和全部 12 个模板任务；重复 Goal 返回 `409 release_goal_conflict`，不会增加记录。模板是项目内独立副本，运行时不会访问 Steam 网络，也不会在模板版本变化时自动合并。
+
+Checklist 状态为 `not_started`、`in_progress`、`needs_review`、`done`、`blocked`、`not_applicable`。Required 任务不能标记为 `not_applicable`；所有 Required 任务都为 Done 后，Release 才能从 `preparing` 进入 `ready_for_review`。进入 `ready_for_review`、`ready` 或 `submitted` 后，Required 任务被锁定，必须先把 Release 退回准备状态。相同目标状态是幂等操作，不重复写历史。
+
+工作流错误继续使用统一信封，错误码为 `template_not_found`、`release_not_found`、`release_goal_conflict`、`release_not_ready`、`release_state_conflict`、`checklist_item_not_found`、`invalid_transition`、`validation_failed` 和 `internal_error`。冲突与 readiness gate 返回 `409`；失败操作不留下半完成数据。
+
+## 8. Web 开发与生产嵌入
 
 开发模式使用两个独立进程。在第一个终端运行 Core：
 
@@ -201,6 +244,16 @@ pnpm dev:web
 
 打开 `http://localhost:5173/projects` 可以查看项目列表、进入创建表单和打开应用内详情页。创建时点击 **Browse** 选择已有目录，或手动输入绝对路径；Core 只读取和规范化目录元数据，不会创建、移动或修改项目文件。
 
+进入 Project 后：
+
+1. 打开 **Release**，查看模板版本、来源和 Steam/Corvus 任务数量；
+2. 确认 **Generate release workspace**，一次性创建 Goal 和 Checklist；
+3. 打开 **Checklist**，使用 status/source/category 筛选任务；
+4. 选择任务查看 What、Why、Requirement、Source 和 Status，或添加自定义任务；
+5. 在 Release 页面根据 Required 完成度显式推进发布状态。
+
+筛选条件和选中任务写入 URL query，直接刷新 `/projects/:projectId/checklist` 可以恢复上下文。窄屏使用任务详情 Drawer。当前不包含 Evidence、Resource、Deliverable、文件验证或 Steam 自动提交。
+
 生产嵌入验证：
 
 ```powershell
@@ -212,11 +265,11 @@ go build -tags corvus_webui -o .tmp/corvus-embedded.exe ./apps/core/cmd/corvus
 
 `stage-web` 只允许写入 Core module 内已忽略的 `apps/core/internal/interfaces/webui/dist/`。带 `corvus_webui` 标签的二进制使用 `go:embed` 提供静态资源和 SPA fallback；普通 Go build 不依赖 Node 或已有 `dist/`。
 
-## 8. SQLite、goose、sqlc 与 OpenAPI 生成
+## 9. SQLite、goose、sqlc 与 OpenAPI 生成
 
 Core 使用纯 Go 的 `modernc.org/sqlite`，启动时启用 WAL、foreign keys、busy timeout 和 normal synchronous。goose 在 HTTP 监听前执行嵌入式 migration。对于已有且非空、存在待执行 migration 的数据库，Core 会先在数据库同级 `backups/` 中创建 SQLite 快照；快照失败会阻止 migration 和启动。
 
-数据库包含基础设施表 `corvus_runtime_metadata` 和 Phase 2 `projects` STRICT 表。`projects.location_key` 只用于平台一致的唯一性判断，不通过公开 API 返回。
+数据库包含基础设施表、`projects`，以及 Phase 3 的 `release_goals`、`checklist_items` 和两类状态历史 STRICT 表。Goal 与模板任务在一个事务内创建；实体状态变化与历史记录也在同一事务内写入。`projects.location_key` 只用于平台一致的唯一性判断，不通过公开 API 返回。
 
 验证 sqlc 生成结果：
 
@@ -233,7 +286,7 @@ git diff --exit-code -- apps/core/internal/interfaces/httpserver/api apps/core/i
 
 没有 `corvus migrate`、`corvus backup` 或 `corvus doctor` 命令。不要用这些未来命令替代自动启动 migration。
 
-## 9. Validation
+## 10. Validation
 
 ### Go workspace
 
@@ -247,9 +300,9 @@ golangci-lint run ./apps/core/... ./apps/launcher/... ./agent/...
 检查格式：
 
 ```powershell
-$phase2GoFiles = Get-ChildItem -Recurse -File -Include *.go -Path '.\apps\core','.\apps\launcher','.\agent'
-$phase2Unformatted = $phase2GoFiles | ForEach-Object { gofmt -l $_.FullName }
-if ($phase2Unformatted) { throw "Unformatted Go files: $phase2Unformatted" }
+$phase3GoFiles = Get-ChildItem -Recurse -File -Include *.go -Path '.\apps\core','.\apps\launcher','.\agent'
+$phase3Unformatted = $phase3GoFiles | ForEach-Object { gofmt -l $_.FullName }
+if ($phase3Unformatted) { throw "Unformatted Go files: $phase3Unformatted" }
 ```
 
 ### Frontend
@@ -272,17 +325,17 @@ go build -o .tmp/corvus.exe ./apps/core/cmd/corvus
 go build -o .tmp/corvus-launcher.exe ./apps/launcher
 ```
 
-GitHub Actions 在 Windows、macOS、Linux 原生 runner 上执行包含 Project repository/API 持久化场景的 Core 测试，并构建 Core/Launcher。Phase 2 的工作流定义已经同步，但必须等当前提交实际推送并运行后才能声明三平台通过。交叉编译、打包、签名、公证和发布不属于 Phase 2。
+GitHub Actions 在 Windows、macOS、Linux 原生 runner 上执行全部 Core 测试，其中包含 Project、Release 和 Checklist 的 migration、原子性、状态历史及重启持久化场景，并构建 Core/Launcher。现有生成漂移步骤自动覆盖扩展后的 OpenAPI、sqlc 和 TypeScript client，因此 Phase 3 不需要新增平行工作流。必须等当前提交实际推送并运行后才能声明三平台通过。交叉编译、打包、签名、公证和发布不属于 Phase 3。
 
-## 10. Launcher 与 Agent 边界
+## 11. Launcher 与 Agent 边界
 
 ```powershell
 go run ./apps/launcher
 ```
 
-Launcher 仍只显示最小 Fyne 窗口，不启停 Core、不提供托盘功能，也不承载业务 UI。`agent/` 仍是独立 Go module 边界；Phase 2 没有 ADK、模型 Provider、workflow、tool 或 prompt 实现。
+Launcher 仍只显示最小 Fyne 窗口，不启停 Core、不提供托盘功能，也不承载业务 UI。`agent/` 仍是独立 Go module 边界；Phase 3 没有 ADK、模型 Provider、workflow、tool 或 prompt 实现。
 
-## 11. Contribution Rules
+## 12. Contribution Rules
 
 - 使用 Trunk Based Development；
 - 不强制 Conventional Commits；
@@ -292,7 +345,7 @@ Launcher 仍只显示最小 Fyne 窗口，不启停 Core、不提供托盘功能
 - 每次变更都必须提供可运行验证证据；
 - 不得在没有证据时声称测试、构建或远端 CI 通过。
 
-## 12. Troubleshooting
+## 13. Troubleshooting
 
 ### Core 拒绝 host
 
@@ -332,10 +385,10 @@ pnpm install --frozen-lockfile
 
 如果 lockfile 与 manifest 不一致，不要删除 lockfile 或关闭严格检查；先核对依赖变更。
 
-## 13. 文档导航
+## 14. 文档导航
 
 1. `README.md`：当前能力和快速验证。
 2. `USAGE.md`：Core、Web、存储、验证和排错。
-3. `.agent/phase-2-project-foundation.md`：Phase 2 执行计划、进度和证据。
+3. `.agent/phase-3-release-checklist.md`：Phase 3 执行计划、进度和证据。
 4. `docs/roadmap.md`：阶段状态和验收门槛。
 5. `docs/`：产品、架构、API、数据模型、Agent 和工程设计的信息源。

@@ -21,7 +21,7 @@
 | Phase 0 — Repository Bootstrap | ✅ Completed   |   100% | Monorepo、三 Go module、pnpm workspace、最小应用骨架和三平台 CI 已验证 |
 | Phase 1 — Core Runtime         | ✅ Completed   |   100% | Core runtime、本地验证及 Windows、macOS、Linux CI 均已通过             |
 | Phase 2 — Project Foundation   | ✅ Completed   |   100% | Project 创建、选择目录、列表、详情、持久化和三平台基线 CI 已验证       |
-| Phase 3 — Release + Checklist  | 🚧 In progress |     5% | ExecPlan 已确认，开始建立 Steam 发布目标与任务闭环                     |
+| Phase 3 — Release + Checklist  | 🚧 In progress |    95% | 本地闭环与验收已完成，等待推送后的三平台 CI                            |
 | Phase 4A — Resource            | ⬜ Not started |     0% | 建立素材与引用管理                                                     |
 | Phase 4B — Deliverable         | ⬜ Not started |     0% | 建立交付物及其与任务、资源的关系                                       |
 | Phase 5 — Asset Map            | ⬜ Not started |     0% | 可视化并保存关系图                                                     |
@@ -143,19 +143,27 @@
 
 **重点：** Release Goal、Steam Coming Soon 模板和可更新状态的 Checklist。
 
-**计划任务：**
+**已完成的本地任务：**
 
-- [ ] 实现 Release Goal 领域、存储、API 和最小页面。
-- [ ] 实现 Steam Coming Soon 模板及其版本/来源记录。
-- [ ] 从发布目标生成 Checklist，并支持查看、筛选和状态变更。
-- [ ] 建立 Release Goal 与 Checklist 的关联和一致性约束。
-- [ ] 覆盖模板生成、状态转换、重启持久化和错误恢复测试。
+- [x] 实现 Release Goal 领域、存储、API 和最小页面。
+- [x] 实现 12 项 Steam Coming Soon 模板及其版本/来源记录。
+- [x] 从发布目标原子生成 Checklist，并支持查看、筛选、添加自定义任务和状态变更。
+- [x] 建立 Release Goal、Checklist、状态历史的关联和事务一致性约束。
+- [x] 覆盖模板校验、状态转换、失败回滚、重启持久化、OpenAPI 合约和 Web 交互测试。
 
 **验收门槛：**
 
-- [ ] 用户可为项目创建发布目标并生成 Checklist。
-- [ ] 用户可查看任务、修改状态，重启后结果保持一致。
-- [ ] 本阶段不依赖 Agent 即可完成确定性工作流。
+- [x] 用户可为项目创建发布目标并一次性生成完整 Checklist。
+- [x] 用户可筛选、查看和修改任务；自动化测试证明 Core 重启后结果保持一致。
+- [x] 本阶段不依赖 Agent、Steam 网络或 Phase 4 领域即可完成确定性工作流。
+- [x] OpenAPI、Go models、sqlc 和 TypeScript client 重新生成后无漂移；本地 Go/frontend/嵌入构建通过。
+- [ ] Phase 3 当前提交在 GitHub Actions 的 Go/frontend quality 及 Windows、macOS、Linux 原生任务中通过。
+
+**当前证据：**
+
+- 本地里程碑提交：`e27ceec`、`33d85b4`、`8d2a245`、`e2f0c58`、`0fd3ecb`；详细命令、发现和回滚方式见 ExecPlan。
+- 本地验证覆盖 Goal + 12 个任务的原子创建、重复 Goal 零增量、状态历史、Required readiness gate、自定义任务和同一 SQLite 的关闭重开。
+- 生成客户端、Core/API、Web 路由和嵌入式 SPA fallback 均有自动化证据；远端三平台 Actions 是唯一剩余阶段门槛。
 
 ### Phase 4A — Resource
 
@@ -295,8 +303,8 @@
 ### P0 — 必须形成闭环
 
 - [x] Project
-- [ ] Release Goal
-- [ ] Checklist
+- [x] Release Goal
+- [x] Checklist
 - [ ] Resource
 - [ ] Deliverable
 - [ ] Export

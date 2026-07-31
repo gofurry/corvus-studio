@@ -1,8 +1,8 @@
 # Corvus Studio
 
-Corvus Studio is a local-first workspace for preparing independent game releases. Phase 2 Project Foundation is complete: developers can select an existing directory, create a Project, list it, and reopen it through Core and Web, with durable SQLite storage and an OpenAPI-first client boundary. [GitHub Actions run 30617549600](https://github.com/gofurry/corvus-studio/actions/runs/30617549600) verified the Phase 2 baseline on Windows, macOS, and Linux; the native directory-picker follow-up has current local evidence and awaits its next remote run.
+Corvus Studio is a local-first workspace for preparing independent game releases. Phase 3 Release + Checklist is locally implemented: developers can create and reopen a Project, generate a versioned Steam Coming Soon Release Goal with its complete Checklist, filter or add tasks, and persist task and release progress through Core restarts and browser refreshes. [GitHub Actions run 30617549600](https://github.com/gofurry/corvus-studio/actions/runs/30617549600) remains the latest successful Windows, macOS, and Linux baseline for Phase 2; Phase 3 stays in progress until its local commits are pushed and the native matrix succeeds.
 
-Project editing, deletion, and archiving are intentionally absent. Release Goal, Checklist, Resource, Deliverable, Steam templates, Asset Map, Agent/ADK, authentication, SSE, and system file-manager integration remain later-phase work.
+Project editing, deletion, and archiving are intentionally absent. Resource, Deliverable, Evidence, Asset Map, Agent/ADK, authentication, SSE, Steam network integration, template upgrades, and system file-manager integration remain later-phase work.
 
 ## What works
 
@@ -12,8 +12,11 @@ Project editing, deletion, and archiving are intentionally absent. Release Goal,
 - OpenAPI-first `POST /api/v1/projects`, `GET /api/v1/projects`, and `GET /api/v1/projects/{project_id}` endpoints.
 - An OpenAPI-first native directory-picker endpoint with manual absolute-path fallback.
 - A Project domain and repository with UUIDv7 identifiers, validated existing-directory locations, and restart persistence.
+- Release Goal and Checklist domains with explicit transitions, Required-task readiness gates, transaction history, and restart persistence.
+- A validated, embedded `steam-coming-soon` template v1.0.0 with eight Steam tasks and four Corvus recommendations; runtime use requires no Steam network access.
+- OpenAPI-first template, Release, and Checklist endpoints with one-transaction Goal/Checklist creation and generated Go/TypeScript contracts.
 - A generated Go model boundary and generated TypeScript Fetch client sourced from the same OpenAPI document.
-- A React 19, TypeScript, Vite 8, Ant Design, React Router, and TanStack Query flow for project creation, listing, and details.
+- A React 19, TypeScript, Vite 8, Ant Design, React Router, and TanStack Query flow for Projects, Release status, URL-restorable Checklist filters, custom tasks, and task details.
 - A Vite development proxy and tagged production embedding path with SPA route fallback.
 - A minimal Fyne launcher window with no product UI or Core process management.
 - GitHub Actions definitions for Go/frontend quality and native Windows, macOS, and Linux Core tests/builds.
@@ -21,8 +24,8 @@ Project editing, deletion, and archiving are intentionally absent. Release Goal,
 ## Repository map
 
 ```text
-apps/core/       Core runtime, Project domain/API, OpenAPI, migrations, and Web embedding
-apps/web/        React/Vite Project application
+apps/core/       Core runtime, Project/Release/Checklist domains and APIs, migrations, and Web embedding
+apps/web/        React/Vite Project and release-preparation application
 apps/launcher/   Minimal Fyne launcher shell
 agent/           Reserved Agent Go module boundary
 packages/        Generated API client plus reserved shared TypeScript boundaries
@@ -96,13 +99,15 @@ Vite proxies `/api` and `/healthz` to Core. Set `CORVUS_CORE_URL` before startin
 
 Open `http://localhost:5173/projects`. On the create form, use **Browse** to open the operating system directory picker, or enter an absolute path manually. Corvus only records the selected directory’s normalized identity; it does not create, move, or write files inside that directory. Opening a project means navigating to its Corvus detail page.
 
+From a Project, open **Release**, review template `steam-coming-soon` v1.0.0, and confirm **Generate release workspace**. Corvus inserts the Release Goal and all 12 tasks atomically. Use **Checklist** to filter by status, source, or category; inspect What, Why, Requirement, Source, and Status; add user-owned tasks; and move tasks forward. Required tasks must all be Done before the Release Goal can enter Ready for review.
+
 The same flow is available through the API:
 
 ```powershell
 $projectLocation = (Resolve-Path .).Path
 $projectBody = @{
   name = 'Corvus Studio'
-  description = 'Local Phase 2 smoke project'
+  description = 'Local Phase 3 smoke project'
   location = $projectLocation
   language = 'English'
   stage = 'concept'
@@ -114,6 +119,19 @@ $project = Invoke-RestMethod -Method Post `
   -Body $projectBody
 Invoke-RestMethod http://127.0.0.1:8765/api/v1/projects
 Invoke-RestMethod "http://127.0.0.1:8765/api/v1/projects/$($project.id)"
+
+$template = Invoke-RestMethod http://127.0.0.1:8765/api/v1/release-templates/steam-coming-soon
+$releaseBody = @{
+  project_id = $project.id
+  goal_type = 'steam_coming_soon'
+  template_key = $template.key
+  template_version = $template.version
+} | ConvertTo-Json
+$release = Invoke-RestMethod -Method Post `
+  -Uri http://127.0.0.1:8765/api/v1/releases `
+  -ContentType 'application/json' `
+  -Body $releaseBody
+Invoke-RestMethod "http://127.0.0.1:8765/api/v1/releases/$($release.id)/checklist"
 ```
 
 To validate production Web embedding:
@@ -135,12 +153,12 @@ Configuration precedence is `CLI > CORVUS_* environment variables > YAML/JSON fi
 go run ./apps/core/cmd/corvus serve --config .\apps\core\configs\corvus.example.yaml
 ```
 
-Core accepts loopback hosts only because authentication is not implemented. See [USAGE.md](USAGE.md) for flags, Project API behavior, storage, generation, validation, and troubleshooting.
+Core accepts loopback hosts only because authentication is not implemented. See [USAGE.md](USAGE.md) for flags, Project/Release/Checklist API behavior, storage, generation, validation, and troubleshooting.
 
 ## Documentation and license
 
-- [USAGE.md](USAGE.md) contains current Phase 2 development commands and boundaries.
-- [.agent/phase-2-project-foundation.md](.agent/phase-2-project-foundation.md) is the living Phase 2 execution and evidence log.
+- [USAGE.md](USAGE.md) contains current Phase 3 development commands and boundaries.
+- [.agent/phase-3-release-checklist.md](.agent/phase-3-release-checklist.md) is the living Phase 3 execution and evidence log.
 - [docs/roadmap.md](docs/roadmap.md) tracks implementation phases and completion gates.
 - [docs/](docs/) contains the source design documents.
 

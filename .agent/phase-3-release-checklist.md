@@ -243,7 +243,7 @@ Evidence must show atomic creation, duplicate rejection, persistence after Core 
 - [x] 2026-07-31: Milestone 3 implemented Release/Checklist/Template domains, the 12-item embedded Catalog, schema version 3, sqlc repositories, atomic workspace creation, transition histories and restart/rollback tests; sqlc generate/vet, Core tests and Go vet passed.
 - [x] 2026-07-31: Milestone 4 composed the services into Runtime and exposed template/Release/Checklist Echo v5 routes with strict requests, filters, DTO/error mapping and OpenAPI exchange tests; focused uncached tests, full Core tests and Go vet passed, including a real restart-persistence HTTP test.
 - [x] 2026-07-31: Milestone 5 added Project workspace navigation, versioned template preview and confirmation, Release status controls, URL-restorable Checklist filters and selection, responsive task details, custom tasks and task transitions; Web format/lint/build and all 20 tests passed.
-- [ ] Milestone 6 — full local completion audit.
+- [x] 2026-07-31: Milestone 6 synchronized README, USAGE and roadmap, confirmed the existing CI jobs cover all Phase 3 generation and native Core tests, and completed the full local acceptance suite.
 - [ ] Authorized push and successful Windows/macOS/Linux Actions evidence.
 
 ### Surprises & Discoveries
@@ -263,7 +263,8 @@ Evidence must show atomic creation, duplicate rejection, persistence after Core 
 - **2026-07-31 — Accepted:** allow User tasks but no task deletion.
 - **2026-07-31 — Accepted:** explicit Release transitions with Required-task readiness gates.
 - **2026-07-31 — Accepted:** local milestone commits only; no push in this implementation run.
+- **2026-07-31 — Accepted:** no CI workflow duplication is required. Existing OpenAPI/sqlc/TypeScript drift checks cover the expanded generated outputs, and the existing three-platform Core test command discovers the new persistence/API suites.
 
 ### Outcomes & Retrospective
 
-Not started — implementation milestones are pending.
+Local implementation is complete and Phase 3 remains In progress only because remote native CI is not authorized in this run. Local evidence on Windows includes deterministic OpenAPI/sqlc/TypeScript regeneration, the full three-module Go test suite, Go vet, golangci-lint v2.12.2 with zero issues, frozen pnpm install, format/lint, 20 Web tests, API-client/Web builds, tagged embedded-Core tests/build, and a phase-boundary scan. The persistence/API suite proves atomic Goal plus 12-item Checklist creation, duplicate rejection without new records, transition history, Required readiness and lock rules, custom-task persistence, Core reopen recovery, and direct embedded route fallback. The only observed non-blocking warning is Vite's advisory application-chunk size warning. An authorized push and successful Windows/macOS/Linux Actions run remain the completion gate.

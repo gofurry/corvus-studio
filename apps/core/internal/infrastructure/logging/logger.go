@@ -3,9 +3,9 @@ package logging
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
-	"syscall"
 
 	"github.com/gofurry/corvus-studio/apps/core/internal/infrastructure/config"
 	"go.uber.org/zap"
@@ -18,7 +18,15 @@ type Handle struct {
 	file   *lumberjack.Logger
 }
 
+type writeOnly struct {
+	io.Writer
+}
+
 func New(cfg config.LoggingConfig) (*Handle, error) {
+	return newWithConsole(cfg, os.Stderr)
+}
+
+func newWithConsole(cfg config.LoggingConfig, console io.Writer) (*Handle, error) {
 	if err := os.MkdirAll(filepath.Dir(cfg.Path), 0o700); err != nil {
 		return nil, fmt.Errorf("create log directory: %w", err)
 	}
@@ -47,7 +55,7 @@ func New(cfg config.LoggingConfig) (*Handle, error) {
 	)
 	consoleCore := zapcore.NewCore(
 		zapcore.NewConsoleEncoder(encoderConfig),
-		zapcore.Lock(os.Stderr),
+		zapcore.Lock(zapcore.AddSync(writeOnly{Writer: console})),
 		level,
 	)
 
@@ -62,7 +70,7 @@ func (h *Handle) Close() error {
 
 	var closeErrors []error
 	if h.Logger != nil {
-		if err := h.Logger.Sync(); err != nil && !errors.Is(err, syscall.EINVAL) {
+		if err := h.Logger.Sync(); err != nil {
 			closeErrors = append(closeErrors, fmt.Errorf("sync logger: %w", err))
 		}
 	}

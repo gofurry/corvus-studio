@@ -3,6 +3,7 @@ module github.com/gofurry/corvus-studio/apps/core
 go 1.26.0
 
 require (
+	github.com/getkin/kin-openapi v0.145.0
 	github.com/google/uuid v1.6.0
 	github.com/labstack/echo/v5 v5.3.1
 	github.com/oapi-codegen/runtime v1.6.0
@@ -25,7 +26,6 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
-	github.com/getkin/kin-openapi v0.142.0 // indirect
 	github.com/go-openapi/jsonpointer v0.23.1 // indirect
 	github.com/go-openapi/swag/jsonname v0.26.0 // indirect
 	github.com/go-sql-driver/mysql v1.10.0 // indirect

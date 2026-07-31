@@ -12,6 +12,8 @@ import (
 	"testing/fstest"
 	"time"
 
+	projectapp "github.com/gofurry/corvus-studio/apps/core/internal/application/project"
+	projectdomain "github.com/gofurry/corvus-studio/apps/core/internal/domain/project"
 	"go.uber.org/zap"
 )
 
@@ -23,8 +25,22 @@ type fakeHealth struct {
 func (f fakeHealth) Ping(context.Context) error { return f.err }
 func (f fakeHealth) SchemaVersion() int64       { return f.version }
 
+type emptyProjects struct{}
+
+func (emptyProjects) Create(context.Context, projectapp.CreateCommand) (projectdomain.Project, error) {
+	return projectdomain.Project{}, errors.New("not implemented in this test")
+}
+
+func (emptyProjects) Get(context.Context, projectdomain.ID) (projectdomain.Project, error) {
+	return projectdomain.Project{}, projectdomain.ErrNotFound
+}
+
+func (emptyProjects) List(context.Context) ([]projectdomain.Project, error) {
+	return []projectdomain.Project{}, nil
+}
+
 func TestHealthHandlerReportsReady(t *testing.T) {
-	server, err := New(fakeHealth{version: 1}, zap.NewNop(), nil)
+	server, err := New(testDependencies(fakeHealth{version: 1}, nil))
 	if err != nil {
 		t.Fatalf("new server: %v", err)
 	}
@@ -45,7 +61,7 @@ func TestHealthHandlerReportsReady(t *testing.T) {
 }
 
 func TestHealthHandlerReportsUnavailable(t *testing.T) {
-	server, err := New(fakeHealth{err: errors.New("database offline"), version: 1}, zap.NewNop(), nil)
+	server, err := New(testDependencies(fakeHealth{err: errors.New("database offline"), version: 1}, nil))
 	if err != nil {
 		t.Fatalf("new server: %v", err)
 	}
@@ -63,7 +79,7 @@ func TestSPAHandlerServesAssetsAndFallback(t *testing.T) {
 		"assets/app.js":     &fstest.MapFile{Data: []byte("console.log('corvus')")},
 		"assets/ignored.js": &fstest.MapFile{Data: []byte("ignored")},
 	}
-	server, err := New(fakeHealth{version: 1}, zap.NewNop(), assets)
+	server, err := New(testDependencies(fakeHealth{version: 1}, assets))
 	if err != nil {
 		t.Fatalf("new server: %v", err)
 	}
@@ -85,14 +101,17 @@ func TestSPAHandlerServesAssetsAndFallback(t *testing.T) {
 }
 
 func TestNewRejectsAssetsWithoutIndex(t *testing.T) {
-	_, err := New(fakeHealth{}, zap.NewNop(), fstest.MapFS{"asset.js": &fstest.MapFile{Data: []byte("x")}})
+	_, err := New(testDependencies(
+		fakeHealth{},
+		fstest.MapFS{"asset.js": &fstest.MapFile{Data: []byte("x")}},
+	))
 	if err == nil {
 		t.Fatal("new server without index returned nil error")
 	}
 }
 
 func TestServeStopsWhenContextIsCancelled(t *testing.T) {
-	server, err := New(fakeHealth{version: 1}, zap.NewNop(), nil)
+	server, err := New(testDependencies(fakeHealth{version: 1}, nil))
 	if err != nil {
 		t.Fatalf("new server: %v", err)
 	}
@@ -133,3 +152,12 @@ func waitForHealthy(t *testing.T, endpoint string) {
 }
 
 var _ fs.FS = fstest.MapFS{}
+
+func testDependencies(health HealthChecker, assets fs.FS) Dependencies {
+	return Dependencies{
+		Health:    health,
+		Projects:  emptyProjects{},
+		Logger:    zap.NewNop(),
+		WebAssets: assets,
+	}
+}

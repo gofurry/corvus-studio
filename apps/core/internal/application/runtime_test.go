@@ -1,6 +1,7 @@
 package application
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"net"
@@ -56,10 +57,107 @@ func TestRunStartsHealthyRuntimeAndStops(t *testing.T) {
 	}
 }
 
+func TestRunPersistsProjectAcrossRestart(t *testing.T) {
+	dataDir := t.TempDir()
+	projectDirectory := filepath.Join(dataDir, "game")
+	if err := os.Mkdir(projectDirectory, 0o700); err != nil {
+		t.Fatalf("create Project directory: %v", err)
+	}
+	port := reservePort(t)
+	cfg := config.Config{
+		Runtime: config.RuntimeConfig{DataDir: dataDir},
+		Server:  config.ServerConfig{Host: config.DefaultHost, Port: port},
+		Storage: config.StorageConfig{Path: filepath.Join(dataDir, "corvus.db")},
+		Logging: config.LoggingConfig{
+			Path:       filepath.Join(dataDir, "logs", "corvus.log"),
+			Level:      "info",
+			MaxSizeMB:  1,
+			MaxBackups: 1,
+			MaxAgeDays: 1,
+		},
+	}
+	baseURL := "http://" + cfg.Server.Address()
+
+	cancel, done := startRuntime(cfg)
+	waitForRuntimeHealth(t, baseURL+"/healthz")
+	requestBody, err := json.Marshal(map[string]any{
+		"name":        "Persistent Raven",
+		"description": "Created before restart",
+		"location":    projectDirectory,
+		"language":    "English",
+		"stage":       "concept",
+	})
+	if err != nil {
+		t.Fatalf("encode create request: %v", err)
+	}
+	response, err := http.Post( //nolint:noctx
+		baseURL+"/api/v1/projects",
+		"application/json",
+		bytes.NewReader(requestBody),
+	)
+	if err != nil {
+		t.Fatalf("create Project: %v", err)
+	}
+	var created struct {
+		ID string `json:"id"`
+	}
+	decodeErr := json.NewDecoder(response.Body).Decode(&created)
+	_ = response.Body.Close()
+	if response.StatusCode != http.StatusCreated || decodeErr != nil || created.ID == "" {
+		t.Fatalf(
+			"create response status=%d decode=%v ID=%q",
+			response.StatusCode,
+			decodeErr,
+			created.ID,
+		)
+	}
+	stopRuntime(t, cancel, done)
+
+	cancel, done = startRuntime(cfg)
+	defer stopRuntime(t, cancel, done)
+	waitForRuntimeHealth(t, baseURL+"/healthz")
+	response, err = http.Get(baseURL + "/api/v1/projects/" + created.ID) //nolint:noctx
+	if err != nil {
+		t.Fatalf("get Project after restart: %v", err)
+	}
+	var reopened struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	}
+	decodeErr = json.NewDecoder(response.Body).Decode(&reopened)
+	_ = response.Body.Close()
+	if response.StatusCode != http.StatusOK || decodeErr != nil {
+		t.Fatalf("reopen response status=%d decode=%v", response.StatusCode, decodeErr)
+	}
+	if reopened.ID != created.ID || reopened.Name != "Persistent Raven" {
+		t.Fatalf("reopened Project = %#v", reopened)
+	}
+}
+
 type healthResponse struct {
 	Status        string `json:"status"`
 	Database      string `json:"database"`
 	SchemaVersion int64  `json:"schema_version"`
+}
+
+func startRuntime(cfg config.Config) (context.CancelFunc, <-chan error) {
+	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan error, 1)
+	go func() { done <- Run(ctx, cfg) }()
+	return cancel, done
+}
+
+func stopRuntime(t *testing.T, cancel context.CancelFunc, done <-chan error) {
+	t.Helper()
+	cancel()
+	select {
+	case err := <-done:
+		if err != nil {
+			t.Fatalf("runtime after cancellation: %v", err)
+		}
+	case <-time.After(10 * time.Second):
+		t.Fatal("runtime did not stop after cancellation")
+	}
 }
 
 func waitForRuntimeHealth(t *testing.T, endpoint string) healthResponse {

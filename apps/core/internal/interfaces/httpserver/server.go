@@ -25,28 +25,47 @@ type HealthChecker interface {
 }
 
 type Server struct {
-	echo   *echo.Echo
-	health HealthChecker
-	logger *zap.Logger
+	echo     *echo.Echo
+	health   HealthChecker
+	projects ProjectService
+	logger   *zap.Logger
 }
 
-func New(health HealthChecker, logger *zap.Logger, webAssets fs.FS) (*Server, error) {
-	if health == nil {
+type Dependencies struct {
+	Health    HealthChecker
+	Projects  ProjectService
+	Logger    *zap.Logger
+	WebAssets fs.FS
+}
+
+func New(dependencies Dependencies) (*Server, error) {
+	if dependencies.Health == nil {
 		return nil, errors.New("health checker is required")
 	}
-	if logger == nil {
-		logger = zap.NewNop()
+	if dependencies.Projects == nil {
+		return nil, errors.New("Project service is required")
+	}
+	if dependencies.Logger == nil {
+		dependencies.Logger = zap.NewNop()
 	}
 
 	e := echo.New()
 	e.Use(middleware.Recover())
-	server := &Server{echo: e, health: health, logger: logger}
+	server := &Server{
+		echo:     e,
+		health:   dependencies.Health,
+		projects: dependencies.Projects,
+		logger:   dependencies.Logger,
+	}
 	e.GET("/healthz", server.healthHandler)
-	if webAssets != nil {
-		if _, err := fs.Stat(webAssets, "index.html"); err != nil {
+	e.GET("/api/v1/projects", server.listProjectsHandler)
+	e.POST("/api/v1/projects", server.createProjectHandler)
+	e.GET("/api/v1/projects/:project_id", server.getProjectHandler)
+	if dependencies.WebAssets != nil {
+		if _, err := fs.Stat(dependencies.WebAssets, "index.html"); err != nil {
 			return nil, fmt.Errorf("embedded Web UI is missing index.html: %w", err)
 		}
-		e.GET("/*", echo.WrapHandler(spaHandler(webAssets)))
+		e.GET("/*", echo.WrapHandler(spaHandler(dependencies.WebAssets)))
 	}
 
 	return server, nil

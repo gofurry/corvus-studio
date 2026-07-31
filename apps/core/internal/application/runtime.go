@@ -5,8 +5,10 @@ import (
 	"errors"
 	"fmt"
 
+	projectapp "github.com/gofurry/corvus-studio/apps/core/internal/application/project"
 	"github.com/gofurry/corvus-studio/apps/core/internal/infrastructure/config"
 	"github.com/gofurry/corvus-studio/apps/core/internal/infrastructure/logging"
+	"github.com/gofurry/corvus-studio/apps/core/internal/infrastructure/projectpath"
 	"github.com/gofurry/corvus-studio/apps/core/internal/infrastructure/storage"
 	"github.com/gofurry/corvus-studio/apps/core/internal/interfaces/httpserver"
 	"github.com/gofurry/corvus-studio/apps/core/internal/interfaces/webui"
@@ -43,11 +45,30 @@ func Run(ctx context.Context, cfg config.Config) (runErr error) {
 	}
 	logger.Info("database ready", zap.Int64("schema_version", store.SchemaVersion()))
 
+	projectRepository, err := storage.NewProjectRepository(store)
+	if err != nil {
+		return fmt.Errorf("initialize Project repository: %w", err)
+	}
+	projectService, err := projectapp.NewService(
+		projectRepository,
+		projectpath.Resolver{},
+		projectapp.UUIDv7Generator{},
+		projectapp.SystemClock{},
+	)
+	if err != nil {
+		return fmt.Errorf("initialize Project service: %w", err)
+	}
+
 	assets, err := webui.Files()
 	if err != nil {
 		return fmt.Errorf("load embedded Web UI: %w", err)
 	}
-	server, err := httpserver.New(store, logger, assets)
+	server, err := httpserver.New(httpserver.Dependencies{
+		Health:    store,
+		Projects:  projectService,
+		Logger:    logger,
+		WebAssets: assets,
+	})
 	if err != nil {
 		return fmt.Errorf("initialize HTTP server: %w", err)
 	}

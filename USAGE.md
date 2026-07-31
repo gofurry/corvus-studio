@@ -1,6 +1,6 @@
 # Corvus Studio Usage & Development Guide
 
-> 文档状态：Phase 2 本地实现已完成，远端三平台验证待执行\
+> 文档状态：Phase 2 Project Foundation 已完成\
 > 项目：Corvus Studio\
 > 用途：Project Foundation、本地开发、验证命令和后续 Phase 边界
 
@@ -15,11 +15,12 @@ Corvus Studio 已完成 Phase 0、Phase 1，并完成 Phase 2 Project Foundation
 - `modernc.org/sqlite`、嵌入式 goose migration 和 sqlc 查询边界；
 - Project Domain、UUIDv7、目录校验、SQLite repository 和重启持久化；
 - OpenAPI-first Project create/list/get 接口及生成的 Go/TypeScript 客户端边界；
+- 由本地 Core 打开的原生目录选择器，以及不可用时的手动绝对路径回退；
 - React Router、TanStack Query 和 Ant Design 实现的项目列表、创建和详情流程；
 - Vite 开发代理与可选的生产 Web 嵌入构建；
 - Core 配置、日志、存储、HTTP、OpenAPI 合约和生命周期测试。
 
-GitHub Actions [run 30611808221](https://github.com/gofurry/corvus-studio/actions/runs/30611808221) 已针对 Phase 1 修正提交 `59a478c` 通过 Go quality、Frontend quality、Ubuntu、macOS 和 Windows 原生任务。Phase 2 本轮不推送，因此不能把该历史运行当作 Phase 2 的远端证据。
+GitHub Actions [run 30617549600](https://github.com/gofurry/corvus-studio/actions/runs/30617549600) 已针对 Phase 2 基线提交 `80dca49` 通过 Go quality、Frontend quality、Ubuntu、macOS 和 Windows 原生任务。随后增加的原生目录选择器已通过当前 Windows 本地全量验证，但尚未推送，不能把该运行描述成覆盖后续提交。
 
 仍未实现：Project 编辑/删除/归档、Dashboard、Release Goal、Checklist、Resource、Deliverable、Steam 模板、Asset Map、Watch、SSE、ADK Agent、模型 Provider、登录鉴权、系统目录打开、Docker、systemd、安装包、签名、公证和自动更新。
 
@@ -143,11 +144,12 @@ go run ./apps/core/cmd/corvus serve
 
 公开合约的唯一来源是 `apps/core/openapi/openapi.yaml`：
 
-| Method | Path                            | 成功结果                             |
-| ------ | ------------------------------- | ------------------------------------ |
-| `GET`  | `/api/v1/projects`              | `200`，按创建时间倒序返回 `items`    |
-| `POST` | `/api/v1/projects`              | `201`、Project 和 `Location` 响应头  |
-| `GET`  | `/api/v1/projects/{project_id}` | `200`，返回指定 Project 的持久化详情 |
+| Method | Path                              | 成功结果                             |
+| ------ | --------------------------------- | ------------------------------------ |
+| `GET`  | `/api/v1/projects`                | `200`，按创建时间倒序返回 `items`    |
+| `POST` | `/api/v1/projects`                | `201`、Project 和 `Location` 响应头  |
+| `GET`  | `/api/v1/projects/{project_id}`   | `200`，返回指定 Project 的持久化详情 |
+| `POST` | `/api/v1/system/select-directory` | `200`，返回选择的绝对目录或取消状态  |
 
 创建示例：
 
@@ -170,9 +172,11 @@ Invoke-RestMethod http://127.0.0.1:8765/api/v1/projects
 Invoke-RestMethod "http://127.0.0.1:8765/api/v1/projects/$($project.id)"
 ```
 
-`stage` 只接受 `concept`、`development`、`release_preparation`、`released`。创建状态固定为 `active`。错误使用统一 `error` 信封，当前错误码是 `validation_failed`、`project_not_found`、`project_location_conflict` 和 `internal_error`。请求体上限是 1 MiB，未知字段、尾随 JSON 和非 UUIDv7 ID 会被拒绝。
+`stage` 只接受 `concept`、`development`、`release_preparation`、`released`。创建状态固定为 `active`。错误使用统一 `error` 信封，当前错误码是 `validation_failed`、`project_not_found`、`project_location_conflict`、`directory_picker_unavailable` 和 `internal_error`。请求体上限是 1 MiB，未知字段、尾随 JSON 和非 UUIDv7 ID 会被拒绝。
 
 重复的规范目录返回 `409 project_location_conflict`，不会新增记录或写入目标目录。“打开项目”仅指进入 Corvus 详情页，不会调用系统文件管理器。
+
+目录选择接口只接受 JSON `{"purpose":"project_location"}`，避免普通跨站请求触发本机对话框。用户取消时返回 `selected: false`，不属于错误。Windows 使用系统 FolderBrowserDialog，macOS 使用系统目录选择器；Linux 优先使用 `zenity`，其次使用 `kdialog`。两者都不存在时 Web 会提示用户继续手动输入。
 
 ## 7. Web 开发与生产嵌入
 
@@ -195,7 +199,7 @@ $env:CORVUS_CORE_URL = 'http://127.0.0.1:18765'
 pnpm dev:web
 ```
 
-打开 `http://localhost:5173/projects` 可以查看项目列表、进入创建表单和打开应用内详情页。创建时 `location` 必须是已有绝对目录；Core 只读取和规范化目录元数据，不会创建、移动或修改项目文件。
+打开 `http://localhost:5173/projects` 可以查看项目列表、进入创建表单和打开应用内详情页。创建时点击 **Browse** 选择已有目录，或手动输入绝对路径；Core 只读取和规范化目录元数据，不会创建、移动或修改项目文件。
 
 生产嵌入验证：
 
@@ -309,6 +313,10 @@ go run ./apps/core/cmd/corvus serve --port 18765 --data-dir .tmp/core-runtime
 ### Project location 被拒绝
 
 确认路径是当前平台上的已有绝对目录，而不是相对路径、文件或不存在的位置。符号链接会解析到真实目录；同一真实目录只能创建一个 Project。不要为了通过校验而让 Corvus 自动创建用户目录。
+
+### Browse 无法打开目录选择器
+
+Windows 需要系统 PowerShell，macOS 需要 `osascript`。Linux 安装 `zenity` 或 `kdialog` 后重试。即使原生选择器不可用，Project location 输入框仍可手动填写已有目录的绝对路径。
 
 ### Launcher 无法构建
 

@@ -2,7 +2,7 @@
 
 > 状态：Active\
 > 最近更新：2026-07-31\
-> 当前进度：Phase 0、Phase 1 已完成；Phase 2 实施中\
+> 当前进度：Phase 0、Phase 1、Phase 2 已完成；下一阶段为 Phase 3\
 > 首个产品目标：Corvus Studio Launch `v0.1` Alpha
 
 本文从[开发实施计划 v0.1](development/Corvus_Studio_Development_Implementation_Plan_v0.1.md)提取阶段主线，并补充可维护的完成状态、依赖关系和验收门槛。原始设计文档继续作为范围基线；本文负责反映实际进展，不以目录占位或未验证代码代替完成证据。
@@ -20,7 +20,7 @@
 | ------------------------------ | -------------- | -----: | ---------------------------------------------------------------------- |
 | Phase 0 — Repository Bootstrap | ✅ Completed   |   100% | Monorepo、三 Go module、pnpm workspace、最小应用骨架和三平台 CI 已验证 |
 | Phase 1 — Core Runtime         | ✅ Completed   |   100% | Core runtime、本地验证及 Windows、macOS、Linux CI 均已通过             |
-| Phase 2 — Project Foundation   | 🚧 In progress |    95% | 本地业务闭环与验收已完成；等待当前提交的远端三平台 CI                  |
+| Phase 2 — Project Foundation   | ✅ Completed   |   100% | Project 创建、选择目录、列表、详情、持久化和三平台基线 CI 已验证       |
 | Phase 3 — Release + Checklist  | ⬜ Not started |     0% | 建立 Steam 发布目标与任务闭环                                          |
 | Phase 4A — Resource            | ⬜ Not started |     0% | 建立素材与引用管理                                                     |
 | Phase 4B — Deliverable         | ⬜ Not started |     0% | 建立交付物及其与任务、资源的关系                                       |
@@ -102,7 +102,7 @@
 
 ### Phase 2 — Project Foundation
 
-**状态：🚧 In progress（2026-07-31）**
+**状态：✅ Completed（2026-07-31）**
 
 **执行计划：** [Phase 2 Project Foundation ExecPlan](../.agent/phase-2-project-foundation.md)
 
@@ -116,6 +116,7 @@
 - [x] 添加 Project schema/migration、repository 和 service 层。
 - [x] 先更新 OpenAPI 合约，再实现 Project API 与生成客户端。
 - [x] 实现项目创建、项目列表和打开项目的最小 Web 流程。
+- [x] 提供原生目录选择按钮，并在系统 picker 不可用时保留手动路径回退。
 - [x] 覆盖领域、存储、API 和前端交互测试。
 
 **验收门槛：**
@@ -123,14 +124,14 @@
 - [x] Windows 本地实进程验证可创建项目、重启 Core，并从同一 SQLite 重新打开项目。
 - [x] OpenAPI、Go models、sqlc 和 TypeScript client 重新生成后不存在漂移。
 - [x] 自动化测试验证失败输入和重复目录不会留下半创建项目或修改目标目录。
-- [ ] 当前 Phase 2 提交在 GitHub Actions 的 Go/frontend quality 及 Windows、macOS、Linux 原生任务中通过。
+- [x] Phase 2 基线提交在 GitHub Actions 的 Go/frontend quality 及 Windows、macOS、Linux 原生任务中通过。
 
 **当前证据：**
 
-- 里程碑提交：`88ebc3a`、`2fe1ff6`、`b1a9925`、`670522d`、`6f9ffcd`；最终 CI/文档由本阶段最后一个本地提交承载。
-- Windows 本地通过 OpenAPI/sqlc/TypeScript client 生成漂移检查、40 个 Go 文件格式检查、三个 module 测试、Go vet、golangci-lint v2.12.2、7 个 Web 交互测试、frontend lint/build、默认及嵌入式 Core build 和 Launcher build。
+- 里程碑提交：`88ebc3a`、`2fe1ff6`、`b1a9925`、`670522d`、`6f9ffcd`、`80dca49`；目录选择补充提交为 `695ad88`、`6ad6226`。
+- Windows 本地通过 OpenAPI/sqlc/TypeScript client 生成漂移检查、44 个 Go 文件格式检查、三个 module 测试、Go vet、golangci-lint v2.12.2、12 个 Web 交互/API 测试、frontend lint/build、默认及嵌入式 Core build 和 Launcher build。
 - 实进程 smoke 创建 UUIDv7 Project，重启同一 Core 后 list/get 仍返回同一记录；嵌入式 `/projects/:id` 刷新返回 `200`，被引用目录保持空目录。
-- Phase 2 未推送，历史 [GitHub Actions run 30611808221](https://github.com/gofurry/corvus-studio/actions/runs/30611808221) 仅是 Phase 1 证据。
+- GitHub Actions [run 30617549600](https://github.com/gofurry/corvus-studio/actions/runs/30617549600) 针对 Phase 2 基线提交 `80dca49` 的全部任务成功；目录选择补充目前只有本地证据，等待下一次推送后的回归运行。
 
 ### Phase 3 — Release + Checklist
 
@@ -291,7 +292,7 @@
 
 ### P0 — 必须形成闭环
 
-- [ ] Project
+- [x] Project
 - [ ] Release Goal
 - [ ] Checklist
 - [ ] Resource

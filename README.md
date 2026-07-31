@@ -1,6 +1,6 @@
 # Corvus Studio
 
-Corvus Studio is a local-first workspace for preparing independent game releases. Phase 2 now has a complete local Project foundation: developers can create, list, and reopen projects through Core and Web, with durable SQLite storage and an OpenAPI-first client boundary. Phase 2 remains in progress until these commits pass the remote Windows, macOS, and Linux workflow; [GitHub Actions run 30611808221](https://github.com/gofurry/corvus-studio/actions/runs/30611808221) is the latest completed remote evidence for Phase 1.
+Corvus Studio is a local-first workspace for preparing independent game releases. Phase 2 Project Foundation is complete: developers can select an existing directory, create a Project, list it, and reopen it through Core and Web, with durable SQLite storage and an OpenAPI-first client boundary. [GitHub Actions run 30617549600](https://github.com/gofurry/corvus-studio/actions/runs/30617549600) verified the Phase 2 baseline on Windows, macOS, and Linux; the native directory-picker follow-up has current local evidence and awaits its next remote run.
 
 Project editing, deletion, and archiving are intentionally absent. Release Goal, Checklist, Resource, Deliverable, Steam templates, Asset Map, Agent/ADK, authentication, SSE, and system file-manager integration remain later-phase work.
 
@@ -10,6 +10,7 @@ Project editing, deletion, and archiving are intentionally absent. Release Goal,
 - `corvus serve`, backed by Cobra, Viper, Zap/lumberjack, Echo v5, modernc SQLite, embedded goose migrations, and sqlc-generated queries.
 - Loopback-only `GET /healthz` readiness on `127.0.0.1:8765` by default.
 - OpenAPI-first `POST /api/v1/projects`, `GET /api/v1/projects`, and `GET /api/v1/projects/{project_id}` endpoints.
+- An OpenAPI-first native directory-picker endpoint with manual absolute-path fallback.
 - A Project domain and repository with UUIDv7 identifiers, validated existing-directory locations, and restart persistence.
 - A generated Go model boundary and generated TypeScript Fetch client sourced from the same OpenAPI document.
 - A React 19, TypeScript, Vite 8, Ant Design, React Router, and TanStack Query flow for project creation, listing, and details.
@@ -46,6 +47,7 @@ The Go equivalents—`go.work`, `go.work.sum`, `.go-version`, and `.golangci.yml
 - pnpm 10.11.0
 - golangci-lint 2.12.2 for local linting
 - A native compiler and the [Fyne prerequisites](https://docs.fyne.io/started/) when building or running the Launcher
+- `zenity` or `kdialog` for the native directory picker on Linux; manual path entry remains available without either tool
 
 Do not silently substitute older project versions. Record a toolchain mismatch before proposing a version change.
 
@@ -92,7 +94,7 @@ pnpm dev:web
 
 Vite proxies `/api` and `/healthz` to Core. Set `CORVUS_CORE_URL` before starting Vite when Core uses a different loopback port.
 
-Open `http://localhost:5173/projects`. The create form accepts an existing absolute directory and only records its normalized identity; Corvus does not create, move, or write files inside that directory. Opening a project means navigating to its Corvus detail page.
+Open `http://localhost:5173/projects`. On the create form, use **Browse** to open the operating system directory picker, or enter an absolute path manually. Corvus only records the selected directory’s normalized identity; it does not create, move, or write files inside that directory. Opening a project means navigating to its Corvus detail page.
 
 The same flow is available through the API:
 

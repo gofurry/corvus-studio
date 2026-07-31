@@ -89,15 +89,15 @@ Phase 2 will not implement:
 
 ## 6. Document conflicts and decisions
 
-| Status   | Conflict or ambiguity                                                                                                             | Decision and rationale                                                                                                                                                                                                  |
-| -------- | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Accepted | The Backend API design specifies create/get but omits Project list; the maintained roadmap requires create/list/open.             | Add `GET /api/v1/projects`. The higher-priority implementation plan and roadmap acceptance require a list to reopen an existing Project. Record this reconciliation here; do not rewrite the versioned design document. |
-| Accepted | Project `stage` exists but allowed values are undefined.                                                                          | Use `concept`, `development`, `release_preparation`, and `released` in OpenAPI, domain, SQLite, and UI.                                                                                                                 |
-| Accepted | Project location may be a Corvus-managed folder or external workspace.                                                            | Phase 2 accepts only an existing absolute directory, resolves and stores its canonical reference, and never writes to it. Managed directories are deferred.                                                             |
-| Accepted | “Open Project” could mean in-app selection or OS file-manager launch.                                                             | Navigate to `/projects/:projectId` and reload from Core. OS integration is deferred.                                                                                                                                    |
-| Accepted | The API design includes `/projects/{id}/dashboard`, whose data depends on later domains.                                          | Do not add the dashboard route in Phase 2.                                                                                                                                                                              |
-| Accepted | `oapi-codegen` can generate an Echo server adapter, but its documented adapter imports Echo v4 while the repository uses Echo v5. | Pin `oapi-codegen v2.8.0`, generate models only, and register manual Echo v5 routes.                                                                                                                                    |
-| Accepted | The repository policy requires actual three-platform evidence, but this task explicitly selects local commits only.               | Complete all local checks, keep Phase 2 In progress, and leave the remote CI acceptance item open until push is separately authorized.                                                                                  |
+| Status     | Conflict or ambiguity                                                                                                             | Decision and rationale                                                                                                                                                                                                  |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Accepted   | The Backend API design specifies create/get but omits Project list; the maintained roadmap requires create/list/open.             | Add `GET /api/v1/projects`. The higher-priority implementation plan and roadmap acceptance require a list to reopen an existing Project. Record this reconciliation here; do not rewrite the versioned design document. |
+| Accepted   | Project `stage` exists but allowed values are undefined.                                                                          | Use `concept`, `development`, `release_preparation`, and `released` in OpenAPI, domain, SQLite, and UI.                                                                                                                 |
+| Accepted   | Project location may be a Corvus-managed folder or external workspace.                                                            | Phase 2 accepts only an existing absolute directory, resolves and stores its canonical reference, and never writes to it. Managed directories are deferred.                                                             |
+| Accepted   | “Open Project” could mean in-app selection or OS file-manager launch.                                                             | Navigate to `/projects/:projectId` and reload from Core. OS integration is deferred.                                                                                                                                    |
+| Accepted   | The API design includes `/projects/{id}/dashboard`, whose data depends on later domains.                                          | Do not add the dashboard route in Phase 2.                                                                                                                                                                              |
+| Accepted   | `oapi-codegen` can generate an Echo server adapter, but its documented adapter imports Echo v4 while the repository uses Echo v5. | Pin `oapi-codegen v2.8.0`, generate models only, and register manual Echo v5 routes.                                                                                                                                    |
+| Superseded | The task initially selected local commits only, while repository policy requires three-platform evidence.                         | The initial implementation stopped at In progress. The user later pushed baseline `80dca49`, and Actions run `30617549600` passed all required jobs, satisfying that gate.                                              |
 
 ## 7. Proposed repository tree
 
@@ -322,7 +322,7 @@ Required Phase 2 additions:
 - existing dependency caches continue to key on all Go sums and the single pnpm lockfile;
 - no Issue/PR template or `CONTRIBUTING.md` is added.
 
-Because this task is local-only, the workflow definition may be validated locally, but actual native job success remains pending.
+The workflow definition and baseline behavior were validated by Actions run `30617549600`. Directory-picker follow-up commits remain local and are explicitly queued for the next routine remote regression.
 
 ## 13. Validation matrix
 
@@ -341,7 +341,7 @@ Because this task is local-only, the workflow definition may be validated locall
 | Embedded Core     | stage plus tagged test/build   | direct Project routes and SPA refresh coexist                |
 | Go workspace      | explicit three-module test     | exit 0                                                       |
 | Lint              | pinned golangci-lint v2        | exit 0                                                       |
-| Native CI         | actual Actions run             | pending until push is authorized                             |
+| Native CI         | Actions run `30617549600`      | baseline passed on Windows, macOS, and Linux                 |
 | Phase boundary    | source/dependency scan         | no Phase 3+ implementation                                   |
 
 ## 14. Idempotence and recovery
@@ -363,7 +363,7 @@ Because this task is local-only, the workflow definition may be validated locall
 - Filesystem canonicalization differs by platform. Windows normalizes the uniqueness key case-insensitively; Unix-like systems retain case.
 - A referenced directory may disappear after Project creation. Phase 2 preserves the reference and does not add watch/recovery UI.
 - Core is still loopback-only without authentication. Do not expand the bind boundary.
-- Actual Windows/macOS/Linux evidence cannot be renewed without an authorized push/PR.
+- Actions run `30617549600` supplies Windows/macOS/Linux baseline evidence; directory-picker follow-up commits need the next routine CI regression after push.
 - macOS signing, notarization, and installers are unrelated to Phase 2.
 
 No blocking issue is known at plan start.
@@ -408,7 +408,7 @@ Evidence must also show:
 - no later-phase domain or endpoint has been added;
 - every logical milestone has a local commit and rollback path.
 
-Phase 2 remains `In progress` until an actual authorized GitHub Actions run passes Go quality, frontend quality, and native Windows/macOS/Linux jobs.
+Phase 2 completion evidence includes GitHub Actions run `30617549600`, which passed Go quality, frontend quality, and native Windows/macOS/Linux jobs for baseline commit `80dca49`. The later directory-picker UX completion has local evidence and must be included in the next routine remote regression run.
 
 ## 17. Progress, discoveries and decision log
 
@@ -421,7 +421,8 @@ Phase 2 remains `In progress` until an actual authorized GitHub Actions run pass
 - [x] 2026-07-31: Milestone 4 implemented manual Echo v5 create/list/get handlers, strict bounded JSON, error envelopes, runtime composition, OpenAPI request/response tests, and a real HTTP restart persistence test; focused/full Core tests and Go vet passed.
 - [x] 2026-07-31: Milestone 5 implemented Project list/create/detail routes, generated-client wrapper, TanStack Query cache behavior, Ant Design UI, and interaction tests; format/lint, 7 Vitest cases, API-client typecheck, and Vite build passed.
 - [x] 2026-07-31: Milestone 6 synchronized CI generation drift gates, README, USAGE, and evidence-backed roadmap state. Frozen install, deterministic generators, gofmt over 40 files, Go vet, all-module tests, golangci-lint v2.12.2, frontend format/lint/7 tests/build, tagged tests, default/tagged Core builds, Launcher build, live restart persistence/SPA refresh smoke, boundary scan, and `git diff --check` passed.
-- [ ] Remote completion: push only after explicit authorization and obtain a green native CI run.
+- [x] 2026-07-31: Remote completion baseline `80dca49` passed every job in GitHub Actions run `30617549600`.
+- [x] 2026-07-31: Post-CI UX completion added an OpenAPI-first native directory picker and Web Browse/manual-fallback flow in `695ad88` and `6ad6226`; 44 Go files, all modules, lint, 12 Web tests, production builds, embedded tests, and a real binary smoke passed locally.
 
 ### Surprises & Discoveries
 
@@ -432,6 +433,8 @@ Phase 2 remains `In progress` until an actual authorized GitHub Actions run pass
 - Generated Go UUID fields require `github.com/oapi-codegen/runtime/types`; the compatible current runtime `v1.6.0` was added explicitly.
 - The first Ant Design production bundle is about 893 kB minified (287 kB gzip) and triggers Vite’s non-failing 500 kB chunk warning. Phase 2 keeps the simple route structure; route-level optimization is a later performance task, not a correctness blocker.
 - The first pinned v2 lint pass found two ST1005 violations in constructor errors that began with `Project`; lowercasing those internal error strings resolved the CI-blocking issues, and the rerun reported zero issues.
+- A browser directory input cannot disclose an absolute host path. The selection must be opened by loopback Core; the Web File System Access API and `webkitdirectory` only expose handles or relative paths.
+- Linux has no universal dependency-free directory-dialog command. Core uses `zenity` or `kdialog` when available and returns a recoverable error so manual entry remains usable otherwise.
 
 ### Decision Log
 
@@ -442,6 +445,9 @@ Phase 2 remains `In progress` until an actual authorized GitHub Actions run pass
 - **2026-07-31 — Accepted:** generate Go models only and manually adapt Echo v5.
 - **2026-07-31 — Accepted deviation:** keep the pinned `openapi-ts 0.99.0` Fetch plugin but omit deprecated `@hey-api/client-fetch 0.13.1`; generated output is self-contained and compile-checked.
 - **2026-07-31 — Accepted:** create local milestone commits but do not push; retain remote CI as the final open gate.
+- **2026-07-31 — Superseded:** the user subsequently pushed the Phase 2 baseline, allowing run `30617549600` to satisfy the remote gate.
+- **2026-07-31 — Accepted:** expose `POST /api/v1/system/select-directory` with a fixed JSON purpose, native per-platform adapters, cancellation as a non-error, and manual entry as the fallback. Project directory safety and canonicalization remain unchanged.
+- **2026-07-31 — Accepted:** mark Phase 2 complete after run `30617549600` passed the baseline and the user accepted the locally validated directory-picker UX follow-up; do not claim that the earlier run covered follow-up commits.
 
 ### Outcomes & Retrospective
 
@@ -449,4 +455,4 @@ All six local milestones are implemented. The generated OpenAPI/sqlc/TypeScript 
 
 The final live Windows smoke created UUIDv7 Project `019fb74b-1679-7ed7-b2e5-ba6b1fcded5a`, observed schema version 2, received `200` from the embedded `/projects/:id` route, stopped and restarted the same Core data directory, and then retrieved the same Project with list count unchanged at one. The referenced project directory remained empty.
 
-Local Phase 2 implementation is complete, but phase status remains **In progress** at 95%. The only remaining completion gate is an actual successful GitHub Actions run for these commits on Go quality, frontend quality, Windows, macOS, and Linux after a future authorized push.
+Phase 2 is **Completed**. Users can choose or manually enter a Project directory, create/list/open a Project, restart Core without losing it, and refresh an embedded detail route. OpenAPI, generated clients, SQLite, Core, and Web validation are reproducible. Actions run `30617549600` supplies the baseline three-platform evidence; `695ad88` and `6ad6226` are explicitly recorded as locally validated follow-up commits awaiting the next routine CI regression.

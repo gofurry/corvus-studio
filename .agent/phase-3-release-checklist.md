@@ -239,7 +239,7 @@ Evidence must show atomic creation, duplicate rejection, persistence after Core 
 
 - [x] 2026-07-31: audited the clean `dev` baseline, relevant design documents, existing architecture and current official Steam documentation; obtained product decisions.
 - [x] 2026-07-31: Milestone 1 created the living ExecPlan and marked Phase 3 In progress; Markdown formatting and `git diff --check` passed.
-- [ ] Milestone 2 — OpenAPI and generated clients.
+- [x] 2026-07-31: Milestone 2 added the template/Release/Checklist OpenAPI contract and regenerated Go/TypeScript clients; Core tests, API-client typecheck and consecutive-output hash comparison passed.
 - [ ] Milestone 3 — domain, template and persistence.
 - [ ] Milestone 4 — HTTP API.
 - [ ] Milestone 5 — Web workflow.
@@ -251,6 +251,7 @@ Evidence must show atomic creation, duplicate rejection, persistence after Core 
 - Backend API design has no Release-list or template-preview route, although a refreshable Web workflow requires both.
 - UX includes Published while the higher-priority data model does not.
 - The branch begins three local commits ahead of its remote baseline.
+- On Windows, one immediate repeated TypeScript generation attempt hit a transient file lock while Prettier reopened `client/types.gen.ts`. A clean retry and two successful runs separated by two seconds produced the identical diff hash `848a1bfe7b7c864351ead23bb66061324084d999`; no source or generator change was required.
 
 ### Decision Log
 

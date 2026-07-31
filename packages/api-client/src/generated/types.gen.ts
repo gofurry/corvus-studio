@@ -51,12 +51,136 @@ export type ProjectList = {
   items: Array<Project>;
 };
 
+export type ReleaseGoalType = 'steam_coming_soon';
+
+export type ReleaseStatus =
+  'draft' | 'preparing' | 'needs_attention' | 'ready_for_review' | 'ready' | 'submitted';
+
+export type ChecklistStatus =
+  'not_started' | 'in_progress' | 'needs_review' | 'done' | 'blocked' | 'not_applicable';
+
+export type ChecklistSource = 'platform_template' | 'corvus_template' | 'user' | 'agent';
+
+export type ChecklistRequirementLevel = 'required' | 'recommended';
+
+export type ChecklistCategory =
+  | 'setup'
+  | 'store_copy'
+  | 'branding'
+  | 'media'
+  | 'compliance'
+  | 'timeline'
+  | 'positioning'
+  | 'localization'
+  | 'review';
+
+export type ReleaseTemplateItem = {
+  template_item_key: string;
+  title: string;
+  description: string;
+  requirement: string;
+  category: ChecklistCategory;
+  requirement_level: ChecklistRequirementLevel;
+  source: ChecklistSource;
+  source_reference: string;
+  sort_order: number;
+};
+
+export type ReleaseTemplate = {
+  key: string;
+  version: string;
+  schema_version: number;
+  name: string;
+  description: string;
+  reviewed_at: string;
+  items: Array<ReleaseTemplateItem>;
+};
+
+export type CreateReleaseRequest = {
+  project_id: string;
+  goal_type: ReleaseGoalType;
+  template_key: string;
+  template_version: string;
+};
+
+export type ChecklistSummary = {
+  total: number;
+  done: number;
+  blocked: number;
+  required_total: number;
+  required_done: number;
+};
+
+export type ReleaseGoal = {
+  id: string;
+  project_id: string;
+  goal_type: ReleaseGoalType;
+  title: string;
+  status: ReleaseStatus;
+  template_key: string;
+  template_version: string;
+  checklist_summary: ChecklistSummary;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ReleaseGoalList = {
+  items: Array<ReleaseGoal>;
+};
+
+export type TransitionReleaseRequest = {
+  status: ReleaseStatus;
+};
+
+export type ChecklistItem = {
+  id: string;
+  release_goal_id: string;
+  title: string;
+  description: string;
+  requirement: string;
+  category: ChecklistCategory;
+  requirement_level: ChecklistRequirementLevel;
+  source: ChecklistSource;
+  source_reference: string;
+  template_item_key?: string | null;
+  template_key?: string | null;
+  template_version?: string | null;
+  status: ChecklistStatus;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ChecklistItemList = {
+  items: Array<ChecklistItem>;
+};
+
+export type CreateChecklistItemRequest = {
+  release_goal_id: string;
+  title: string;
+  description: string;
+  requirement: string;
+  category: ChecklistCategory;
+  requirement_level: ChecklistRequirementLevel;
+};
+
+export type TransitionChecklistItemRequest = {
+  status: ChecklistStatus;
+};
+
 export type Error = {
   code:
     | 'validation_failed'
     | 'project_not_found'
     | 'project_location_conflict'
     | 'directory_picker_unavailable'
+    | 'template_not_found'
+    | 'release_not_found'
+    | 'release_goal_conflict'
+    | 'release_not_ready'
+    | 'release_state_conflict'
+    | 'checklist_item_not_found'
+    | 'invalid_transition'
     | 'internal_error';
   message: string;
   recoverable: boolean;
@@ -65,6 +189,16 @@ export type Error = {
 export type ErrorResponse = {
   error: Error;
 };
+
+/**
+ * UUIDv7 Release Goal identifier.
+ */
+export type ReleaseId = string;
+
+/**
+ * UUIDv7 Checklist item identifier.
+ */
+export type ChecklistItemId = string;
 
 export type SelectDirectoryData = {
   body: SelectDirectoryRequest;
@@ -194,3 +328,355 @@ export type GetProjectResponses = {
 };
 
 export type GetProjectResponse = GetProjectResponses[keyof GetProjectResponses];
+
+export type GetReleaseTemplateData = {
+  body?: never;
+  path: {
+    template_key: string;
+  };
+  query?: never;
+  url: '/api/v1/release-templates/{template_key}';
+};
+
+export type GetReleaseTemplateErrors = {
+  /**
+   * Release template does not exist.
+   */
+  404: ErrorResponse;
+  /**
+   * Core could not complete the request.
+   */
+  500: ErrorResponse;
+};
+
+export type GetReleaseTemplateError = GetReleaseTemplateErrors[keyof GetReleaseTemplateErrors];
+
+export type GetReleaseTemplateResponses = {
+  /**
+   * Release template metadata and item preview.
+   */
+  200: ReleaseTemplate;
+};
+
+export type GetReleaseTemplateResponse =
+  GetReleaseTemplateResponses[keyof GetReleaseTemplateResponses];
+
+export type ListProjectReleasesData = {
+  body?: never;
+  path: {
+    /**
+     * UUIDv7 Project identifier.
+     */
+    project_id: string;
+  };
+  query?: never;
+  url: '/api/v1/projects/{project_id}/releases';
+};
+
+export type ListProjectReleasesErrors = {
+  /**
+   * Request validation failed.
+   */
+  400: ErrorResponse;
+  /**
+   * Project does not exist.
+   */
+  404: ErrorResponse;
+  /**
+   * Core could not complete the request.
+   */
+  500: ErrorResponse;
+};
+
+export type ListProjectReleasesError = ListProjectReleasesErrors[keyof ListProjectReleasesErrors];
+
+export type ListProjectReleasesResponses = {
+  /**
+   * Release Goals ordered from newest to oldest.
+   */
+  200: ReleaseGoalList;
+};
+
+export type ListProjectReleasesResponse =
+  ListProjectReleasesResponses[keyof ListProjectReleasesResponses];
+
+export type CreateReleaseData = {
+  body: CreateReleaseRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/releases';
+};
+
+export type CreateReleaseErrors = {
+  /**
+   * Request validation failed.
+   */
+  400: ErrorResponse;
+  /**
+   * Project or exact Release template does not exist.
+   */
+  404: ErrorResponse;
+  /**
+   * A Release Goal of this type already exists for the Project.
+   */
+  409: ErrorResponse;
+  /**
+   * Core could not complete the request.
+   */
+  500: ErrorResponse;
+};
+
+export type CreateReleaseError = CreateReleaseErrors[keyof CreateReleaseErrors];
+
+export type CreateReleaseResponses = {
+  /**
+   * Release Goal and Checklist created.
+   */
+  201: ReleaseGoal;
+};
+
+export type CreateReleaseResponse = CreateReleaseResponses[keyof CreateReleaseResponses];
+
+export type GetReleaseData = {
+  body?: never;
+  path: {
+    /**
+     * UUIDv7 Release Goal identifier.
+     */
+    release_id: string;
+  };
+  query?: never;
+  url: '/api/v1/releases/{release_id}';
+};
+
+export type GetReleaseErrors = {
+  /**
+   * Request validation failed.
+   */
+  400: ErrorResponse;
+  /**
+   * Release Goal does not exist.
+   */
+  404: ErrorResponse;
+  /**
+   * Core could not complete the request.
+   */
+  500: ErrorResponse;
+};
+
+export type GetReleaseError = GetReleaseErrors[keyof GetReleaseErrors];
+
+export type GetReleaseResponses = {
+  /**
+   * Release Goal with current Checklist summary.
+   */
+  200: ReleaseGoal;
+};
+
+export type GetReleaseResponse = GetReleaseResponses[keyof GetReleaseResponses];
+
+export type TransitionReleaseData = {
+  body: TransitionReleaseRequest;
+  path: {
+    /**
+     * UUIDv7 Release Goal identifier.
+     */
+    release_id: string;
+  };
+  query?: never;
+  url: '/api/v1/releases/{release_id}/transition';
+};
+
+export type TransitionReleaseErrors = {
+  /**
+   * Request validation failed.
+   */
+  400: ErrorResponse;
+  /**
+   * Release Goal does not exist.
+   */
+  404: ErrorResponse;
+  /**
+   * Release Goal transition is invalid or required work is incomplete.
+   */
+  409: ErrorResponse;
+  /**
+   * Core could not complete the request.
+   */
+  500: ErrorResponse;
+};
+
+export type TransitionReleaseError = TransitionReleaseErrors[keyof TransitionReleaseErrors];
+
+export type TransitionReleaseResponses = {
+  /**
+   * Updated Release Goal.
+   */
+  200: ReleaseGoal;
+};
+
+export type TransitionReleaseResponse =
+  TransitionReleaseResponses[keyof TransitionReleaseResponses];
+
+export type ListChecklistItemsData = {
+  body?: never;
+  path: {
+    /**
+     * UUIDv7 Release Goal identifier.
+     */
+    release_id: string;
+  };
+  query?: {
+    status?: ChecklistStatus;
+    source?: ChecklistSource;
+    category?: ChecklistCategory;
+  };
+  url: '/api/v1/releases/{release_id}/checklist';
+};
+
+export type ListChecklistItemsErrors = {
+  /**
+   * Request validation failed.
+   */
+  400: ErrorResponse;
+  /**
+   * Release Goal does not exist.
+   */
+  404: ErrorResponse;
+  /**
+   * Core could not complete the request.
+   */
+  500: ErrorResponse;
+};
+
+export type ListChecklistItemsError = ListChecklistItemsErrors[keyof ListChecklistItemsErrors];
+
+export type ListChecklistItemsResponses = {
+  /**
+   * Filtered Checklist items in stable display order.
+   */
+  200: ChecklistItemList;
+};
+
+export type ListChecklistItemsResponse =
+  ListChecklistItemsResponses[keyof ListChecklistItemsResponses];
+
+export type CreateChecklistItemData = {
+  body: CreateChecklistItemRequest;
+  path?: never;
+  query?: never;
+  url: '/api/v1/checklist';
+};
+
+export type CreateChecklistItemErrors = {
+  /**
+   * Request validation failed.
+   */
+  400: ErrorResponse;
+  /**
+   * Release Goal does not exist.
+   */
+  404: ErrorResponse;
+  /**
+   * Release Goal state prevents this operation.
+   */
+  409: ErrorResponse;
+  /**
+   * Core could not complete the request.
+   */
+  500: ErrorResponse;
+};
+
+export type CreateChecklistItemError = CreateChecklistItemErrors[keyof CreateChecklistItemErrors];
+
+export type CreateChecklistItemResponses = {
+  /**
+   * Checklist item created.
+   */
+  201: ChecklistItem;
+};
+
+export type CreateChecklistItemResponse =
+  CreateChecklistItemResponses[keyof CreateChecklistItemResponses];
+
+export type GetChecklistItemData = {
+  body?: never;
+  path: {
+    /**
+     * UUIDv7 Checklist item identifier.
+     */
+    item_id: string;
+  };
+  query?: never;
+  url: '/api/v1/checklist/{item_id}';
+};
+
+export type GetChecklistItemErrors = {
+  /**
+   * Request validation failed.
+   */
+  400: ErrorResponse;
+  /**
+   * Checklist item does not exist.
+   */
+  404: ErrorResponse;
+  /**
+   * Core could not complete the request.
+   */
+  500: ErrorResponse;
+};
+
+export type GetChecklistItemError = GetChecklistItemErrors[keyof GetChecklistItemErrors];
+
+export type GetChecklistItemResponses = {
+  /**
+   * Checklist item detail.
+   */
+  200: ChecklistItem;
+};
+
+export type GetChecklistItemResponse = GetChecklistItemResponses[keyof GetChecklistItemResponses];
+
+export type TransitionChecklistItemData = {
+  body: TransitionChecklistItemRequest;
+  path: {
+    /**
+     * UUIDv7 Checklist item identifier.
+     */
+    item_id: string;
+  };
+  query?: never;
+  url: '/api/v1/checklist/{item_id}/transition';
+};
+
+export type TransitionChecklistItemErrors = {
+  /**
+   * Request validation failed.
+   */
+  400: ErrorResponse;
+  /**
+   * Checklist item does not exist.
+   */
+  404: ErrorResponse;
+  /**
+   * Checklist transition is invalid or conflicts with its Release Goal.
+   */
+  409: ErrorResponse;
+  /**
+   * Core could not complete the request.
+   */
+  500: ErrorResponse;
+};
+
+export type TransitionChecklistItemError =
+  TransitionChecklistItemErrors[keyof TransitionChecklistItemErrors];
+
+export type TransitionChecklistItemResponses = {
+  /**
+   * Updated Checklist item.
+   */
+  200: ChecklistItem;
+};
+
+export type TransitionChecklistItemResponse =
+  TransitionChecklistItemResponses[keyof TransitionChecklistItemResponses];

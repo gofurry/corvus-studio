@@ -3,18 +3,45 @@
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
 import type {
+  CreateChecklistItemData,
+  CreateChecklistItemErrors,
+  CreateChecklistItemResponses,
   CreateProjectData,
   CreateProjectErrors,
   CreateProjectResponses,
+  CreateReleaseData,
+  CreateReleaseErrors,
+  CreateReleaseResponses,
+  GetChecklistItemData,
+  GetChecklistItemErrors,
+  GetChecklistItemResponses,
   GetProjectData,
   GetProjectErrors,
   GetProjectResponses,
+  GetReleaseData,
+  GetReleaseErrors,
+  GetReleaseResponses,
+  GetReleaseTemplateData,
+  GetReleaseTemplateErrors,
+  GetReleaseTemplateResponses,
+  ListChecklistItemsData,
+  ListChecklistItemsErrors,
+  ListChecklistItemsResponses,
+  ListProjectReleasesData,
+  ListProjectReleasesErrors,
+  ListProjectReleasesResponses,
   ListProjectsData,
   ListProjectsErrors,
   ListProjectsResponses,
   SelectDirectoryData,
   SelectDirectoryErrors,
   SelectDirectoryResponses,
+  TransitionChecklistItemData,
+  TransitionChecklistItemErrors,
+  TransitionChecklistItemResponses,
+  TransitionReleaseData,
+  TransitionReleaseErrors,
+  TransitionReleaseResponses,
 } from './types.gen';
 
 export type Options<
@@ -85,4 +112,134 @@ export const getProject = <ThrowOnError extends boolean = false>(
   (options.client ?? client).get<GetProjectResponses, GetProjectErrors, ThrowOnError>({
     url: '/api/v1/projects/{project_id}',
     ...options,
+  });
+
+/**
+ * Get an immutable release template
+ */
+export const getReleaseTemplate = <ThrowOnError extends boolean = false>(
+  options: Options<GetReleaseTemplateData, ThrowOnError>,
+): RequestResult<GetReleaseTemplateResponses, GetReleaseTemplateErrors, ThrowOnError> =>
+  (options.client ?? client).get<
+    GetReleaseTemplateResponses,
+    GetReleaseTemplateErrors,
+    ThrowOnError
+  >({ url: '/api/v1/release-templates/{template_key}', ...options });
+
+/**
+ * List Release Goals for a Project
+ */
+export const listProjectReleases = <ThrowOnError extends boolean = false>(
+  options: Options<ListProjectReleasesData, ThrowOnError>,
+): RequestResult<ListProjectReleasesResponses, ListProjectReleasesErrors, ThrowOnError> =>
+  (options.client ?? client).get<
+    ListProjectReleasesResponses,
+    ListProjectReleasesErrors,
+    ThrowOnError
+  >({ url: '/api/v1/projects/{project_id}/releases', ...options });
+
+/**
+ * Atomically create a Release Goal and Checklist
+ */
+export const createRelease = <ThrowOnError extends boolean = false>(
+  options: Options<CreateReleaseData, ThrowOnError>,
+): RequestResult<CreateReleaseResponses, CreateReleaseErrors, ThrowOnError> =>
+  (options.client ?? client).post<CreateReleaseResponses, CreateReleaseErrors, ThrowOnError>({
+    url: '/api/v1/releases',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Get a Release Goal
+ */
+export const getRelease = <ThrowOnError extends boolean = false>(
+  options: Options<GetReleaseData, ThrowOnError>,
+): RequestResult<GetReleaseResponses, GetReleaseErrors, ThrowOnError> =>
+  (options.client ?? client).get<GetReleaseResponses, GetReleaseErrors, ThrowOnError>({
+    url: '/api/v1/releases/{release_id}',
+    ...options,
+  });
+
+/**
+ * Transition a Release Goal
+ */
+export const transitionRelease = <ThrowOnError extends boolean = false>(
+  options: Options<TransitionReleaseData, ThrowOnError>,
+): RequestResult<TransitionReleaseResponses, TransitionReleaseErrors, ThrowOnError> =>
+  (options.client ?? client).post<
+    TransitionReleaseResponses,
+    TransitionReleaseErrors,
+    ThrowOnError
+  >({
+    url: '/api/v1/releases/{release_id}/transition',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * List and filter Checklist items for a Release Goal
+ */
+export const listChecklistItems = <ThrowOnError extends boolean = false>(
+  options: Options<ListChecklistItemsData, ThrowOnError>,
+): RequestResult<ListChecklistItemsResponses, ListChecklistItemsErrors, ThrowOnError> =>
+  (options.client ?? client).get<
+    ListChecklistItemsResponses,
+    ListChecklistItemsErrors,
+    ThrowOnError
+  >({ url: '/api/v1/releases/{release_id}/checklist', ...options });
+
+/**
+ * Add a user-owned Checklist item
+ */
+export const createChecklistItem = <ThrowOnError extends boolean = false>(
+  options: Options<CreateChecklistItemData, ThrowOnError>,
+): RequestResult<CreateChecklistItemResponses, CreateChecklistItemErrors, ThrowOnError> =>
+  (options.client ?? client).post<
+    CreateChecklistItemResponses,
+    CreateChecklistItemErrors,
+    ThrowOnError
+  >({
+    url: '/api/v1/checklist',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Get a Checklist item
+ */
+export const getChecklistItem = <ThrowOnError extends boolean = false>(
+  options: Options<GetChecklistItemData, ThrowOnError>,
+): RequestResult<GetChecklistItemResponses, GetChecklistItemErrors, ThrowOnError> =>
+  (options.client ?? client).get<GetChecklistItemResponses, GetChecklistItemErrors, ThrowOnError>({
+    url: '/api/v1/checklist/{item_id}',
+    ...options,
+  });
+
+/**
+ * Transition a Checklist item
+ */
+export const transitionChecklistItem = <ThrowOnError extends boolean = false>(
+  options: Options<TransitionChecklistItemData, ThrowOnError>,
+): RequestResult<TransitionChecklistItemResponses, TransitionChecklistItemErrors, ThrowOnError> =>
+  (options.client ?? client).post<
+    TransitionChecklistItemResponses,
+    TransitionChecklistItemErrors,
+    ThrowOnError
+  >({
+    url: '/api/v1/checklist/{item_id}/transition',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
   });

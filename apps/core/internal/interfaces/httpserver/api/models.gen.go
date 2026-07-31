@@ -9,6 +9,117 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for ChecklistCategory.
+const (
+	Branding     ChecklistCategory = "branding"
+	Compliance   ChecklistCategory = "compliance"
+	Localization ChecklistCategory = "localization"
+	Media        ChecklistCategory = "media"
+	Positioning  ChecklistCategory = "positioning"
+	Review       ChecklistCategory = "review"
+	Setup        ChecklistCategory = "setup"
+	StoreCopy    ChecklistCategory = "store_copy"
+	Timeline     ChecklistCategory = "timeline"
+)
+
+// Valid indicates whether the value is a known member of the ChecklistCategory enum.
+func (e ChecklistCategory) Valid() bool {
+	switch e {
+	case Branding:
+		return true
+	case Compliance:
+		return true
+	case Localization:
+		return true
+	case Media:
+		return true
+	case Positioning:
+		return true
+	case Review:
+		return true
+	case Setup:
+		return true
+	case StoreCopy:
+		return true
+	case Timeline:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ChecklistRequirementLevel.
+const (
+	Recommended ChecklistRequirementLevel = "recommended"
+	Required    ChecklistRequirementLevel = "required"
+)
+
+// Valid indicates whether the value is a known member of the ChecklistRequirementLevel enum.
+func (e ChecklistRequirementLevel) Valid() bool {
+	switch e {
+	case Recommended:
+		return true
+	case Required:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ChecklistSource.
+const (
+	Agent            ChecklistSource = "agent"
+	CorvusTemplate   ChecklistSource = "corvus_template"
+	PlatformTemplate ChecklistSource = "platform_template"
+	User             ChecklistSource = "user"
+)
+
+// Valid indicates whether the value is a known member of the ChecklistSource enum.
+func (e ChecklistSource) Valid() bool {
+	switch e {
+	case Agent:
+		return true
+	case CorvusTemplate:
+		return true
+	case PlatformTemplate:
+		return true
+	case User:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ChecklistStatus.
+const (
+	Blocked       ChecklistStatus = "blocked"
+	Done          ChecklistStatus = "done"
+	InProgress    ChecklistStatus = "in_progress"
+	NeedsReview   ChecklistStatus = "needs_review"
+	NotApplicable ChecklistStatus = "not_applicable"
+	NotStarted    ChecklistStatus = "not_started"
+)
+
+// Valid indicates whether the value is a known member of the ChecklistStatus enum.
+func (e ChecklistStatus) Valid() bool {
+	switch e {
+	case Blocked:
+		return true
+	case Done:
+		return true
+	case InProgress:
+		return true
+	case NeedsReview:
+		return true
+	case NotApplicable:
+		return true
+	case NotStarted:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for DirectoryPickerPurpose.
 const (
 	ProjectLocation DirectoryPickerPurpose = "project_location"
@@ -26,23 +137,44 @@ func (e DirectoryPickerPurpose) Valid() bool {
 
 // Defines values for ErrorCode.
 const (
+	ErrorCodeChecklistItemNotFound      ErrorCode = "checklist_item_not_found"
 	ErrorCodeDirectoryPickerUnavailable ErrorCode = "directory_picker_unavailable"
 	ErrorCodeInternalError              ErrorCode = "internal_error"
+	ErrorCodeInvalidTransition          ErrorCode = "invalid_transition"
 	ErrorCodeProjectLocationConflict    ErrorCode = "project_location_conflict"
 	ErrorCodeProjectNotFound            ErrorCode = "project_not_found"
+	ErrorCodeReleaseGoalConflict        ErrorCode = "release_goal_conflict"
+	ErrorCodeReleaseNotFound            ErrorCode = "release_not_found"
+	ErrorCodeReleaseNotReady            ErrorCode = "release_not_ready"
+	ErrorCodeReleaseStateConflict       ErrorCode = "release_state_conflict"
+	ErrorCodeTemplateNotFound           ErrorCode = "template_not_found"
 	ErrorCodeValidationFailed           ErrorCode = "validation_failed"
 )
 
 // Valid indicates whether the value is a known member of the ErrorCode enum.
 func (e ErrorCode) Valid() bool {
 	switch e {
+	case ErrorCodeChecklistItemNotFound:
+		return true
 	case ErrorCodeDirectoryPickerUnavailable:
 		return true
 	case ErrorCodeInternalError:
 		return true
+	case ErrorCodeInvalidTransition:
+		return true
 	case ErrorCodeProjectLocationConflict:
 		return true
 	case ErrorCodeProjectNotFound:
+		return true
+	case ErrorCodeReleaseGoalConflict:
+		return true
+	case ErrorCodeReleaseNotFound:
+		return true
+	case ErrorCodeReleaseNotReady:
+		return true
+	case ErrorCodeReleaseStateConflict:
+		return true
+	case ErrorCodeTemplateNotFound:
 		return true
 	case ErrorCodeValidationFailed:
 		return true
@@ -93,6 +225,107 @@ func (e ProjectStatus) Valid() bool {
 	}
 }
 
+// Defines values for ReleaseGoalType.
+const (
+	SteamComingSoon ReleaseGoalType = "steam_coming_soon"
+)
+
+// Valid indicates whether the value is a known member of the ReleaseGoalType enum.
+func (e ReleaseGoalType) Valid() bool {
+	switch e {
+	case SteamComingSoon:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ReleaseStatus.
+const (
+	Draft          ReleaseStatus = "draft"
+	NeedsAttention ReleaseStatus = "needs_attention"
+	Preparing      ReleaseStatus = "preparing"
+	Ready          ReleaseStatus = "ready"
+	ReadyForReview ReleaseStatus = "ready_for_review"
+	Submitted      ReleaseStatus = "submitted"
+)
+
+// Valid indicates whether the value is a known member of the ReleaseStatus enum.
+func (e ReleaseStatus) Valid() bool {
+	switch e {
+	case Draft:
+		return true
+	case NeedsAttention:
+		return true
+	case Preparing:
+		return true
+	case Ready:
+		return true
+	case ReadyForReview:
+		return true
+	case Submitted:
+		return true
+	default:
+		return false
+	}
+}
+
+// ChecklistCategory defines model for ChecklistCategory.
+type ChecklistCategory string
+
+// ChecklistItem defines model for ChecklistItem.
+type ChecklistItem struct {
+	Category         ChecklistCategory         `json:"category"`
+	CreatedAt        time.Time                 `json:"created_at"`
+	Description      string                    `json:"description"`
+	Id               openapi_types.UUID        `json:"id"`
+	ReleaseGoalId    openapi_types.UUID        `json:"release_goal_id"`
+	Requirement      string                    `json:"requirement"`
+	RequirementLevel ChecklistRequirementLevel `json:"requirement_level"`
+	SortOrder        int32                     `json:"sort_order"`
+	Source           ChecklistSource           `json:"source"`
+	SourceReference  string                    `json:"source_reference"`
+	Status           ChecklistStatus           `json:"status"`
+	TemplateItemKey  *string                   `json:"template_item_key,omitempty"`
+	TemplateKey      *string                   `json:"template_key,omitempty"`
+	TemplateVersion  *string                   `json:"template_version,omitempty"`
+	Title            string                    `json:"title"`
+	UpdatedAt        time.Time                 `json:"updated_at"`
+}
+
+// ChecklistItemList defines model for ChecklistItemList.
+type ChecklistItemList struct {
+	Items []ChecklistItem `json:"items"`
+}
+
+// ChecklistRequirementLevel defines model for ChecklistRequirementLevel.
+type ChecklistRequirementLevel string
+
+// ChecklistSource defines model for ChecklistSource.
+type ChecklistSource string
+
+// ChecklistStatus defines model for ChecklistStatus.
+type ChecklistStatus string
+
+// ChecklistSummary defines model for ChecklistSummary.
+type ChecklistSummary struct {
+	Blocked       int32 `json:"blocked"`
+	Done          int32 `json:"done"`
+	RequiredDone  int32 `json:"required_done"`
+	RequiredTotal int32 `json:"required_total"`
+	Total         int32 `json:"total"`
+}
+
+// CreateChecklistItemRequest defines model for CreateChecklistItemRequest.
+type CreateChecklistItemRequest struct {
+	Category         ChecklistCategory         `json:"category"`
+	Description      string                    `json:"description"`
+	ReleaseGoalId    openapi_types.UUID        `json:"release_goal_id"`
+	Requirement      string                    `json:"requirement"`
+	RequirementLevel ChecklistRequirementLevel `json:"requirement_level"`
+	Title            string                    `json:"title"`
+}
+
 // CreateProjectRequest defines model for CreateProjectRequest.
 type CreateProjectRequest struct {
 	Description *string `json:"description,omitempty"`
@@ -103,6 +336,14 @@ type CreateProjectRequest struct {
 	Name       string       `json:"name"`
 	Stage      ProjectStage `json:"stage"`
 	SteamAppId *int64       `json:"steam_app_id,omitempty"`
+}
+
+// CreateReleaseRequest defines model for CreateReleaseRequest.
+type CreateReleaseRequest struct {
+	GoalType        ReleaseGoalType    `json:"goal_type"`
+	ProjectId       openapi_types.UUID `json:"project_id"`
+	TemplateKey     string             `json:"template_key"`
+	TemplateVersion string             `json:"template_version"`
 }
 
 // DirectoryPickerPurpose defines model for DirectoryPickerPurpose.
@@ -148,6 +389,55 @@ type ProjectStage string
 // ProjectStatus defines model for ProjectStatus.
 type ProjectStatus string
 
+// ReleaseGoal defines model for ReleaseGoal.
+type ReleaseGoal struct {
+	ChecklistSummary ChecklistSummary   `json:"checklist_summary"`
+	CreatedAt        time.Time          `json:"created_at"`
+	GoalType         ReleaseGoalType    `json:"goal_type"`
+	Id               openapi_types.UUID `json:"id"`
+	ProjectId        openapi_types.UUID `json:"project_id"`
+	Status           ReleaseStatus      `json:"status"`
+	TemplateKey      string             `json:"template_key"`
+	TemplateVersion  string             `json:"template_version"`
+	Title            string             `json:"title"`
+	UpdatedAt        time.Time          `json:"updated_at"`
+}
+
+// ReleaseGoalList defines model for ReleaseGoalList.
+type ReleaseGoalList struct {
+	Items []ReleaseGoal `json:"items"`
+}
+
+// ReleaseGoalType defines model for ReleaseGoalType.
+type ReleaseGoalType string
+
+// ReleaseStatus defines model for ReleaseStatus.
+type ReleaseStatus string
+
+// ReleaseTemplate defines model for ReleaseTemplate.
+type ReleaseTemplate struct {
+	Description   string                `json:"description"`
+	Items         []ReleaseTemplateItem `json:"items"`
+	Key           string                `json:"key"`
+	Name          string                `json:"name"`
+	ReviewedAt    openapi_types.Date    `json:"reviewed_at"`
+	SchemaVersion int32                 `json:"schema_version"`
+	Version       string                `json:"version"`
+}
+
+// ReleaseTemplateItem defines model for ReleaseTemplateItem.
+type ReleaseTemplateItem struct {
+	Category         ChecklistCategory         `json:"category"`
+	Description      string                    `json:"description"`
+	Requirement      string                    `json:"requirement"`
+	RequirementLevel ChecklistRequirementLevel `json:"requirement_level"`
+	SortOrder        int32                     `json:"sort_order"`
+	Source           ChecklistSource           `json:"source"`
+	SourceReference  string                    `json:"source_reference"`
+	TemplateItemKey  string                    `json:"template_item_key"`
+	Title            string                    `json:"title"`
+}
+
 // SelectDirectoryRequest defines model for SelectDirectoryRequest.
 type SelectDirectoryRequest struct {
 	Purpose DirectoryPickerPurpose `json:"purpose"`
@@ -159,6 +449,28 @@ type SelectDirectoryResponse struct {
 	Path     *string `json:"path"`
 	Selected bool    `json:"selected"`
 }
+
+// TransitionChecklistItemRequest defines model for TransitionChecklistItemRequest.
+type TransitionChecklistItemRequest struct {
+	Status ChecklistStatus `json:"status"`
+}
+
+// TransitionReleaseRequest defines model for TransitionReleaseRequest.
+type TransitionReleaseRequest struct {
+	Status ReleaseStatus `json:"status"`
+}
+
+// ChecklistItemId defines model for ChecklistItemId.
+type ChecklistItemId = openapi_types.UUID
+
+// ReleaseId defines model for ReleaseId.
+type ReleaseId = openapi_types.UUID
+
+// ChecklistItemNotFound defines model for ChecklistItemNotFound.
+type ChecklistItemNotFound = ErrorResponse
+
+// ChecklistTransitionConflict defines model for ChecklistTransitionConflict.
+type ChecklistTransitionConflict = ErrorResponse
 
 // DirectoryPickerUnavailable defines model for DirectoryPickerUnavailable.
 type DirectoryPickerUnavailable = ErrorResponse
@@ -172,11 +484,48 @@ type ProjectLocationConflict = ErrorResponse
 // ProjectNotFound defines model for ProjectNotFound.
 type ProjectNotFound = ErrorResponse
 
+// ProjectOrTemplateNotFound defines model for ProjectOrTemplateNotFound.
+type ProjectOrTemplateNotFound = ErrorResponse
+
+// ReleaseGoalConflict defines model for ReleaseGoalConflict.
+type ReleaseGoalConflict = ErrorResponse
+
+// ReleaseNotFound defines model for ReleaseNotFound.
+type ReleaseNotFound = ErrorResponse
+
+// ReleaseStateConflict defines model for ReleaseStateConflict.
+type ReleaseStateConflict = ErrorResponse
+
+// ReleaseTransitionConflict defines model for ReleaseTransitionConflict.
+type ReleaseTransitionConflict = ErrorResponse
+
+// TemplateNotFound defines model for TemplateNotFound.
+type TemplateNotFound = ErrorResponse
+
 // ValidationError defines model for ValidationError.
 type ValidationError = ErrorResponse
 
+// ListChecklistItemsParams defines parameters for ListChecklistItems.
+type ListChecklistItemsParams struct {
+	Status   *ChecklistStatus   `form:"status,omitempty" json:"status,omitempty"`
+	Source   *ChecklistSource   `form:"source,omitempty" json:"source,omitempty"`
+	Category *ChecklistCategory `form:"category,omitempty" json:"category,omitempty"`
+}
+
+// CreateChecklistItemJSONRequestBody defines body for CreateChecklistItem for application/json ContentType.
+type CreateChecklistItemJSONRequestBody = CreateChecklistItemRequest
+
+// TransitionChecklistItemJSONRequestBody defines body for TransitionChecklistItem for application/json ContentType.
+type TransitionChecklistItemJSONRequestBody = TransitionChecklistItemRequest
+
 // CreateProjectJSONRequestBody defines body for CreateProject for application/json ContentType.
 type CreateProjectJSONRequestBody = CreateProjectRequest
+
+// CreateReleaseJSONRequestBody defines body for CreateRelease for application/json ContentType.
+type CreateReleaseJSONRequestBody = CreateReleaseRequest
+
+// TransitionReleaseJSONRequestBody defines body for TransitionRelease for application/json ContentType.
+type TransitionReleaseJSONRequestBody = TransitionReleaseRequest
 
 // SelectDirectoryJSONRequestBody defines body for SelectDirectory for application/json ContentType.
 type SelectDirectoryJSONRequestBody = SelectDirectoryRequest

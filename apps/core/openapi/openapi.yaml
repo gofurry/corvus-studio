@@ -101,7 +101,277 @@ paths:
           $ref: "#/components/responses/ProjectNotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+  /api/v1/release-templates/{template_key}:
+    get:
+      operationId: getReleaseTemplate
+      summary: Get an immutable release template
+      tags:
+        - Release Templates
+      parameters:
+        - name: template_key
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        "200":
+          description: Release template metadata and item preview.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReleaseTemplate"
+        "404":
+          $ref: "#/components/responses/TemplateNotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /api/v1/projects/{project_id}/releases:
+    get:
+      operationId: listProjectReleases
+      summary: List Release Goals for a Project
+      tags:
+        - Releases
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          description: UUIDv7 Project identifier.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Release Goals ordered from newest to oldest.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReleaseGoalList"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/ProjectNotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /api/v1/releases:
+    post:
+      operationId: createRelease
+      summary: Atomically create a Release Goal and Checklist
+      tags:
+        - Releases
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReleaseRequest"
+      responses:
+        "201":
+          description: Release Goal and Checklist created.
+          headers:
+            Location:
+              description: URL of the created Release Goal.
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReleaseGoal"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/ProjectOrTemplateNotFound"
+        "409":
+          $ref: "#/components/responses/ReleaseGoalConflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /api/v1/releases/{release_id}:
+    get:
+      operationId: getRelease
+      summary: Get a Release Goal
+      tags:
+        - Releases
+      parameters:
+        - $ref: "#/components/parameters/ReleaseId"
+      responses:
+        "200":
+          description: Release Goal with current Checklist summary.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReleaseGoal"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/ReleaseNotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /api/v1/releases/{release_id}/transition:
+    post:
+      operationId: transitionRelease
+      summary: Transition a Release Goal
+      tags:
+        - Releases
+      parameters:
+        - $ref: "#/components/parameters/ReleaseId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransitionReleaseRequest"
+      responses:
+        "200":
+          description: Updated Release Goal.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReleaseGoal"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/ReleaseNotFound"
+        "409":
+          $ref: "#/components/responses/ReleaseTransitionConflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /api/v1/releases/{release_id}/checklist:
+    get:
+      operationId: listChecklistItems
+      summary: List and filter Checklist items for a Release Goal
+      tags:
+        - Checklist
+      parameters:
+        - $ref: "#/components/parameters/ReleaseId"
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/ChecklistStatus"
+        - name: source
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/ChecklistSource"
+        - name: category
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/ChecklistCategory"
+      responses:
+        "200":
+          description: Filtered Checklist items in stable display order.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChecklistItemList"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/ReleaseNotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /api/v1/checklist:
+    post:
+      operationId: createChecklistItem
+      summary: Add a user-owned Checklist item
+      tags:
+        - Checklist
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateChecklistItemRequest"
+      responses:
+        "201":
+          description: Checklist item created.
+          headers:
+            Location:
+              description: URL of the created Checklist item.
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChecklistItem"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/ReleaseNotFound"
+        "409":
+          $ref: "#/components/responses/ReleaseStateConflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /api/v1/checklist/{item_id}:
+    get:
+      operationId: getChecklistItem
+      summary: Get a Checklist item
+      tags:
+        - Checklist
+      parameters:
+        - $ref: "#/components/parameters/ChecklistItemId"
+      responses:
+        "200":
+          description: Checklist item detail.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChecklistItem"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/ChecklistItemNotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /api/v1/checklist/{item_id}/transition:
+    post:
+      operationId: transitionChecklistItem
+      summary: Transition a Checklist item
+      tags:
+        - Checklist
+      parameters:
+        - $ref: "#/components/parameters/ChecklistItemId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransitionChecklistItemRequest"
+      responses:
+        "200":
+          description: Updated Checklist item.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChecklistItem"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/ChecklistItemNotFound"
+        "409":
+          $ref: "#/components/responses/ChecklistTransitionConflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
 components:
+  parameters:
+    ReleaseId:
+      name: release_id
+      in: path
+      required: true
+      description: UUIDv7 Release Goal identifier.
+      schema:
+        type: string
+        format: uuid
+    ChecklistItemId:
+      name: item_id
+      in: path
+      required: true
+      description: UUIDv7 Checklist item identifier.
+      schema:
+        type: string
+        format: uuid
   responses:
     ValidationError:
       description: Request validation failed.
@@ -123,6 +393,54 @@ components:
             $ref: "#/components/schemas/ErrorResponse"
     DirectoryPickerUnavailable:
       description: The Core host cannot open a native directory picker.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    TemplateNotFound:
+      description: Release template does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ProjectOrTemplateNotFound:
+      description: Project or exact Release template does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ReleaseNotFound:
+      description: Release Goal does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ChecklistItemNotFound:
+      description: Checklist item does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ReleaseGoalConflict:
+      description: A Release Goal of this type already exists for the Project.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ReleaseTransitionConflict:
+      description: Release Goal transition is invalid or required work is incomplete.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ReleaseStateConflict:
+      description: Release Goal state prevents this operation.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ChecklistTransitionConflict:
+      description: Checklist transition is invalid or conflicts with its Release Goal.
       content:
         application/json:
           schema:
@@ -253,6 +571,329 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Project"
+    ReleaseGoalType:
+      type: string
+      enum:
+        - steam_coming_soon
+    ReleaseStatus:
+      type: string
+      enum:
+        - draft
+        - preparing
+        - needs_attention
+        - ready_for_review
+        - ready
+        - submitted
+    ChecklistStatus:
+      type: string
+      enum:
+        - not_started
+        - in_progress
+        - needs_review
+        - done
+        - blocked
+        - not_applicable
+    ChecklistSource:
+      type: string
+      enum:
+        - platform_template
+        - corvus_template
+        - user
+        - agent
+    ChecklistRequirementLevel:
+      type: string
+      enum:
+        - required
+        - recommended
+    ChecklistCategory:
+      type: string
+      enum:
+        - setup
+        - store_copy
+        - branding
+        - media
+        - compliance
+        - timeline
+        - positioning
+        - localization
+        - review
+    ReleaseTemplateItem:
+      type: object
+      additionalProperties: false
+      required:
+        - template_item_key
+        - title
+        - description
+        - requirement
+        - category
+        - requirement_level
+        - source
+        - source_reference
+        - sort_order
+      properties:
+        template_item_key:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        requirement:
+          type: string
+        category:
+          $ref: "#/components/schemas/ChecklistCategory"
+        requirement_level:
+          $ref: "#/components/schemas/ChecklistRequirementLevel"
+        source:
+          $ref: "#/components/schemas/ChecklistSource"
+        source_reference:
+          type: string
+        sort_order:
+          type: integer
+          format: int32
+          minimum: 1
+    ReleaseTemplate:
+      type: object
+      additionalProperties: false
+      required:
+        - key
+        - version
+        - schema_version
+        - name
+        - description
+        - reviewed_at
+        - items
+      properties:
+        key:
+          type: string
+        version:
+          type: string
+        schema_version:
+          type: integer
+          format: int32
+        name:
+          type: string
+        description:
+          type: string
+        reviewed_at:
+          type: string
+          format: date
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/ReleaseTemplateItem"
+    CreateReleaseRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - project_id
+        - goal_type
+        - template_key
+        - template_version
+      properties:
+        project_id:
+          type: string
+          format: uuid
+        goal_type:
+          $ref: "#/components/schemas/ReleaseGoalType"
+        template_key:
+          type: string
+          minLength: 1
+        template_version:
+          type: string
+          minLength: 1
+    ChecklistSummary:
+      type: object
+      additionalProperties: false
+      required:
+        - total
+        - done
+        - blocked
+        - required_total
+        - required_done
+      properties:
+        total:
+          type: integer
+          format: int32
+          minimum: 0
+        done:
+          type: integer
+          format: int32
+          minimum: 0
+        blocked:
+          type: integer
+          format: int32
+          minimum: 0
+        required_total:
+          type: integer
+          format: int32
+          minimum: 0
+        required_done:
+          type: integer
+          format: int32
+          minimum: 0
+    ReleaseGoal:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - project_id
+        - goal_type
+        - title
+        - status
+        - template_key
+        - template_version
+        - checklist_summary
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        project_id:
+          type: string
+          format: uuid
+        goal_type:
+          $ref: "#/components/schemas/ReleaseGoalType"
+        title:
+          type: string
+        status:
+          $ref: "#/components/schemas/ReleaseStatus"
+        template_key:
+          type: string
+        template_version:
+          type: string
+        checklist_summary:
+          $ref: "#/components/schemas/ChecklistSummary"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    ReleaseGoalList:
+      type: object
+      additionalProperties: false
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReleaseGoal"
+    TransitionReleaseRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - status
+      properties:
+        status:
+          $ref: "#/components/schemas/ReleaseStatus"
+    ChecklistItem:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - release_goal_id
+        - title
+        - description
+        - requirement
+        - category
+        - requirement_level
+        - source
+        - source_reference
+        - status
+        - sort_order
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        release_goal_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        requirement:
+          type: string
+        category:
+          $ref: "#/components/schemas/ChecklistCategory"
+        requirement_level:
+          $ref: "#/components/schemas/ChecklistRequirementLevel"
+        source:
+          $ref: "#/components/schemas/ChecklistSource"
+        source_reference:
+          type: string
+        template_item_key:
+          type: string
+          nullable: true
+        template_key:
+          type: string
+          nullable: true
+        template_version:
+          type: string
+          nullable: true
+        status:
+          $ref: "#/components/schemas/ChecklistStatus"
+        sort_order:
+          type: integer
+          format: int32
+          minimum: 1
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    ChecklistItemList:
+      type: object
+      additionalProperties: false
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChecklistItem"
+    CreateChecklistItemRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - release_goal_id
+        - title
+        - description
+        - requirement
+        - category
+        - requirement_level
+      properties:
+        release_goal_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 160
+        description:
+          type: string
+          maxLength: 2000
+        requirement:
+          type: string
+          maxLength: 2000
+        category:
+          $ref: "#/components/schemas/ChecklistCategory"
+        requirement_level:
+          $ref: "#/components/schemas/ChecklistRequirementLevel"
+    TransitionChecklistItemRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - status
+      properties:
+        status:
+          $ref: "#/components/schemas/ChecklistStatus"
     Error:
       type: object
       additionalProperties: false
@@ -268,6 +909,13 @@ components:
             - project_not_found
             - project_location_conflict
             - directory_picker_unavailable
+            - template_not_found
+            - release_not_found
+            - release_goal_conflict
+            - release_not_ready
+            - release_state_conflict
+            - checklist_item_not_found
+            - invalid_transition
             - internal_error
         message:
           type: string

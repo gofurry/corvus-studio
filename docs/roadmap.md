@@ -2,7 +2,7 @@
 
 > 状态：Active\
 > 最近更新：2026-07-31\
-> 当前进度：Phase 0、Phase 1、Phase 2 已完成；下一阶段为 Phase 3\
+> 当前进度：Phase 0、Phase 1、Phase 2 已完成；Phase 3 实施中\
 > 首个产品目标：Corvus Studio Launch `v0.1` Alpha
 
 本文从[开发实施计划 v0.1](development/Corvus_Studio_Development_Implementation_Plan_v0.1.md)提取阶段主线，并补充可维护的完成状态、依赖关系和验收门槛。原始设计文档继续作为范围基线；本文负责反映实际进展，不以目录占位或未验证代码代替完成证据。
@@ -21,7 +21,7 @@
 | Phase 0 — Repository Bootstrap | ✅ Completed   |   100% | Monorepo、三 Go module、pnpm workspace、最小应用骨架和三平台 CI 已验证 |
 | Phase 1 — Core Runtime         | ✅ Completed   |   100% | Core runtime、本地验证及 Windows、macOS、Linux CI 均已通过             |
 | Phase 2 — Project Foundation   | ✅ Completed   |   100% | Project 创建、选择目录、列表、详情、持久化和三平台基线 CI 已验证       |
-| Phase 3 — Release + Checklist  | ⬜ Not started |     0% | 建立 Steam 发布目标与任务闭环                                          |
+| Phase 3 — Release + Checklist  | 🚧 In progress |     5% | ExecPlan 已确认，开始建立 Steam 发布目标与任务闭环                     |
 | Phase 4A — Resource            | ⬜ Not started |     0% | 建立素材与引用管理                                                     |
 | Phase 4B — Deliverable         | ⬜ Not started |     0% | 建立交付物及其与任务、资源的关系                                       |
 | Phase 5 — Asset Map            | ⬜ Not started |     0% | 可视化并保存关系图                                                     |
@@ -135,7 +135,9 @@
 
 ### Phase 3 — Release + Checklist
 
-**状态：⬜ Not started**
+**状态：🚧 In progress**
+
+**执行计划：** [Phase 3 Release + Checklist ExecPlan](../.agent/phase-3-release-checklist.md)
 
 **目标：** 建立 Steam 发布准备的基础工作流。
 

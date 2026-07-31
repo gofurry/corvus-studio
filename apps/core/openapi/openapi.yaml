@@ -1,0 +1,226 @@
+openapi: 3.0.3
+info:
+  title: Corvus Studio Core API
+  version: 0.1.0
+  description: Local-first API exposed by the Corvus Studio Core runtime.
+paths:
+  /api/v1/projects:
+    get:
+      operationId: listProjects
+      summary: List projects
+      tags:
+        - Projects
+      responses:
+        "200":
+          description: Projects ordered from newest to oldest.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectList"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    post:
+      operationId: createProject
+      summary: Create a project
+      tags:
+        - Projects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProjectRequest"
+      responses:
+        "201":
+          description: Project created.
+          headers:
+            Location:
+              description: URL of the created Project.
+              required: true
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "409":
+          $ref: "#/components/responses/ProjectLocationConflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /api/v1/projects/{project_id}:
+    get:
+      operationId: getProject
+      summary: Get a project
+      tags:
+        - Projects
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          description: UUIDv7 Project identifier.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Project detail.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/ProjectNotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+components:
+  responses:
+    ValidationError:
+      description: Request validation failed.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ProjectNotFound:
+      description: Project does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ProjectLocationConflict:
+      description: Another Project already references the same directory.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    InternalError:
+      description: Core could not complete the request.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+  schemas:
+    ProjectStage:
+      type: string
+      enum:
+        - concept
+        - development
+        - release_preparation
+        - released
+    ProjectStatus:
+      type: string
+      enum:
+        - active
+        - archived
+    CreateProjectRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+        - location
+        - language
+        - stage
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          maxLength: 2000
+          default: ""
+        location:
+          type: string
+          minLength: 1
+          description: Existing absolute directory on the Core host.
+        steam_app_id:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 4294967295
+        language:
+          type: string
+          minLength: 1
+          maxLength: 64
+        stage:
+          $ref: "#/components/schemas/ProjectStage"
+    Project:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - name
+        - description
+        - location
+        - steam_app_id
+        - language
+        - stage
+        - status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        steam_app_id:
+          type: integer
+          format: int64
+          nullable: true
+        language:
+          type: string
+        stage:
+          $ref: "#/components/schemas/ProjectStage"
+        status:
+          $ref: "#/components/schemas/ProjectStatus"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    ProjectList:
+      type: object
+      additionalProperties: false
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Project"
+    Error:
+      type: object
+      additionalProperties: false
+      required:
+        - code
+        - message
+        - recoverable
+      properties:
+        code:
+          type: string
+          enum:
+            - validation_failed
+            - project_not_found
+            - project_location_conflict
+            - internal_error
+        message:
+          type: string
+        recoverable:
+          type: boolean
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          $ref: "#/components/schemas/Error"

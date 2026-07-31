@@ -11,8 +11,12 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@corvus-studio/api-client": "workspace:*",
+    "@tanstack/react-query": "5.101.4",
+    "antd": "6.5.2",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "react-router-dom": "7.18.2"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

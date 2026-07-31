@@ -1,3 +1,11 @@
 # API Client
 
-This directory is reserved for a future OpenAPI-generated frontend client. Phase 0 does not create an OpenAPI contract, package manifest, or generated code.
+This workspace package is generated from `apps/core/openapi/openapi.yaml`.
+
+Run the generator from the repository root:
+
+```powershell
+pnpm generate:api
+```
+
+Files under `src/generated/` are committed and must not be edited by hand.

@@ -174,7 +174,7 @@ Expected: only the ExecPlan and roadmap are changed; no product source exists.
 
 **Paths:** Core OpenAPI files and module files, `packages/api-client/`, root/frontend manifests and lockfile.
 
-**Operations:** define create/list/get and error schemas; pin `oapi-codegen v2.8.0` as a Core Go tool; generate models only; initialize the API client package with exact `@hey-api` versions; add root `generate:api`; add exact Web dependencies.
+**Operations:** define create/list/get and error schemas; pin `oapi-codegen v2.8.0` as a Core Go tool; generate models only; initialize the API client package with exact `openapi-ts` tooling; add root `generate:api`; add exact Web dependencies.
 
 **Validation:**
 
@@ -277,6 +277,7 @@ Core adds direct dependencies/tool pins only when imported:
 - `github.com/google/uuid v1.6.0`;
 - `github.com/getkin/kin-openapi v0.145.0` for contract tests;
 - `github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen v2.8.0` as a Go tool.
+- `github.com/oapi-codegen/runtime v1.6.0` for generated UUID transport models.
 
 The canonical workspace test remains:
 
@@ -288,7 +289,7 @@ go test ./apps/core/... ./apps/launcher/... ./agent/...
 
 The root remains the workspace coordinator and owns the only `pnpm-lock.yaml`.
 
-- `packages/api-client` becomes `@corvus-studio/api-client` and contains committed generated Fetch SDK/types.
+- `packages/api-client` becomes `@corvus-studio/api-client` and contains committed generated Fetch SDK/types. `openapi-ts 0.99.0` emits the Fetch implementation into the generated package, so the deprecated standalone `@hey-api/client-fetch` package is not retained.
 - `apps/web` consumes the package through the pnpm workspace and owns Ant Design, TanStack Query, and React Router runtime dependencies.
 - root `package.json` gains only orchestration such as `generate:api`; frontend runtime dependencies do not move to root.
 - `packages/shared-types` and `packages/ui` remain documentation-only placeholders.
@@ -415,7 +416,7 @@ Phase 2 remains `In progress` until an actual authorized GitHub Actions run pass
 
 - [x] 2026-07-31: audited the clean `dev` baseline at `74f59de`, read Phase 2 source documents, and obtained the three product decisions plus local-only remote policy.
 - [x] 2026-07-31: Milestone 1 prepared the living plan and roadmap In progress state; `git diff --check` is the pre-commit validation.
-- [ ] Milestone 2: implement and commit the OpenAPI/generator boundary.
+- [x] 2026-07-31: Milestone 2 defined OpenAPI create/list/get, generated deterministic Go and TypeScript clients, and passed `pnpm generate:api`, frozen install, API-client typecheck, root format/build, and `go test ./apps/core/...`.
 - [ ] Milestone 3: implement and commit Project domain/storage.
 - [ ] Milestone 4: implement and commit Project HTTP API.
 - [ ] Milestone 5: implement and commit the Project Web flow.
@@ -427,6 +428,8 @@ Phase 2 remains `In progress` until an actual authorized GitHub Actions run pass
 - The Backend API design lacks the Project list route required by the implementation roadmap.
 - The selected Go generator’s Echo adapter imports Echo v4, while Corvus Studio is already on Echo v5.
 - The local PATH still exposes golangci-lint v1.64.8 even though CI and the repository configuration use v2.12.2.
+- `@hey-api/client-fetch 0.13.1` installed with an upstream deprecation warning, and the `openapi-ts 0.99.0` output imports only its own generated Fetch implementation. The unnecessary standalone dependency was removed rather than committing deprecated code.
+- Generated Go UUID fields require `github.com/oapi-codegen/runtime/types`; the compatible current runtime `v1.6.0` was added explicitly.
 
 ### Decision Log
 
@@ -435,8 +438,9 @@ Phase 2 remains `In progress` until an actual authorized GitHub Actions run pass
 - **2026-07-31 — Accepted:** Project creation references an existing absolute directory and never writes to it.
 - **2026-07-31 — Accepted:** opening a Project means navigating to an application detail route.
 - **2026-07-31 — Accepted:** generate Go models only and manually adapt Echo v5.
+- **2026-07-31 — Accepted deviation:** keep the pinned `openapi-ts 0.99.0` Fetch plugin but omit deprecated `@hey-api/client-fetch 0.13.1`; generated output is self-contained and compile-checked.
 - **2026-07-31 — Accepted:** create local milestone commits but do not push; retain remote CI as the final open gate.
 
 ### Outcomes & Retrospective
 
-Implementation started. Milestone 1 established the evidence-first roadmap state and decision-complete living plan. No Phase 2 product code has been created yet.
+Milestones 1–2 established the living plan and OpenAPI-first generation boundary. Contract models and clients compile and regenerate deterministically; Project domain behavior has not yet been implemented.

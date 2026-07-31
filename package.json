@@ -9,9 +9,10 @@
   },
   "scripts": {
     "dev:web": "pnpm --filter @corvus-studio/web dev",
-    "format:check": "pnpm --filter @corvus-studio/web format:check",
+    "generate:api": "go -C apps/core tool oapi-codegen -config openapi/oapi-codegen.yaml openapi/openapi.yaml && pnpm --filter @corvus-studio/api-client generate",
+    "format:check": "pnpm --filter @corvus-studio/api-client format:check && pnpm --filter @corvus-studio/web format:check",
     "lint": "pnpm --filter @corvus-studio/web lint",
     "test": "pnpm --filter @corvus-studio/web test",
-    "build": "pnpm --filter @corvus-studio/web build"
+    "build": "pnpm --filter @corvus-studio/api-client build && pnpm --filter @corvus-studio/web build"
   }
 }

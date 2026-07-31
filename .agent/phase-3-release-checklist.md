@@ -240,7 +240,7 @@ Evidence must show atomic creation, duplicate rejection, persistence after Core 
 - [x] 2026-07-31: audited the clean `dev` baseline, relevant design documents, existing architecture and current official Steam documentation; obtained product decisions.
 - [x] 2026-07-31: Milestone 1 created the living ExecPlan and marked Phase 3 In progress; Markdown formatting and `git diff --check` passed.
 - [x] 2026-07-31: Milestone 2 added the template/Release/Checklist OpenAPI contract and regenerated Go/TypeScript clients; Core tests, API-client typecheck and consecutive-output hash comparison passed.
-- [ ] Milestone 3 — domain, template and persistence.
+- [x] 2026-07-31: Milestone 3 implemented Release/Checklist/Template domains, the 12-item embedded Catalog, schema version 3, sqlc repositories, atomic workspace creation, transition histories and restart/rollback tests; sqlc generate/vet, Core tests and Go vet passed.
 - [ ] Milestone 4 — HTTP API.
 - [ ] Milestone 5 — Web workflow.
 - [ ] Milestone 6 — full local completion audit.
@@ -252,6 +252,7 @@ Evidence must show atomic creation, duplicate rejection, persistence after Core 
 - UX includes Published while the higher-priority data model does not.
 - The branch begins three local commits ahead of its remote baseline.
 - On Windows, one immediate repeated TypeScript generation attempt hit a transient file lock while Prettier reopened `client/types.gen.ts`. A clean retry and two successful runs separated by two seconds produced the identical diff hash `848a1bfe7b7c864351ead23bb66061324084d999`; no source or generator change was required.
+- Expanding the sqlc schema caused the pinned sqlc tool to record additional transitive module checksums in `go.work.sum`; no Go module version or direct dependency changed.
 
 ### Decision Log
 

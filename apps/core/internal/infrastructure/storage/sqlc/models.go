@@ -8,6 +8,33 @@ import (
 	"database/sql"
 )
 
+type ChecklistItem struct {
+	ID               string
+	ReleaseGoalID    string
+	Title            string
+	Description      string
+	Requirement      string
+	Category         string
+	RequirementLevel string
+	Source           string
+	SourceReference  string
+	TemplateItemKey  sql.NullString
+	TemplateKey      sql.NullString
+	TemplateVersion  sql.NullString
+	Status           string
+	SortOrder        int64
+	CreatedAt        string
+	UpdatedAt        string
+}
+
+type ChecklistItemStatusHistory struct {
+	ID              int64
+	ChecklistItemID string
+	FromStatus      string
+	ToStatus        string
+	ChangedAt       string
+}
+
 type CorvusRuntimeMetadatum struct {
 	Key       string
 	Value     string
@@ -26,4 +53,24 @@ type Project struct {
 	Status      string
 	CreatedAt   string
 	UpdatedAt   string
+}
+
+type ReleaseGoal struct {
+	ID              string
+	ProjectID       string
+	GoalType        string
+	Title           string
+	Status          string
+	TemplateKey     string
+	TemplateVersion string
+	CreatedAt       string
+	UpdatedAt       string
+}
+
+type ReleaseGoalStatusHistory struct {
+	ID            int64
+	ReleaseGoalID string
+	FromStatus    string
+	ToStatus      string
+	ChangedAt     string
 }

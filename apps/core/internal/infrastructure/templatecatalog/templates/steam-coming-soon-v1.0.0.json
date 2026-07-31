@@ -1,0 +1,143 @@
+{
+  "key": "steam-coming-soon",
+  "version": "1.0.0",
+  "schema_version": 1,
+  "goal_type": "steam_coming_soon",
+  "name": "Steam Coming Soon",
+  "description": "Prepare an accurate, reviewable Steam Coming Soon store presence.",
+  "reviewed_at": "2026-07-31",
+  "items": [
+    {
+      "key": "steamworks-app-confirmed",
+      "title": "Create or confirm the Steamworks application",
+      "description": "The store presence is managed from an application in Steamworks.",
+      "requirement": "Confirm that the Steamworks application exists and that the team knows its App ID.",
+      "category": "setup",
+      "requirement_level": "required",
+      "source": "platform_template",
+      "source_reference": "https://partner.steamgames.com/doc/store/coming_soon?language=english",
+      "sort_order": 1
+    },
+    {
+      "key": "store-basic-info-complete",
+      "title": "Complete store basic information",
+      "description": "Customers and Steam review rely on accurate product and release information.",
+      "requirement": "Complete the required store-presence fields and choose an honest release-date presentation.",
+      "category": "store_copy",
+      "requirement_level": "required",
+      "source": "platform_template",
+      "source_reference": "https://partner.steamgames.com/doc/store/coming_soon?language=english",
+      "sort_order": 2
+    },
+    {
+      "key": "store-description-complete",
+      "title": "Write the store descriptions",
+      "description": "The short and full descriptions should explain the product clearly to a new player.",
+      "requirement": "Provide coherent, accurate copy focused on this product and remove external links from description content.",
+      "category": "store_copy",
+      "requirement_level": "required",
+      "source": "platform_template",
+      "source_reference": "https://partner.steamgames.com/doc/store/page/description?language=english",
+      "sort_order": 3
+    },
+    {
+      "key": "store-capsules-ready",
+      "title": "Prepare compliant store capsule artwork",
+      "description": "Capsule artwork represents the game throughout the Steam store.",
+      "requirement": "Provide the required capsule artwork with a readable game title or logo and no disallowed marketing text.",
+      "category": "branding",
+      "requirement_level": "required",
+      "source": "platform_template",
+      "source_reference": "https://partner.steamgames.com/doc/store/assets/rules?language=english",
+      "sort_order": 4
+    },
+    {
+      "key": "gameplay-screenshots-ready",
+      "title": "Upload gameplay-only screenshots",
+      "description": "Steam review expects screenshots to show the product customers will actually play.",
+      "requirement": "Use screenshots of gameplay rather than concept art, pre-rendered stills, awards or marketing copy.",
+      "category": "media",
+      "requirement_level": "required",
+      "source": "platform_template",
+      "source_reference": "https://partner.steamgames.com/doc/store/review_process?language=english",
+      "sort_order": 5
+    },
+    {
+      "key": "gameplay-trailer-ready",
+      "title": "Prepare a gameplay trailer",
+      "description": "A trailer is one of the first pieces of media a potential customer sees.",
+      "requirement": "Prepare a trailer that gives viewers an honest view of the game and its core experience.",
+      "category": "media",
+      "requirement_level": "recommended",
+      "source": "platform_template",
+      "source_reference": "https://partner.steamgames.com/doc/store/coming_soon?language=english",
+      "sort_order": 6
+    },
+    {
+      "key": "launch-content-accurate",
+      "title": "Verify that store claims match launch content",
+      "description": "Store content should set accurate expectations for review and for customers.",
+      "requirement": "Remove or clearly qualify screenshots, trailers and feature claims for content that will not be available at launch.",
+      "category": "compliance",
+      "requirement_level": "required",
+      "source": "platform_template",
+      "source_reference": "https://partner.steamgames.com/doc/store/review_process?language=english",
+      "sort_order": 7
+    },
+    {
+      "key": "review-and-release-lead-time",
+      "title": "Plan Steam review and Coming Soon lead time",
+      "description": "Steam review and the mandatory Coming Soon period need calendar space.",
+      "requirement": "Allow at least seven business days for store review and plan for the Coming Soon page to be public for at least two weeks before playable release.",
+      "category": "timeline",
+      "requirement_level": "required",
+      "source": "platform_template",
+      "source_reference": "https://partner.steamgames.com/doc/store/coming_soon?language=english",
+      "sort_order": 8
+    },
+    {
+      "key": "corvus-positioning-statement",
+      "title": "Define the audience and one-sentence promise",
+      "description": "A clear positioning statement gives the whole store page one job.",
+      "requirement": "Write down the target player, genre and one-sentence reason that player should care.",
+      "category": "positioning",
+      "requirement_level": "recommended",
+      "source": "corvus_template",
+      "source_reference": "docs/product/Corvus_Studio_Launch_PRD_v0.1.md",
+      "sort_order": 9
+    },
+    {
+      "key": "corvus-narrative-alignment",
+      "title": "Align copy, screenshots and trailer",
+      "description": "The main store assets should communicate the same core loop and value proposition.",
+      "requirement": "Review the first visible copy and media together and remove contradictory or distracting messages.",
+      "category": "review",
+      "requirement_level": "recommended",
+      "source": "corvus_template",
+      "source_reference": "docs/product/Corvus_Studio_Product_Design_Draft_v0.1.md",
+      "sort_order": 10
+    },
+    {
+      "key": "corvus-localization-scope",
+      "title": "Choose the store localization scope",
+      "description": "Text-bearing artwork and store copy need a deliberate language plan.",
+      "requirement": "List the languages that will be supported for store copy and identify artwork containing localizable text.",
+      "category": "localization",
+      "requirement_level": "recommended",
+      "source": "corvus_template",
+      "source_reference": "docs/product/Corvus_Studio_Launch_Functional_Specification_v0.1.md",
+      "sort_order": 11
+    },
+    {
+      "key": "corvus-outsider-review",
+      "title": "Run an outsider clarity review",
+      "description": "Someone without project context can reveal unclear claims and missing steps.",
+      "requirement": "Ask a reviewer unfamiliar with the project to identify what the game is, why it is interesting and what still appears incomplete.",
+      "category": "review",
+      "requirement_level": "recommended",
+      "source": "corvus_template",
+      "source_reference": "docs/product/Corvus_Studio_Launch_UX_IA_v0.1.md",
+      "sort_order": 12
+    }
+  ]
+}

@@ -8,6 +8,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gofurry/corvus-studio/apps/core/migrations"
+	"github.com/pressly/goose/v3"
 	_ "modernc.org/sqlite"
 )
 
@@ -19,8 +21,8 @@ func TestOpenMigratesAndReopensIdempotently(t *testing.T) {
 	if err != nil {
 		t.Fatalf("first open: %v", err)
 	}
-	if first.SchemaVersion() != 2 {
-		t.Fatalf("first schema version = %d, want 2", first.SchemaVersion())
+	if first.SchemaVersion() != 3 {
+		t.Fatalf("first schema version = %d, want 3", first.SchemaVersion())
 	}
 	if first.LastBackupPath() != "" {
 		t.Fatalf("fresh database backup = %q, want none", first.LastBackupPath())
@@ -35,8 +37,8 @@ func TestOpenMigratesAndReopensIdempotently(t *testing.T) {
 		t.Fatalf("second open: %v", err)
 	}
 	t.Cleanup(func() { _ = second.Close() })
-	if second.SchemaVersion() != 2 {
-		t.Fatalf("second schema version = %d, want 2", second.SchemaVersion())
+	if second.SchemaVersion() != 3 {
+		t.Fatalf("second schema version = %d, want 3", second.SchemaVersion())
 	}
 	if second.LastBackupPath() != "" {
 		t.Fatalf("idempotent reopen backup = %q, want none", second.LastBackupPath())
@@ -58,7 +60,7 @@ func TestOpenBacksUpExistingDatabaseBeforeMigration(t *testing.T) {
 	wantBackup := filepath.Join(
 		filepath.Dir(databasePath),
 		"backups",
-		"corvus-pre-migration-v0-to-v2-20260729T100000.000000123Z.db",
+		"corvus-pre-migration-v0-to-v3-20260729T100000.000000123Z.db",
 	)
 	if store.LastBackupPath() != wantBackup {
 		t.Fatalf("backup path = %q, want %q", store.LastBackupPath(), wantBackup)
@@ -78,6 +80,47 @@ func TestOpenBacksUpExistingDatabaseBeforeMigration(t *testing.T) {
 	}
 	if value != "preserve me" {
 		t.Fatalf("backup seed value = %q", value)
+	}
+}
+
+func TestOpenMigratesVersionTwoDatabaseToVersionThreeWithBackup(t *testing.T) {
+	ctx := context.Background()
+	databasePath := filepath.Join(t.TempDir(), "corvus.db")
+	db, err := sql.Open(driverName, dataSourceName(databasePath))
+	if err != nil {
+		t.Fatal(err)
+	}
+	provider, err := goose.NewProvider(
+		goose.DialectSQLite3,
+		db,
+		migrations.Files(),
+		goose.WithDisableGlobalRegistry(true),
+		goose.WithLogger(goose.NopLogger()),
+	)
+	if err != nil {
+		_ = db.Close()
+		t.Fatal(err)
+	}
+	if _, err := provider.UpTo(ctx, 2); err != nil {
+		_ = db.Close()
+		t.Fatalf("seed schema version 2: %v", err)
+	}
+	if err := db.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	fixedTime := time.Date(2026, time.July, 31, 11, 0, 0, 0, time.UTC)
+	store, err := open(ctx, databasePath, func() time.Time { return fixedTime })
+	if err != nil {
+		t.Fatalf("migrate version 2 database: %v", err)
+	}
+	t.Cleanup(func() { _ = store.Close() })
+	if store.SchemaVersion() != 3 {
+		t.Fatalf("schema version = %d, want 3", store.SchemaVersion())
+	}
+	wantSuffix := filepath.Join("backups", "corvus-pre-migration-v2-to-v3-20260731T110000.000000000Z.db")
+	if store.LastBackupPath() != filepath.Join(filepath.Dir(databasePath), wantSuffix) {
+		t.Fatalf("backup path = %q", store.LastBackupPath())
 	}
 }
 

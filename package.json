@@ -1,0 +1,18 @@
+{
+  "name": "corvus-studio",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.11.0",
+  "engines": {
+    "node": ">=24.15.0 <25",
+    "pnpm": "10.11.0"
+  },
+  "scripts": {
+    "dev:web": "pnpm --filter @corvus-studio/web dev",
+    "generate:api": "go -C apps/core tool oapi-codegen -config openapi/oapi-codegen.yaml openapi/openapi.yaml && pnpm --filter @corvus-studio/api-client generate",
+    "format:check": "pnpm --filter @corvus-studio/api-client format:check && pnpm --filter @corvus-studio/web format:check",
+    "lint": "pnpm --filter @corvus-studio/web lint",
+    "test": "pnpm --filter @corvus-studio/web test",
+    "build": "pnpm --filter @corvus-studio/api-client build && pnpm --filter @corvus-studio/web build"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@corvus-studio/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "generate": "openapi-ts && prettier --write src/generated",
+    "build": "tsc --noEmit",
+    "format:check": "prettier --check . --ignore-path ../../.prettierignore"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "0.99.0",
+    "prettier": "3.9.6",
+    "typescript": "6.0.2"
+  }
+}

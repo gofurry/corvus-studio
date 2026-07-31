@@ -1,6 +1,6 @@
 # Phase 0: Repository Bootstrap ExecPlan
 
-> Status: Plan complete — awaiting user review. Repository-root normalization is present; Milestones 2–5 have not started.
+> Status: Phase 0 completion criteria satisfied — Milestones 1–5 and the GitHub-hosted native matrix passed; the recommended Launcher visual smoke remains a manual follow-up.
 > Target repository root: `E:\Git\开源\agent\corvus`
 > Prepared: 2026-07-29 (Asia/Shanghai)
 > Maintenance standard: `.agent/PLANS.md`
@@ -63,55 +63,55 @@ This is user-owned, uncommitted work. The bootstrap must preserve it and must no
 
 ### Local environment evidence
 
-| Tool | Observed state | Phase 0 implication |
-|---|---|---|
-| Git | `2.51.0.windows.1` | Available |
-| Go | `go1.25.8 windows/amd64` | Blocked for project commands until Go 1.26 is available locally |
-| `GOTOOLCHAIN` | `auto` | Must not be relied on silently; record any automatic download |
-| CGO | enabled | Suitable for native Fyne build when toolchain prerequisites exist |
-| GCC | `14.2.0` | Present on current Windows host |
-| Node.js | `v24.15.0` | Compatible with the selected Vite/test toolchain |
-| npm | `9.6.7` | Not used for workspace installation |
-| pnpm | `10.11.0` | Selected package-manager version |
-| Corepack | `0.34.6` | Available |
-| golangci-lint | `v1.64.8` | Too old; v2.12.2 is required for Phase 0 lint evidence |
-| goose | `v3.27.1` | Installed but out of scope and must not be run |
-| sqlc | missing | Not a Phase 0 blocker; integration starts later |
-| Fyne CLI | missing | Not required for `go build`; packaging is out of scope |
-| Docker | missing | Not a Phase 0 blocker |
-| make / clang | missing | Make is not required; Windows build uses GCC |
+| Tool          | Observed state                                                                   | Phase 0 implication                                                                 |
+| ------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Git           | `2.51.0.windows.1`                                                               | Available                                                                           |
+| Go            | `go1.26.5 windows/amd64`                                                         | Required toolchain is available                                                     |
+| `GOTOOLCHAIN` | `auto`                                                                           | Must not be relied on silently; record any automatic download                       |
+| CGO           | enabled                                                                          | Suitable for native Fyne build when toolchain prerequisites exist                   |
+| GCC           | `14.2.0`                                                                         | Present on current Windows host                                                     |
+| Node.js       | `v24.15.0`                                                                       | Compatible with the selected Vite/test toolchain                                    |
+| npm           | `9.6.7`                                                                          | Not used for workspace installation                                                 |
+| pnpm          | `10.11.0`                                                                        | Selected package-manager version                                                    |
+| Corepack      | `0.34.6`                                                                         | Available                                                                           |
+| golangci-lint | PATH has `v1.64.8`; official v2.12.2 archive executed from a temporary directory | v2.12.2 local lint evidence is available without replacing the user's global binary |
+| goose         | `v3.27.1`                                                                        | Installed but out of scope and must not be run                                      |
+| sqlc          | missing                                                                          | Not a Phase 0 blocker; integration starts later                                     |
+| Fyne CLI      | missing                                                                          | Not required for `go build`; packaging is out of scope                              |
+| Docker        | missing                                                                          | Not a Phase 0 blocker                                                               |
+| make / clang  | missing                                                                          | Make is not required; Windows build uses GCC                                        |
 
-No build, test, generator, dependency installation, migration, or Phase 0 application command has been run yet.
+At the Milestone 2 start, branch `dev` pointed to `ad73355` with a clean worktree. No Phase 0 build, test, dependency installation, migration, or application command had been run at that point.
 
 ## 3. Source-of-truth documents
 
 Conflicts use the following precedence. A lower source supplies context only when it does not expand or contradict a higher source.
 
-1. `docs/Corvus_Studio_Development_Implementation_Plan_v0.1.md`
+1. `docs/development/Corvus_Studio_Development_Implementation_Plan_v0.1.md`
    - Defines Repository Bootstrap as Monorepo, Go module/workspace, pnpm workspace, GitHub Actions, README, and License.
    - Places Echo, Viper, Zap, SQLite, goose, sqlc, and Cobra in Phase 1.
-2. `docs/Corvus_Studio_Repository_Structure_Design_v0.1.md`
+2. `docs/architecture/Corvus_Studio_Repository_Structure_Design_v0.1.md`
    - Defines the target top-level tree, Core/Web/Launcher/Agent separation, package reservations, tests, tools, deployments, and `.github` layout.
-3. `docs/Corvus_Studio_Technology_Stack_Decision_v0.1.md`
+3. `docs/architecture/Corvus_Studio_Technology_Stack_Decision_v0.1.md`
    - Fixes Go 1.26, Echo v5, SQLite/modernc, goose/sqlc, React 19, Vite 8, pnpm, Fyne, Google ADK Go, and quality tools.
-4. `docs/Corvus_Studio_Engineering_and_Deployment_Guide_v0.1.md`
+4. `docs/deployment/Corvus_Studio_Engineering_and_Deployment_Guide_v0.1.md`
    - Defines GitHub Actions checks, React-to-Go production delivery direction, supported platforms, and absence of automatic updates in v0.1.
 5. `USAGE.md`
    - Defines intended developer commands and experience; commands for future phases must be labelled rather than presented as currently working.
 
 The following documents are complete background sources but do not authorize Phase 1+ implementation in this plan:
 
-- `docs/Corvus_Studio_ADK_Implementation_Plan_v0.1.md`: future in-process ADK runtime and workflows.
-- `docs/Corvus_Studio_Agent_Architecture_and_Tool_Specification_v0.1.md`: future Agent/tool boundaries and evidence model.
-- `docs/Corvus_Studio_Backend_API_Design_v0.1.md`: future REST/SSE contract.
-- `docs/Corvus_Studio_Data_Model_Design_v0.1.md`: future domains and persistence concepts.
-- `docs/Corvus_Studio_Launch_Frontend_Specification_v0.1.md`: future pages and frontend libraries.
-- `docs/Corvus_Studio_Launch_Functional_Specification_v0.1.md`: future business capabilities.
-- `docs/Corvus_Studio_Launch_MVP_Roadmap_v0.1.md`: product roadmap; its Phase labels are subordinate to the Development Implementation Plan.
-- `docs/Corvus_Studio_Launch_PRD_v0.1.md`: product requirements and v0.1 outcome.
-- `docs/Corvus_Studio_Launch_System_Design_Document_v0.1.md`: future runtime/domain/storage boundaries.
-- `docs/Corvus_Studio_Launch_UX_IA_v0.1.md`: future navigation and workflows.
-- `docs/Corvus_Studio_Product_Design_Draft_v0.1.md`: product direction and licensing recommendation.
+- `docs/agent/Corvus_Studio_ADK_Implementation_Plan_v0.1.md`: future in-process ADK runtime and workflows.
+- `docs/agent/Corvus_Studio_Agent_Architecture_and_Tool_Specification_v0.1.md`: future Agent/tool boundaries and evidence model.
+- `docs/api/Corvus_Studio_Backend_API_Design_v0.1.md`: future REST/SSE contract.
+- `docs/architecture/Corvus_Studio_Data_Model_Design_v0.1.md`: future domains and persistence concepts.
+- `docs/architecture/Corvus_Studio_Launch_Frontend_Specification_v0.1.md`: future pages and frontend libraries.
+- `docs/product/Corvus_Studio_Launch_Functional_Specification_v0.1.md`: future business capabilities.
+- `docs/product/Corvus_Studio_Launch_MVP_Roadmap_v0.1.md`: product roadmap; its Phase labels are subordinate to the Development Implementation Plan.
+- `docs/product/Corvus_Studio_Launch_PRD_v0.1.md`: product requirements and v0.1 outcome.
+- `docs/architecture/Corvus_Studio_Launch_System_Design_Document_v0.1.md`: future runtime/domain/storage boundaries.
+- `docs/product/Corvus_Studio_Launch_UX_IA_v0.1.md`: future navigation and workflows.
+- `docs/product/Corvus_Studio_Product_Design_Draft_v0.1.md`: product direction and licensing recommendation.
 
 `LICENSE` is preserved as the current repository license. `README.md` is empty; `USAGE.md` is aspirational and may receive the minimal status/command corrections specified by this plan.
 
@@ -151,17 +151,17 @@ OpenAPI source placement, sqlc layout, migrations, and production asset staging 
 
 ## 6. Document conflicts and decisions
 
-| Status | Conflict or ambiguity | Decision and rationale |
-|---|---|---|
-| Accepted | The initial working directory was outside the nested Git repository; the root was normalized between assistant turns. | The outer `corvus` directory is the permanent root. Do not repeat the move. Phase 0 begins by auditing the current root, exact document inventory, four tracked-document blob matches, and a new SHA-256 baseline for all 15 documents. |
-| Accepted | Development Plan Phase 0 is infrastructure-only, while the lower-priority MVP Roadmap lists Go Core, React, Fyne, SQLite, and CI/CD under Phase 0. | Create minimal buildable Core/React/Fyne shells, but follow the higher-priority plan by deferring SQLite and all runtime/business wiring to Phase 1+. |
-| Accepted | The Development Plan and USAGE use `go test ./...`, but three nested modules in a root `go.work` are not reliably covered by that pattern from a non-module root. | Use `go test ./apps/core/... ./apps/launcher/... ./agent/...`. Do not add a misleading root module merely to preserve the shorter command. User confirmed this choice. |
-| Accepted | Repository design separates top-level `agent/`, while the runtime design says the Agent runs in the Core process. | `agent/` is an independent Go module and future source boundary; Core will import/run it later. Phase 0 adds no ADK dependency. |
-| Accepted | Fyne creates native CGO/toolchain complexity during bootstrap. | Use a real Fyne v2.8.0 minimal window and validate native builds on all three operating systems, without implementing launcher responsibilities. User confirmed this choice. |
-| Accepted | USAGE presents future commands as if they work now. | Preserve product guidance but add a clear phase-status distinction and list only verified Phase 0 commands as current. |
-| Accepted | The repository structure names shared packages, but there are no contracts or shared components yet. | Create only explanatory README placeholders. Do not create package manifests, exports, generated code, or dependencies until a consuming phase exists. |
-| Accepted | OpenAPI/sqlc/goose locations are needed, but their content is later-phase work. | Reserve future locations as `apps/core/openapi/`, `packages/api-client/`, `apps/core/sqlc.yaml`, Core-internal SQL query/generated packages, and `apps/core/migrations/`. Only `packages/api-client/README.md` exists in Phase 0. |
-| Open Question | Product Design recommends AGPL-3.0-or-later for code and CC BY 4.0 for docs, while the repository has one AGPLv3 license and no separate docs license. | Preserve the existing `LICENSE` byte-for-byte. Decide separate documentation licensing outside Phase 0 with appropriate project/legal review. This does not block bootstrap. |
+| Status        | Conflict or ambiguity                                                                                                                                             | Decision and rationale                                                                                                                                                                                                                  |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Accepted      | The initial working directory was outside the nested Git repository; the root was normalized between assistant turns.                                             | The outer `corvus` directory is the permanent root. Do not repeat the move. Phase 0 begins by auditing the current root, exact document inventory, four tracked-document blob matches, and a new SHA-256 baseline for all 15 documents. |
+| Accepted      | Development Plan Phase 0 is infrastructure-only, while the lower-priority MVP Roadmap lists Go Core, React, Fyne, SQLite, and CI/CD under Phase 0.                | Create minimal buildable Core/React/Fyne shells, but follow the higher-priority plan by deferring SQLite and all runtime/business wiring to Phase 1+.                                                                                   |
+| Accepted      | The Development Plan and USAGE use `go test ./...`, but three nested modules in a root `go.work` are not reliably covered by that pattern from a non-module root. | Use `go test ./apps/core/... ./apps/launcher/... ./agent/...`. Do not add a misleading root module merely to preserve the shorter command. User confirmed this choice.                                                                  |
+| Accepted      | Repository design separates top-level `agent/`, while the runtime design says the Agent runs in the Core process.                                                 | `agent/` is an independent Go module and future source boundary; Core will import/run it later. Phase 0 adds no ADK dependency.                                                                                                         |
+| Accepted      | Fyne creates native CGO/toolchain complexity during bootstrap.                                                                                                    | Use a real Fyne v2.8.0 minimal window and validate native builds on all three operating systems, without implementing launcher responsibilities. User confirmed this choice.                                                            |
+| Accepted      | USAGE presents future commands as if they work now.                                                                                                               | Preserve product guidance but add a clear phase-status distinction and list only verified Phase 0 commands as current.                                                                                                                  |
+| Accepted      | The repository structure names shared packages, but there are no contracts or shared components yet.                                                              | Create only explanatory README placeholders. Do not create package manifests, exports, generated code, or dependencies until a consuming phase exists.                                                                                  |
+| Accepted      | OpenAPI/sqlc/goose locations are needed, but their content is later-phase work.                                                                                   | Reserve future locations as `apps/core/openapi/`, `packages/api-client/`, `apps/core/sqlc.yaml`, Core-internal SQL query/generated packages, and `apps/core/migrations/`. Only `packages/api-client/README.md` exists in Phase 0.       |
+| Open Question | Product Design recommends AGPL-3.0-or-later for code and CC BY 4.0 for docs, while the repository has one AGPLv3 license and no separate docs license.            | Preserve the existing `LICENSE` byte-for-byte. Decide separate documentation licensing outside Phase 0 with appropriate project/legal review. This does not block bootstrap.                                                            |
 
 ## 7. Proposed repository tree
 
@@ -242,22 +242,30 @@ corvus/
 │   └── README.md                                [reserve]
 ├── deployments/
 │   └── README.md                                [reserve; no deployment files]
-├── docs/                                        [existing; preserve bytes]
-│   ├── Corvus_Studio_ADK_Implementation_Plan_v0.1.md
-│   ├── Corvus_Studio_Agent_Architecture_and_Tool_Specification_v0.1.md
-│   ├── Corvus_Studio_Backend_API_Design_v0.1.md
-│   ├── Corvus_Studio_Data_Model_Design_v0.1.md
-│   ├── Corvus_Studio_Development_Implementation_Plan_v0.1.md
-│   ├── Corvus_Studio_Engineering_and_Deployment_Guide_v0.1.md
-│   ├── Corvus_Studio_Launch_Frontend_Specification_v0.1.md
-│   ├── Corvus_Studio_Launch_Functional_Specification_v0.1.md
-│   ├── Corvus_Studio_Launch_MVP_Roadmap_v0.1.md
-│   ├── Corvus_Studio_Launch_PRD_v0.1.md
-│   ├── Corvus_Studio_Launch_System_Design_Document_v0.1.md
-│   ├── Corvus_Studio_Launch_UX_IA_v0.1.md
-│   ├── Corvus_Studio_Product_Design_Draft_v0.1.md
-│   ├── Corvus_Studio_Repository_Structure_Design_v0.1.md
-│   └── Corvus_Studio_Technology_Stack_Decision_v0.1.md
+├── docs/                                        [existing design baselines; organized post-P0]
+│   ├── README.md                                [post-P0 navigation]
+│   ├── roadmap.md                               [post-P0 current implementation status]
+│   ├── agent/
+│   │   ├── Corvus_Studio_ADK_Implementation_Plan_v0.1.md
+│   │   └── Corvus_Studio_Agent_Architecture_and_Tool_Specification_v0.1.md
+│   ├── api/
+│   │   └── Corvus_Studio_Backend_API_Design_v0.1.md
+│   ├── architecture/
+│   │   ├── Corvus_Studio_Data_Model_Design_v0.1.md
+│   │   ├── Corvus_Studio_Launch_Frontend_Specification_v0.1.md
+│   │   ├── Corvus_Studio_Launch_System_Design_Document_v0.1.md
+│   │   ├── Corvus_Studio_Repository_Structure_Design_v0.1.md
+│   │   └── Corvus_Studio_Technology_Stack_Decision_v0.1.md
+│   ├── deployment/
+│   │   └── Corvus_Studio_Engineering_and_Deployment_Guide_v0.1.md
+│   ├── development/
+│   │   └── Corvus_Studio_Development_Implementation_Plan_v0.1.md
+│   └── product/
+│       ├── Corvus_Studio_Launch_Functional_Specification_v0.1.md
+│       ├── Corvus_Studio_Launch_MVP_Roadmap_v0.1.md
+│       ├── Corvus_Studio_Launch_PRD_v0.1.md
+│       ├── Corvus_Studio_Launch_UX_IA_v0.1.md
+│       └── Corvus_Studio_Product_Design_Draft_v0.1.md
 ├── scripts/
 │   └── README.md                                [reserve]
 ├── tests/
@@ -301,21 +309,21 @@ All commands in this section run from `E:\Git\开源\agent\corvus` in PowerShell
 ```powershell
 $phase0Evidence = Join-Path ([IO.Path]::GetTempPath()) 'corvus-phase0-preflight'
 $phase0ExpectedDocs = @(
-    'Corvus_Studio_ADK_Implementation_Plan_v0.1.md',
-    'Corvus_Studio_Agent_Architecture_and_Tool_Specification_v0.1.md',
-    'Corvus_Studio_Backend_API_Design_v0.1.md',
-    'Corvus_Studio_Data_Model_Design_v0.1.md',
-    'Corvus_Studio_Development_Implementation_Plan_v0.1.md',
-    'Corvus_Studio_Engineering_and_Deployment_Guide_v0.1.md',
-    'Corvus_Studio_Launch_Frontend_Specification_v0.1.md',
-    'Corvus_Studio_Launch_Functional_Specification_v0.1.md',
-    'Corvus_Studio_Launch_MVP_Roadmap_v0.1.md',
-    'Corvus_Studio_Launch_PRD_v0.1.md',
-    'Corvus_Studio_Launch_System_Design_Document_v0.1.md',
-    'Corvus_Studio_Launch_UX_IA_v0.1.md',
-    'Corvus_Studio_Product_Design_Draft_v0.1.md',
-    'Corvus_Studio_Repository_Structure_Design_v0.1.md',
-    'Corvus_Studio_Technology_Stack_Decision_v0.1.md'
+    'agent/Corvus_Studio_ADK_Implementation_Plan_v0.1.md',
+    'agent/Corvus_Studio_Agent_Architecture_and_Tool_Specification_v0.1.md',
+    'api/Corvus_Studio_Backend_API_Design_v0.1.md',
+    'architecture/Corvus_Studio_Data_Model_Design_v0.1.md',
+    'development/Corvus_Studio_Development_Implementation_Plan_v0.1.md',
+    'deployment/Corvus_Studio_Engineering_and_Deployment_Guide_v0.1.md',
+    'architecture/Corvus_Studio_Launch_Frontend_Specification_v0.1.md',
+    'product/Corvus_Studio_Launch_Functional_Specification_v0.1.md',
+    'product/Corvus_Studio_Launch_MVP_Roadmap_v0.1.md',
+    'product/Corvus_Studio_Launch_PRD_v0.1.md',
+    'architecture/Corvus_Studio_Launch_System_Design_Document_v0.1.md',
+    'product/Corvus_Studio_Launch_UX_IA_v0.1.md',
+    'product/Corvus_Studio_Product_Design_Draft_v0.1.md',
+    'architecture/Corvus_Studio_Repository_Structure_Design_v0.1.md',
+    'architecture/Corvus_Studio_Technology_Stack_Decision_v0.1.md'
 )
 
 if ((git rev-parse --show-toplevel) -ne 'E:/Git/开源/agent/corvus') {
@@ -325,32 +333,33 @@ if (Test-Path -LiteralPath '.\corvus-studio') {
     throw 'Obsolete nested repository path reappeared'
 }
 
-$phase0ActualDocs = Get-ChildItem -LiteralPath '.\docs' -File |
-    Select-Object -ExpandProperty Name |
+$phase0DocsRoot = (Resolve-Path -LiteralPath '.\docs').Path
+$phase0ActualDocs = Get-ChildItem -LiteralPath $phase0DocsRoot -Recurse -File -Filter 'Corvus_Studio_*.md' |
+    ForEach-Object { [IO.Path]::GetRelativePath($phase0DocsRoot, $_.FullName).Replace('\', '/') } |
     Sort-Object
 $phase0NameDiff = Compare-Object ($phase0ExpectedDocs | Sort-Object) $phase0ActualDocs
 if ($phase0NameDiff) {
     throw "Document inventory mismatch: $phase0NameDiff"
 }
 
-foreach ($phase0Name in @(
-    'Corvus_Studio_Launch_Functional_Specification_v0.1.md',
-    'Corvus_Studio_Launch_PRD_v0.1.md',
-    'Corvus_Studio_Launch_UX_IA_v0.1.md',
-    'Corvus_Studio_Product_Design_Draft_v0.1.md'
+foreach ($phase0RelativePath in @(
+    'product/Corvus_Studio_Launch_Functional_Specification_v0.1.md',
+    'product/Corvus_Studio_Launch_PRD_v0.1.md',
+    'product/Corvus_Studio_Launch_UX_IA_v0.1.md',
+    'product/Corvus_Studio_Product_Design_Draft_v0.1.md'
 )) {
-    $phase0HeadHash = git rev-parse ('HEAD:' + $phase0Name)
-    $phase0CurrentHash = git hash-object ('docs/' + $phase0Name)
+    $phase0HeadHash = git rev-parse ('HEAD:docs/' + $phase0RelativePath)
+    $phase0CurrentHash = git hash-object ('docs/' + $phase0RelativePath)
     if ($phase0HeadHash -ne $phase0CurrentHash) {
-        throw "Tracked document content changed: $phase0Name"
+        throw "Tracked document content changed: $phase0RelativePath"
     }
 }
 
 New-Item -ItemType Directory -Force -Path $phase0Evidence | Out-Null
 git status --porcelain=v2 --branch |
     Set-Content -LiteralPath (Join-Path $phase0Evidence 'git-status-current.txt')
-Get-ChildItem -LiteralPath '.\docs' -File |
-    Sort-Object Name |
+Get-ChildItem -LiteralPath '.\docs' -Recurse -File -Filter 'Corvus_Studio_*.md' |
+    Sort-Object FullName |
     Get-FileHash -Algorithm SHA256 |
     Select-Object Path, Hash |
     Export-Csv -NoTypeInformation -LiteralPath (Join-Path $phase0Evidence 'docs-current.csv')
@@ -466,6 +475,7 @@ Initial dependency set and versions:
 
 - Runtime: `react@19.2.8`, `react-dom@19.2.8`.
 - Build/language: `vite@8.1.5`, `@vitejs/plugin-react@6.0.4`, `typescript@6.0.2`, `sass@1.102.0`.
+- Vite/Rolldown optional dependency policy: exclude only `@rolldown/binding-wasm32-wasi`; Corvus targets native Windows, macOS, and Linux bindings, and this optional fallback contains an internally unsatisfiable Emnapi peer graph under strict pnpm validation.
 - Lint/format: `eslint@10.8.0`, `@eslint/js@10.0.1`, `typescript-eslint@8.65.0`, `eslint-plugin-react-hooks@7.1.1`, `eslint-plugin-react-refresh@0.5.3`, `globals@17.8.0`, `prettier@3.9.6`.
 - Test: `vitest@4.1.10`, `jsdom@30.0.1`, `@testing-library/react@16.3.2`, `@testing-library/dom@10.4.1`, `@testing-library/jest-dom@7.0.0`.
 - Types: `@types/node@24.13.3`, `@types/react@19.2.17`, `@types/react-dom@19.2.3`.
@@ -563,7 +573,7 @@ Test-Path '.\CONTRIBUTING.md'
 
 Expected output: ripgrep and SQL search return no application matches; all three forbidden repository-policy path checks print `False`.
 
-**Acceptance and remote evidence:** locally validate workflow command parity and `git diff --check`. Because this plan does not commit or push, a GitHub Actions run is not automatically available. Record remote jobs as pending until a user-authorized push/PR causes a run; never state that GitHub Actions passed based only on YAML inspection.
+**Acceptance and remote evidence:** locally validate workflow command parity and `git diff --check`. The user authorized local milestone commits but not a push, so a GitHub Actions run is not automatically available. Record remote jobs as pending until a user-authorized push/PR causes a run; never state that GitHub Actions passed based only on YAML inspection.
 
 **Recovery:** back up current untracked `README.md` and `USAGE.md` to the temporary evidence directory before editing. On failure, restore those exact copies and move newly created CI/config files to the evidence directory. Do not touch design documents or the license.
 
@@ -571,7 +581,7 @@ Expected output: ripgrep and SQL search return no application matches; all three
 
 **Goal:** prove that Phase 0 is complete, reproducible, and contains no later-phase implementation.
 
-Run every applicable command in Section 13, record platform/exit code/summary in Progress, compare current document hashes with Milestone 1's current baseline, and inspect `git status --short` without staging or committing.
+Run every applicable command in Section 13, record platform/exit code/summary in Progress, compare current document hashes with Milestone 1's current baseline, and inspect `git status --short` before the final plan update and again after the user-authorized local evidence commit.
 
 Expected result: completion criteria in Section 16 are either backed by current evidence or explicitly marked pending/blocked. Do not declare Phase 0 complete while a required local or CI-independent criterion lacks evidence. Remote CI remains a named follow-up if no authorized GitHub run exists.
 
@@ -583,11 +593,11 @@ Recovery is milestone-specific: fix only the failing Phase 0 artifact, rerun its
 
 Module boundaries are:
 
-| Path | Module path | Phase 0 responsibility | Reason for boundary |
-|---|---|---|---|
-| `apps/core` | `github.com/gofurry/corvus-studio/apps/core` | Minimal Core command only | Core owns future HTTP/domain/storage runtime and produces the main binary. |
-| `apps/launcher` | `github.com/gofurry/corvus-studio/apps/launcher` | Minimal Fyne window | Native UI dependencies and build constraints remain isolated from headless Core. |
-| `agent` | `github.com/gofurry/corvus-studio/agent` | Empty package boundary | Agent source is top-level by design and can later be imported into Core without becoming Core-internal code. |
+| Path            | Module path                                      | Phase 0 responsibility    | Reason for boundary                                                                                          |
+| --------------- | ------------------------------------------------ | ------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `apps/core`     | `github.com/gofurry/corvus-studio/apps/core`     | Minimal Core command only | Core owns future HTTP/domain/storage runtime and produces the main binary.                                   |
+| `apps/launcher` | `github.com/gofurry/corvus-studio/apps/launcher` | Minimal Fyne window       | Native UI dependencies and build constraints remain isolated from headless Core.                             |
+| `agent`         | `github.com/gofurry/corvus-studio/agent`         | Empty package boundary    | Agent source is top-level by design and can later be imported into Core without becoming Core-internal code. |
 
 No module is created for the repository root, `packages`, `tests`, or `tools`. A new Go module requires a later explicit architectural reason and an update to `go.work` and this decision record.
 
@@ -697,32 +707,32 @@ Future additions are made when their owning phase has real content: OpenAPI drif
 
 ## 13. Validation matrix
 
-| Target | Command or observation | Expected evidence | Phase 0 requirement |
-|---|---|---|---|
-| Windows local root | `git rev-parse --show-toplevel` | Approved outer absolute root | Required |
-| Document preservation | Compare against Milestone 1 current SHA-256 baseline; verify four HEAD blobs | No post-baseline differences; four tracked blobs match | Required |
-| Go toolchain | `go version` | Go 1.26.x; planned patch 1.26.5 | Required |
-| Go workspace | `go env GOWORK`; `go work edit -json`; `go list -m` | Root workspace and exactly three modules | Required |
-| Go tests | `go test ./apps/core/... ./apps/launcher/... ./agent/...` | Exit 0; Core bootstrap test passes | Required |
-| Core build/run | Build to temporary path, execute binary | Exit 0 and exact bootstrap marker | Required |
-| Launcher Windows build | `go build` to temporary path | Exit 0 and executable exists | Required |
-| Launcher manual smoke | `go run ./apps/launcher` | Minimal window appears/closes | Recommended local observation |
-| Go formatting | `gofmt -l` audit | No paths printed | Required |
-| Go lint | golangci-lint v2.12.2 explicit patterns | Exit 0 | Required; CI may supply evidence if local version blocked |
-| pnpm version | `pnpm --version` | `10.11.0` | Required before lockfile mutation |
-| pnpm workspace | `pnpm list -r --depth -1` | Root and Web only | Required |
-| Frozen install | `pnpm install --frozen-lockfile` | Exit 0, unchanged lockfile | Required |
-| Frontend formatting/lint | `pnpm format:check`; `pnpm lint` | Exit 0 | Required |
-| Frontend tests | `pnpm test` | Bootstrap render test passes | Required |
-| Frontend build | `pnpm build`; check `apps/web/dist/index.html` | Exit 0 and file exists | Required |
-| Linux CI | Native matrix job | Core and Fyne builds exit 0 | Required before claiming remote CI complete |
-| macOS CI | Native matrix job | Core and Fyne builds exit 0 | Required before claiming remote CI complete |
-| Windows CI | Native matrix job | Core and Fyne builds exit 0 | Required before claiming remote CI complete |
-| Phase boundary | Forbidden dependency/symbol and SQL searches | No application matches | Required |
-| Repository policy | Test forbidden template/contribution paths | All false | Required |
-| Worktree review | `git status --short`; `git diff --check` | Only intended new/updated paths; no whitespace errors | Required |
+| Target                   | Command or observation                                                       | Expected evidence                                      | Phase 0 requirement                                       |
+| ------------------------ | ---------------------------------------------------------------------------- | ------------------------------------------------------ | --------------------------------------------------------- |
+| Windows local root       | `git rev-parse --show-toplevel`                                              | Approved outer absolute root                           | Required                                                  |
+| Document preservation    | Compare against Milestone 1 current SHA-256 baseline; verify four HEAD blobs | No post-baseline differences; four tracked blobs match | Required                                                  |
+| Go toolchain             | `go version`                                                                 | Go 1.26.x; planned patch 1.26.5                        | Required                                                  |
+| Go workspace             | `go env GOWORK`; `go work edit -json`; `go list -m`                          | Root workspace and exactly three modules               | Required                                                  |
+| Go tests                 | `go test ./apps/core/... ./apps/launcher/... ./agent/...`                    | Exit 0; Core bootstrap test passes                     | Required                                                  |
+| Core build/run           | Build to temporary path, execute binary                                      | Exit 0 and exact bootstrap marker                      | Required                                                  |
+| Launcher Windows build   | `go build` to temporary path                                                 | Exit 0 and executable exists                           | Required                                                  |
+| Launcher manual smoke    | `go run ./apps/launcher`                                                     | Minimal window appears/closes                          | Recommended local observation                             |
+| Go formatting            | `gofmt -l` audit                                                             | No paths printed                                       | Required                                                  |
+| Go lint                  | golangci-lint v2.12.2 explicit patterns                                      | Exit 0                                                 | Required; CI may supply evidence if local version blocked |
+| pnpm version             | `pnpm --version`                                                             | `10.11.0`                                              | Required before lockfile mutation                         |
+| pnpm workspace           | `pnpm list -r --depth -1`                                                    | Root and Web only                                      | Required                                                  |
+| Frozen install           | `pnpm install --frozen-lockfile`                                             | Exit 0, unchanged lockfile                             | Required                                                  |
+| Frontend formatting/lint | `pnpm format:check`; `pnpm lint`                                             | Exit 0                                                 | Required                                                  |
+| Frontend tests           | `pnpm test`                                                                  | Bootstrap render test passes                           | Required                                                  |
+| Frontend build           | `pnpm build`; check `apps/web/dist/index.html`                               | Exit 0 and file exists                                 | Required                                                  |
+| Linux CI                 | Native matrix job                                                            | Core and Fyne builds exit 0                            | Required before claiming remote CI complete               |
+| macOS CI                 | Native matrix job                                                            | Core and Fyne builds exit 0                            | Required before claiming remote CI complete               |
+| Windows CI               | Native matrix job                                                            | Core and Fyne builds exit 0                            | Required before claiming remote CI complete               |
+| Phase boundary           | Forbidden dependency/symbol and SQL searches                                 | No application matches                                 | Required                                                  |
+| Repository policy        | Test forbidden template/contribution paths                                   | All false                                              | Required                                                  |
+| Worktree review          | `git status --short`; `git diff --check`                                     | Only intended new/updated paths; no whitespace errors  | Required                                                  |
 
-If GitHub Actions cannot run because no commit/push is authorized, record the three remote jobs as pending. Local checks do not constitute remote CI evidence.
+If GitHub Actions cannot run because no push or pull request is authorized, record the three remote jobs as pending. Local commits and local checks do not constitute remote CI evidence.
 
 ## 14. Idempotence and recovery
 
@@ -789,8 +799,12 @@ Phase 0 is complete only when evidence shows all of the following:
 - README and USAGE describe only genuinely available Phase 0 commands as current;
 - no application dependency, import, SQL file, type, route, page, or workflow implements Phase 1+ capabilities;
 - no Issue/PR templates, `CONTRIBUTING.md`, Docker/systemd files, installers, signing files, or automatic-update configuration exist;
-- `git diff --check` passes, the worktree review identifies only intended Phase 0/planning paths plus the preserved pre-existing user changes, and no Git commit was created;
+- `git diff --check` passes, the worktree review identifies only intended Phase 0/planning paths, the user-requested local milestone commits are reviewable, and no unauthorized push was performed;
 - all locally runnable required checks have recorded exit codes and results; any remote CI run not authorized or available is explicitly pending rather than reported as passed.
+
+Current assessment after the 2026-07-29 local and remote audits: every required Phase 0 criterion has authoritative evidence. All CI-independent checks passed locally on Windows, and GitHub Actions run `30442490029` passed Go quality, Frontend quality, and native Ubuntu, macOS, and Windows builds for commit `a0c6670`. The recommended visual Launcher smoke remains a manual follow-up rather than a completion gate.
+
+The user pushed `dev` and explicitly authorized creation of Draft PR [#1](https://github.com/gofurry/corvus-studio/pull/1). Its pull-request workflow provided the native evidence without merging to `main` or introducing deployment/release behavior.
 
 ## 17. Progress, discoveries and decision log
 
@@ -802,10 +816,22 @@ Phase 0 is complete only when evidence shows all of the following:
 - [x] 2026-07-29 — Confirmed target root, three-module strategy, explicit Go test command, and real Fyne skeleton with the user.
 - [x] 2026-07-29 — Created the three allowed planning artifacts only.
 - [x] 2026-07-29 16:53 +08:00 — Milestone 1 audit: outer Git root confirmed, nested path absent, all 15 expected document names present, and four tracked documents match HEAD blobs. Limitation: no pre-move SHA-256 baseline exists for the 11 originally untracked documents.
-- [ ] Milestone 2 — Create root skeleton and Go module shells.
-- [ ] Milestone 3 — Create pnpm and minimal Web workspace.
-- [ ] Milestone 4 — Add CI and align developer documentation.
-- [ ] Milestone 5 — Complete final evidence audit and handoff.
+- [x] 2026-07-29 17:08 +08:00 — Execution preflight: branch `dev`, HEAD `ad73355`, clean worktree, Go 1.26.5, Node 24.15.0, pnpm 10.11.0, GCC 14.2.0; golangci-lint remains v1.64.8.
+- [x] 2026-07-29 17:20 +08:00 — Milestone 2 workspace/format validation: `go env GOWORK`, `go work edit -json`, and `go list -m` identified exactly the root workspace and three approved modules; `gofmt -l` returned no files.
+- [x] 2026-07-29 17:20 +08:00 — Milestone 2 test/build validation: explicit three-module `go test` exited 0; Core and Windows Fyne Launcher built to the temporary directory; Core printed the exact bootstrap marker; forbidden Go module scan returned no Phase 1+ dependencies; `git diff --check` exited 0.
+- [x] Milestone 2 — Root skeleton and Go module shells created and locally validated on Windows.
+- [x] 2026-07-29 17:28 +08:00 — Milestone 3 dependency validation: pnpm 10.11.0 generated one root lockfile; strict peer validation remained enabled; frozen install exited 0 after excluding only Rolldown's broken optional WASM fallback.
+- [x] 2026-07-29 17:28 +08:00 — Milestone 3 frontend validation: workspace list contained root and Web only; format, ESLint, one Vitest/Testing Library smoke test, TypeScript/Vite build, and frozen reinstall all exited 0; `apps/web/dist/index.html` existed.
+- [x] Milestone 3 — pnpm and minimal Web workspace created and locally validated on Windows.
+- [x] 2026-07-29 17:47 +08:00 — Milestone 4 local acceptance: official golangci-lint v2.12.2 reported zero issues; the explicit Go test, frozen pnpm install, format, lint, one-test Vitest suite, Vite build, `git diff --check`, and native Windows Core/Launcher builds all exited 0.
+- [x] 2026-07-29 17:50 +08:00 — Milestone 4 policy/parity audit: code and SQL boundary scans were empty; Issue/PR template and `CONTRIBUTING.md` checks were false; `docs/` and `LICENSE` had no diff; README, USAGE, and CI use the same Go/frontend scopes. Prettier parsed the workflow and both documents. Six referenced Action major tags were observed in their official Git remotes before a later GitHub connectivity outage.
+- [x] Milestone 4 — CI definition and developer documentation created and locally validated. GitHub-hosted Windows/macOS/Linux job results remain pending until a user-authorized push or pull request.
+- [x] 2026-07-29 17:55 +08:00 — Milestone 5 structural/Go audit: approved outer Git root and absent inner container confirmed; all 15 design-document SHA-256 values and the LICENSE hash matched the pre-execution baseline and HEAD; 44 required Phase 0 files existed and 21 future/forbidden paths were absent. Go 1.26.5 recognized exactly three modules; golangci-lint v2.12.2 reported zero issues; explicit tests passed; Windows Core and Launcher binaries were 2,465,792 and 43,980,361 bytes; Core printed the exact marker.
+- [x] 2026-07-29 17:55 +08:00 — Milestone 5 frontend audit: pnpm 10.11.0 listed only the root and Web workspace projects; frozen install preserved lockfile SHA-256 `9C4AF0B490FBF6ABE01151CFFFEE91B1EB1358D6EB2C367828FB52C8462896ED`; format, lint, the one-test Vitest suite, and Vite build passed; `apps/web/dist/index.html` existed; no deferred product UI dependency appeared in manifests.
+- [x] 2026-07-29 17:56 +08:00 — Milestone 5 boundary/policy audit: no forbidden implementation symbol, Go dependency, SQL, repository template, deployment/signing/installer file, or release automation was found; CI/README/USAGE command scopes matched; workflow and docs parsed with pinned Prettier; `git diff --check` passed; worktree was clean before this final plan update.
+- [x] Milestone 5 — Final local evidence audit and handoff completed. Remote GitHub-hosted native builds remain required before full Phase 0 completion can be claimed; the recommended visual Launcher smoke remains pending.
+- [x] 2026-07-29 18:08 +08:00 — Remote handoff: the user pushed local `dev` at `a0c6670` and authorized creation of Draft PR [#1](https://github.com/gofurry/corvus-studio/pull/1) targeting `main`; no additional implementation commit or assistant push was required.
+- [x] 2026-07-29 18:15 +08:00 — Remote completion gate: GitHub Actions run [30442490029](https://github.com/gofurry/corvus-studio/actions/runs/30442490029) completed successfully. Go quality, Frontend quality, and native Ubuntu, macOS, and Windows jobs all reported `success`; the slowest job was the initial Windows Fyne build, which completed without retry or bypass.
 
 ### Surprises & Discoveries
 
@@ -816,6 +842,16 @@ Phase 0 is complete only when evidence shows all of the following:
 - Fyne remains the only Phase 0 component requiring native C/graphics build prerequisites.
 - A root `go test ./...` command would not express the intended coverage for a non-module workspace root, so explicit module patterns are necessary.
 - The repository-root relocation occurred between assistant turns rather than through Milestone 1's recorded command sequence. The root and document inventory are present, but the complete pre-move hash manifest cannot be reconstructed.
+- Before execution, the repository had advanced externally to commit `ad73355`, both `main` and `dev` referenced that commit, the active branch was `dev`, and the worktree was clean.
+- Go 1.26.5 became available between planning and execution, removing the Milestone 2 toolchain blocker without changing the project version.
+- The first two full workspace test attempts timed out during the initial Windows Fyne/GLFW native compilation at 124 and 304 seconds. An isolated `go test -x ./apps/launcher/...` completed successfully after the build cache was populated, and the required full three-module test then completed successfully in 6.4 seconds.
+- The first pnpm install failed under the required strict peer policy: Vite 8.1.5 resolved Rolldown 1.1.5, whose optional WASM chain needs Emnapi 2.x while the optional binding itself pins Emnapi 1.11.1. Adding top-level Emnapi 2.0.0-alpha.3 packages did not change that nested peer context and was reverted. The broken optional WASM fallback was excluded while native Windows/macOS/Linux bindings remain enabled and strict peer checks remain active.
+- The first frontend format check found two source/config files that required the pinned Prettier rewrite. After the build generated `apps/web/dist`, a second check also revealed that a filtered workspace script does not automatically discover the root `.prettierignore`; the script now names the root ignore file explicitly and uses workspace-wide output globs.
+- Root `pnpm exec prettier` does not expose the Web package's locally pinned binary. Repository-document and workflow formatting validation must use `pnpm --filter @corvus-studio/web exec prettier ...`; this avoids a duplicate root Prettier dependency.
+- The first Milestone 4 acceptance run correctly stopped at `git diff --check` because two USAGE blockquote lines used trailing-space Markdown breaks. They were changed to explicit backslash breaks, and the entire acceptance sequence then passed.
+- A first `git ls-remote` audit returned all six referenced GitHub Action major tags. A later repeat encountered a connection reset and then three GitHub port 443 timeouts; this is recorded as a transient external-network failure and does not constitute a GitHub Actions run.
+- The Windows host exposes `wsl.exe` but has no installed Linux distribution. Docker, Podman, Multipass, and Vagrant are absent, and Windows cannot provide macOS-native build evidence. Local emulation or cross-compilation is therefore not an acceptable substitute for the pending native matrix.
+- The GitHub Connector returned HTTP 403 when creating the authorized Draft PR. Per the selected GitHub publishing workflow, authenticated GitHub CLI was used as the fallback and created PR #1 successfully; no repository content changed during PR creation.
 
 ### Decision Log
 
@@ -825,7 +861,12 @@ Phase 0 is complete only when evidence shows all of the following:
 - **2026-07-29 — Accepted:** use a real minimal Fyne v2.8.0 Launcher and native three-platform build matrix during Phase 0.
 - **2026-07-29 — Accepted:** defer Echo, SQLite, goose, sqlc, OpenAPI generation, Agent/ADK, product UI libraries, and all business behavior to their owning later phases.
 - **2026-07-29 — Accepted:** preserve the existing AGPLv3 license unchanged; separate documentation licensing remains an open, non-blocking later decision.
+- **2026-07-29 — Accepted:** commit each completed milestone locally after validation; do not push unless the user explicitly requests it.
+- **2026-07-29 — Accepted:** retain `strict-peer-dependencies=true` and exclude only Rolldown's broken optional WASM binding via `ignoredOptionalDependencies`; do not weaken peer validation or remove native bindings for the three supported platforms.
+- **2026-07-29 — Accepted:** keep pnpm workspace coordination, the single lockfile, Node/pnpm constraints, and shared formatting policy at the repository root; keep application-specific Vite, TypeScript, ESLint, source, tests, and styles under `apps/web/`. Document these responsibilities in README instead of duplicating workspace state inside the application.
+- **2026-07-29 — Accepted:** close Milestone 5 after recording the complete local audit, but withhold the overall Phase 0 completion claim until actual GitHub-hosted Windows, macOS, and Linux native-build results exist. Do not treat YAML inspection or the successful local Windows build as remote evidence.
+- **2026-07-29 — Accepted:** actual PR run `30442490029` supplies the required remote evidence, so Phase 0 completion can now be claimed. Keep PR #1 as a draft for user review; do not merge or mark it ready without separate authorization.
 
 ### Outcomes & Retrospective
 
-Milestone 1's revised repository audit is complete; the engineering bootstrap in Milestones 2–5 has not started and remains awaiting user review. Repository-root normalization occurred outside this task, and the missing pre-move hash baseline for 11 untracked documents is explicitly retained. No dependency installation, application generation, database migration, or design-document edit has occurred as part of preparing this plan.
+Phase 0 is complete. Milestones 1–5 passed their local audits, and Draft PR #1 supplied successful GitHub-hosted Go/frontend quality plus native Ubuntu, macOS, and Windows build evidence for `a0c6670`. The three approved Go modules and root skeleton build/test locally on Windows, including a real Fyne v2.8.0 Launcher shell. The pnpm workspace installs from one frozen lockfile and the minimal Web package passes formatting, lint, smoke test, and production build. README and USAGE distinguish current behavior from future product commands. Design documents and LICENSE remained byte-stable, and no Phase 1 capability or database migration was introduced. The only remaining suggested action is a human visual smoke of the Launcher window; it is not a Phase 0 completion gate.

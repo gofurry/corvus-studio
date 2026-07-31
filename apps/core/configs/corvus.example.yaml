@@ -1,0 +1,21 @@
+runtime:
+  # Relative paths are resolved from the process working directory.
+  data_dir: ./.tmp/corvus-runtime
+
+server:
+  # Phase 1 accepts loopback hosts only because authentication is not implemented.
+  host: 127.0.0.1
+  port: 8765
+
+storage:
+  # Empty uses <runtime.data_dir>/corvus.db.
+  path: ""
+
+logging:
+  # Empty uses <runtime.data_dir>/logs/corvus.log.
+  path: ""
+  level: info
+  max_size_mb: 10
+  max_backups: 3
+  max_age_days: 28
+  compress: true
